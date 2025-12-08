@@ -1,0 +1,36 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Environnement
+.env
+.env.local
+
+# PHP / Composer
+/vendor
+
+# Node / JS
+/node_modules/
+
+# Public JS / Webpack
+/public/js/webpack/
+
+# Caches & logs
+/cache/
+/logs/
+*.log
+
+# IDE / éditeurs
+.vscode
+
+# Backups & dumps
+*.sql.gz
+*.bak
+
+# drafts (notes) ac. exception pour créer la dir. vide draft sur Github
+/docs/draft/*
+!/docs/draft/.gitkeep 
+
+# dumps DB
+/sql/dumps/*
+!/sql/dumps/.gitkeep

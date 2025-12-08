@@ -1,0 +1,145 @@
+Pourquoi réaliser cette mission ?
+
+Cette mission a pour but de mettre en œuvre toutes les compétences acquises jusqu’à présent, en particulier sur la programmation 
+en PHP, sur la programmation orientée objet et sur le pattern MVC. 
+
+C’est l’occasion de faire le bilan de ce qui est acquis et de ce qui nécessite encore d’être travaillé. Ce projet est bien plus 
+conséquent que les précédents, mais toutes les notions ont déjà été vues. 
+
+La bonne nouvelle est que réussir ce projet signifie que vous savez réaliser une application web complexe, de A à Z, et en 
+respectant les bonnes pratiques ! 
+
+Avant de démarrer ce projet, nous vous conseillons de :
+	- Lire tout le projet et les documents liés.
+	- Prendre des notes sur ce que vous avez compris.
+	- Consulter les points d’orientation pour vous guider. 
+	- Préparer une liste de questions pour votre première session de mentorat.
+ 
+
+Découvrez votre mission
+-----------------------
+	Vous êtes embauché par TomTroc, une association à but non lucratif dont le but est d’encourager le partage des livres 
+	et de créer des rencontres entre lecteurs. 
+
+	L’association vise à mettre en relation des particuliers qui souhaitent échanger des livres afin de donner une seconde 
+	vie aux livres qui ne sont plus  utilisés. Son objectif est de créer une plateforme conviviale où les membres peuvent 
+	facilement se connecter, communiquer et organiser des échanges de livres en toute simplicité.
+
+	Cette association vous a demandé de développer de zéro son site web de mise en relation. Voici l’e-mail que vous avez 
+	reçu de la présidente, Alice Fostre, qui vous briefe sur le projet : 
+
+		De : Alice
+		À : Vous
+		Objet : Développement du site de TomTroc
+
+		Salut ! 
+		 
+		Nous sommes ravis de t'avoir à bord pour développer notre site web. Comme nous en avons parlé, voici les 
+		informations dont tu auras besoin pour démarrer ton développement : 
+			- Le site devra être développé en PHP, en utilisant le modèle MVC et en respectant les principes de la 
+			  programmation orientée objet (POO). Ceci permettra une meilleure structure du code et une maintenance 
+			  aisée à l'avenir. 
+			- Tu trouveras en pièce jointe le document de spécifications fonctionnelles qui résume l’ensemble du projet 
+			  à développer.
+			- Notre designer a déjà conçu toute la maquette du site, tu la trouveras également en pièce jointe, ainsi 
+			  que le prototype du site pour voir le résultat attendu. Pense à bien respecter l’ensemble des éléments 
+			  graphiques pour créer les pages.
+			- En termes de contraintes techniques, elles sont simples : tu dois tout développer en PHP, HTML et CSS 
+			  sans aucune librairie tierce. Il faut également que tu versionnes ton code avec Git et GitHub. Concernant 
+			  l’IDE, libre à toi de choisir celui que tu préfères.
+		 
+		Nous savons que c'est un projet ambitieux, mais nous avons toute confiance en tes compétences et en ta capacité 
+		à le réaliser avec brio. Prends le temps nécessaire pour bien comprendre nos besoins et assure-toi de respecter 
+		les bonnes pratiques de développement PHP ! 
+
+		Alice.
+
+
+Pièces jointes : 
+--------------
+	- Spécifications fonctionnelles
+	- Maquette du site
+	- Prototype du site
+ 
+
+Ça y est, vous avez toutes les informations pour démarrer votre développement. C’est parti !
+Si vous le souhaitez, vous pouvez suivre les étapes clés recommandées ci-dessous.
+
+Étapes
+------
+	Étape 1 – Prenez connaissance du projet
+	---------------------------------------
+		La première étape est de se définir des jalons. Ce projet est plus conséquent que les précédents et 
+		aucun code n’est fourni au départ ; cependant, vous avez les maquettes pour vous guider en détail.
+ 
+		Commencez par déterminer les données dont vous aurez besoin, cela va vous guider dans la création 
+		de la base de données. Quelles sont les tables qui doivent être créées ? avec quels champs ? Quelles 
+		sont les relations entre les tables ? 		 
+
+		Recommandations pour cette étape
+		--------------------------------
+			Papiers et crayons seront vos meilleurs amis pour cette étape. L’idée ici est de prendre 
+			connaissance du sujet et, en quelque sorte, de le planifier. 
+
+			L’ampleur du projet peut faire peur, mais en réalité, chaque fonctionnalité, prise séparément, 
+			n’est pas si difficile à écrire. 
+		 
+			Au cours des étapes suivantes, n’hésitez pas à revenir sur ce que vous aviez décidé ; plus vous 
+			avancerez dans le projet, plus il sera clair dans votre tête, et plus vous aurez de chance de vous 
+			rendre compte que vous avez oublié ou mal compris telle ou telle partie.
+
+	
+	Étape 2 – Initialisez la structure de votre projet
+	--------------------------------------------------
+		Il vous est demandé d’utiliser une architecture MVC. Il faut donc mettre en place la structure de code 
+		en MVC ainsi que la base de données. Cette architecture est comme un échafaudage. Une fois qu’elle sera 
+		mise en place, la création de toutes les pages supplémentaires sera largement facilitée.
+
+		Recommandations pour cette étape
+		--------------------------------		
+		Commencez par réaliser votre premier “hello world” en MVC. Le but ici est simple : en respectant cette 
+		architecture, vous devez afficher une donnée qui vient de la base de données. Ce sera un bon point de 
+		départ pour créer votre base de code.
+		Une structure solide sera la garantie d’un projet plus facile à réaliser. Relisez le cours sur le MVC 
+		si nécessaire, revoyez vos exercices. Ce qui est important, c’est de comprendre en profondeur ce que 
+		vous faites, comment et pourquoi. 
+		Pour la BDD, à vous de créer les données. Vous devrez les entrer vous-même manuellement ou bien via un 
+		système de fixtures.	
+	
+	Étape 3 – Écrivez les pages
+	---------------------------
+		À ce stade, la base de données doit être prête, votre architecture mise en place, il est temps de 
+		véritablement commencer à écrire les diverses pages demandées : connexion/inscription, profil utilisateur, 
+		bibliothèque, messagerie… 
+
+		Recommandations pour cette étape
+		--------------------------------
+		- Choisissez une des pages à développer et lancez-vous. À ce stade, c’est à vous de définir dans quel 
+		  ordre organiser votre développement. Pour ça, posez-vous les bonnes questions : 
+			- Quelles sont les fonctionnalités les plus complexes ?
+			- Lesquelles peuvent être développées indépendamment des autres ? Lesquelles sont dépendantes ?
+			- Vaut-il mieux commencer par l’inscription ? Par la messagerie ? Par le profil ?
+			- Si vous avez besoin d’aide, n’hésitez pas à demander à votre mentor.
+		- Si aucun choix ne vous semble pertinent, prenez une fonctionnalité au hasard et essayez de la coder, 
+		  vous découvrirez rapidement si cette option est pertinente ou non.
+		- La messagerie interne peut sembler complexe à implémenter. Mais au final, poster un message dans 
+		  une messagerie interne ou un article de blog, c’est exactement la même chose. On enregistre un message 
+		  en base de données, puis lorsque l’utilisateur consulte sa messagerie, on vient lire ce message depuis 
+		  la base de données en fonction d’un critère (ici, l’id du lecteur). Rappelez-vous donc vos projets précédents 
+		  pour utiliser votre expérience.	
+	
+	Étape 4 – Assurez-vous de la sécurité du code
+	---------------------------------------------
+		Vous devez garder en tête les bonnes pratiques de sécurité tout au long du développement. Mais faites 
+		également une vérification en fin de projet pour vous assurer que tout est sécurisé.
+	 
+		Recommandations pour cette étape
+		--------------------------------
+		- Veillez à ne pas laisser de faille de sécurité ; en particulier :
+			- les mots de passe doivent être encodés dans la base de données ;
+			- il faut éviter les injections SQL et les failles XSS. 
+		- Pensez à tester les failles vous-même. Que se passe-t-il si vous écrivez dans une description quelque 
+		  chose comme  <script>alert(‘Faille XSS !)</script>  ? Voyez-vous la popup d’alerte s’afficher ? Si c’est 
+		  le cas, votre site n’est pas sécurisé. 
+		- Pensez également à bien vérifier que vous avez utilisé les requêtes préparées pour vous assurer qu’aucune 
+		  injection SQL n’est possible. 	

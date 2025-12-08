@@ -1,0 +1,71 @@
+@startuml db_tomtroc
+skinparam classAttributeIconSize 0
+skinparam roundcorner 15
+skinparam class {
+    BackgroundColor #f9f9f9
+    BorderColor #333333
+}
+
+' --------------------------
+' USERS
+' --------------------------
+entity users {
+    * id : INT UNSIGNED
+    --
+    pseudo : VARCHAR(50)
+    email : VARCHAR(255)
+    password_hash : VARCHAR(255)
+    created_at : DATETIME
+    updated_at : DATETIME
+    --
+    + UNIQUE(email)
+    + UNIQUE(pseudo)
+}
+
+' --------------------------
+' BOOKS
+' --------------------------
+entity books {
+    * id : INT UNSIGNED
+    --
+    user_id : INT UNSIGNED <<FK>>
+    title : VARCHAR(255)
+    author : VARCHAR(255)
+    description : TEXT
+    image_path : VARCHAR(255)
+    status : ENUM('available','unavailable')
+    created_at : DATETIME
+    updated_at : DATETIME
+    --
+    + INDEX(user_id)
+    + INDEX(status)
+    + INDEX(title)
+}
+
+' --------------------------
+' MESSAGES
+' --------------------------
+entity messages {
+    * id : INT UNSIGNED
+    --
+    sender_id : INT UNSIGNED <<FK>>
+    receiver_id : INT UNSIGNED <<FK>>
+    content : TEXT
+    created_at : DATETIME
+    updated_at : DATETIME
+    read_at : DATETIME NULL
+    --
+    + INDEX(receiver_id, created_at)
+    + INDEX(sender_id, receiver_id, created_at)
+}
+
+' --------------------------
+' RELATIONS
+' --------------------------
+
+users ||--o{ books : "user_id"
+
+users ||--o{ messages : "sender_id"
+users ||--o{ messages : "receiver_id"
+
+@enduml

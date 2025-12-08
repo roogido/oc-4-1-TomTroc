@@ -1,0 +1,116 @@
+											---------------------------------------
+											 P4L1 - Prj. TomTroc - Etapes suivies
+												Date : Samdi 6 décembre 2025
+												Maj : Lundi 8 décembre 2025   
+											---------------------------------------
+											
+1. ANALYSE DU PROJET
+	a) Commande sur site OC
+	
+	b) Spécifications fonctionnelles
+	
+	c) Maquette et prototype du site 
+	
+2. INITIALISATION DU PROJET
+	BDD : tomtroc
+		Relations entre les tables :
+		--------------------------
+			Voir aussi la représentation ERD (Entity Relation Diagram) sous :
+				/docs/architecture/erd_tomtroc.puml
+
+			1. users ↔ books
+				Relation : 1 utilisateur possède plusieurs livres (1-N) :
+					books.user_id  →  users.id
+				Contrainte (suppression en cascade - éviter les données orphelines) :
+					CONSTRAINT fk_books_user
+						FOREIGN KEY (user_id) REFERENCES users(id)
+						ON DELETE CASCADE
+	
+			2. users ↔ messages (expéditeur)
+				Relation : 1 utilisateur peut envoyer plusieurs messages (1-N)	
+					messages.sender_id → users.id
+					
+			3. users ↔ messages (destinataire)
+				Relation : 1 utilisateur peut recevoir plusieurs messages (1-N)	
+				
+				→ Le modèle "messagerie" est donc défini avec deux FK pointant vers la même table users.
+	
+		Création de BDD : tomtroc
+		-------------------------
+			CREATE DATABASE IF NOT EXISTS tomtroc
+			  CHARACTER SET utf8mb4
+			  COLLATE utf8mb4_unicode_ci;
+
+			USE tomtroc;
+
+			CREATE TABLE users (
+				id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+				pseudo VARCHAR(50) NOT NULL,
+				email VARCHAR(255) NOT NULL,
+				password_hash VARCHAR(255) NOT NULL,
+				created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+				CONSTRAINT uq_users_email UNIQUE (email),
+				CONSTRAINT uq_users_pseudo UNIQUE (pseudo)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+			CREATE TABLE books (
+				id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+				user_id INT UNSIGNED NOT NULL,
+				title VARCHAR(255) NOT NULL,
+				author VARCHAR(255) NOT NULL,
+				description TEXT NOT NULL,
+				image_path VARCHAR(255) NULL,
+				status ENUM('available', 'unavailable') NOT NULL DEFAULT 'available',
+				created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+				CONSTRAINT fk_books_user
+					FOREIGN KEY (user_id) REFERENCES users(id)
+					ON DELETE CASCADE,
+
+				INDEX idx_books_user (user_id),
+				INDEX idx_books_status (status),
+				INDEX idx_books_title (title)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+			CREATE TABLE messages (
+				id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+				sender_id INT UNSIGNED NOT NULL,
+				receiver_id INT UNSIGNED NOT NULL,
+				content TEXT NOT NULL,
+				created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+				read_at DATETIME NULL DEFAULT NULL,
+
+				CONSTRAINT fk_messages_sender
+					FOREIGN KEY (sender_id) REFERENCES users(id)
+					ON DELETE CASCADE,
+
+				CONSTRAINT fk_messages_receiver
+					FOREIGN KEY (receiver_id) REFERENCES users(id)
+					ON DELETE CASCADE,
+
+				INDEX idx_messages_receiver_created (receiver_id, created_at),
+				INDEX idx_messages_pair (sender_id, receiver_id, created_at)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+	
+	
+		Git/Gihub :
+		---------
+			Création de la repo. github : oc-4-1-TomTroc
+			
+			git init
+			git add .
+			git commit -m "Initial commit – project structure + SQL schema + base MVC"
+			git branch -M main
+			git remote add origin https://github.com/toncompte/oc-4-1-TomTroc.git
+			git push -u origin main	
+			
+			git commit -m "Initial commit – project structure + SQL schema + base MVC"
+
+3.
+
+4.
