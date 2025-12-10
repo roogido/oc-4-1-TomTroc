@@ -1,4 +1,4 @@
-@startuml db_tomtroc
+@startuml erd_tomtroc
 skinparam classAttributeIconSize 0
 skinparam roundcorner 15
 skinparam class {

@@ -1,0 +1,41 @@
+RewriteEngine On
+RewriteBase /
+
+# -------------------------------------------------------------
+# 1) Laisser Apache servir directement les fichiers existants
+# -------------------------------------------------------------
+# Si la ressource demandée correspond à un fichier réel (-f)
+# OU à un répertoire réel (-d),
+# alors on ne passe PAS par index.php : on laisse Apache gérer.
+#
+# Exemple :
+# - /css/style.css      → servi tel quel
+# - /images/logo.png    → servi tel quel
+# - /uploads/avatar.jpg → servi tel quel
+#
+# L drapeau [L] signifie : "stop, ne traite pas d'autres règles".
+# -------------------------------------------------------------
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+
+# -------------------------------------------------------------
+# 2) Rediriger toutes les autres requêtes vers index.php
+# -------------------------------------------------------------
+# Si la ressource n'est NI un fichier NI un dossier existant,
+# alors on redirige la requête vers index.php, le front controller.
+#
+# Exemple :
+# - /login         → index.php
+# - /books         → index.php
+# - /book/12       → index.php
+#
+# Le drapeau [QSA] conserve les paramètres GET :
+# /book?id=5  → index.php?id=5
+#
+# Le drapeau [L] signifie : "cette règle est finale".
+# -------------------------------------------------------------
+
+RewriteRule ^ index.php [QSA,L]

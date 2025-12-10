@@ -1,0 +1,138 @@
+@startuml sequence_tomtroc
+title Parcours utilisateur – TomTroc (Pages maquette + Specs)
+
+actor Utilisateur
+
+participant "Router" as R
+participant "HomeController" as HC
+participant "BookController" as BC
+participant "UserController" as UC
+participant "AuthController" as AC
+participant "MessageController" as MC
+participant "View" as V
+participant "Model (PDO)" as M
+
+' ---------------------------------------------------
+' 1) Page d'accueil (maquette pages 5–6)
+' ---------------------------------------------------
+Utilisateur -> R: GET "/"
+R -> HC: home()
+HC -> M: loadLastBooks()
+M --> HC: books[]
+HC -> V: render("home")
+
+' ---------------------------------------------------
+' 2) Page "Nos livres à l'échange" (pages 7–8)
+' ---------------------------------------------------
+Utilisateur -> R: GET "/livres"
+R -> BC: index()
+BC -> M: getAvailableBooks()
+M --> BC: books[]
+BC -> V: render("books/list")
+
+' --- Recherche d'un livre (spec 4) ---
+Utilisateur -> R: GET "/livres?search=..."
+R -> BC: index(search)
+BC -> M: searchBooks(search)
+M --> BC: filteredBooks[]
+BC -> V: render("books/list")
+
+' ---------------------------------------------------
+' 3) Page "Détail d'un livre" (pages 9–10, spec 5)
+' ---------------------------------------------------
+Utilisateur -> R: GET "/livre/{id}"
+R -> BC: show(id)
+BC -> M: findBook(id)
+M --> BC: book
+BC -> M: findOwner(book.user_id)
+M --> BC: owner
+BC -> V: render("books/detail")
+
+' ---------------------------------------------------
+' 4) Page Profil utilisateur (pages 15–16, spec 2)
+' Appelée uniquement depuis un livre (spec)
+' ---------------------------------------------------
+Utilisateur -> R: GET "/utilisateur/{id}"
+R -> UC: show(id)
+UC -> M: findUser(id)
+M --> UC: user
+UC -> M: listBooksByUser(id)
+M --> UC: books[]
+UC -> V: render("user/profile")
+
+' ---------------------------------------------------
+' 5) Inscription (pages 11–12, spec 1)
+' ---------------------------------------------------
+Utilisateur -> R: GET "/inscription"
+R -> AC: registerForm()
+AC -> V: render("auth/register")
+
+Utilisateur -> R: POST "/inscription"
+R -> AC: register(data)
+AC -> M: createUser(data-hashed)
+M --> AC: success
+AC -> V: redirect("/connexion")
+
+' ---------------------------------------------------
+' 6) Connexion (pages 13–14, spec 1)
+' ---------------------------------------------------
+Utilisateur -> R: GET "/connexion"
+R -> AC: loginForm()
+AC -> V: render("auth/login")
+
+Utilisateur -> R: POST "/connexion"
+R -> AC: login(credentials)
+AC -> M: findUserByEmail()
+M --> AC: user
+AC -> AC: verifyPassword()
+AC -> V: redirect("/mon-compte")
+
+' ---------------------------------------------------
+' 7) Mon compte / Bibliothèque (pages 15–16, spec 3)
+' ---------------------------------------------------
+Utilisateur -> R: GET "/mon-compte"
+R -> UC: dashboard()
+UC -> M: listBooksByUser(currentUser)
+M --> UC: books[]
+UC -> V: render("user/dashboard")
+
+' ---------------------------------------------------
+' 8) Modifier un livre (pages 19–20, spec 3)
+' ---------------------------------------------------
+Utilisateur -> R: GET "/livre/editer/{id}"
+R -> BC: edit(id)
+BC -> M: findBook(id)
+M --> BC: book
+BC -> V: render("books/edit")
+
+Utilisateur -> R: POST "/livre/editer/{id}"
+R -> BC: update(id, data)
+BC -> M: updateBook(id, data)
+M --> BC: success
+BC -> V: redirect("/mon-compte")
+
+' ---------------------------------------------------
+' 9) Messagerie (pages 17–18 + 21–23, spec 6)
+' ---------------------------------------------------
+
+' --- Inbox (pages 21–23) ---
+Utilisateur -> R: GET "/messagerie"
+R -> MC: inbox()
+MC -> M: getConversations(currentUser)
+M --> MC: conversations[]
+MC -> V: render("messages/inbox")
+
+' --- Fil de discussion + Écrire un message (pages 17–18) ---
+Utilisateur -> R: GET "/messagerie/{userId}"
+R -> MC: conversation(userId)
+MC -> M: getConversationMessages(currentUser, userId)
+M --> MC: messages[]
+MC -> V: render("messages/thread")
+
+Utilisateur -> R: POST "/messagerie/{userId}"
+R -> MC: sendMessage(userId, content)
+MC -> M: storeMessage(sender, receiver, content)
+M --> MC: success
+MC -> V: redirect("/messagerie/{userId}")
+
+@enduml

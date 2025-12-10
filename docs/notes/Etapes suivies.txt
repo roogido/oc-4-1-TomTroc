@@ -108,9 +108,30 @@
 			git branch -M main
 			git remote add origin https://github.com/toncompte/oc-4-1-TomTroc.git
 			git push -u origin main	
-			
-			git commit -m "Initial commit – project structure + SQL schema + base MVC"
 
-3.
+3. CREATION/MISE EN PLACE DU SQUELETTE MVC
+	- Structure du project
+	- Autoloader (spl) (suppression de composer/phpdotenv car non autorisé dans le prj)
+	- router
+	- front controller
+	- Gestion des erreurs (403 / 404 / 500)
+	- Système de configuration
+	- Rendu MVC
+	- Layouts
+	- Database manager
 
-4.
+git add .
+git commit -m "feat(core): implement MVC foundation, routing, config system and error handling
+
+- Added custom autoloader (PSR-like)
+- Implemented centralized configuration system (Config class + /config files)
+- Added front controller with global exception handling (DEV/PROD modes)
+- Added HTTP error handling (403, 404, 500) with dedicated views
+- Improved Router to throw HTTP exceptions
+- Added base Controller with render() and renderError() workflows
+- Implemented unified layouts for normal and error views
+- Updated Database manager to use config system
+- Clean project structure and prepared foundation for feature development
+"
+
+4. CRÉATION DS FEATURES
