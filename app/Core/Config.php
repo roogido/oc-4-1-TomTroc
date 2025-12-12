@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 /**
- * class Config.php
+ * class Config
  * 
  * Classe centralisée de configuration.
  * Cette classe charge automatiquement les fichiers du dossier /config
@@ -15,7 +15,7 @@
  * Date :      10 décembre 2025
  * Maj  :
  * 
- * @category   
+ * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
  * @version    1.0.0
  * @since      
