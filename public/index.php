@@ -2,31 +2,37 @@
 /**
  * index.php
  *
- * Front-controller   
- * 
+ * Front-controller de l'application.
+ * Point d'entrée unique : charge l'autoloader, initialise la session,
+ * configure l'environnement et délègue la requête au router.
+ *
  * PHP version 8.2.12
- * 
- * Date :      7 décembre 2025
- * Maj  :
- * 
- * @category   
+ *
+ * Date  :     7 décembre 2025
+ * Maj   :     12 décembre 2025
+ *
+ * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
- * @version    1.0.0
- * @since      
- * @see      
- * @todo       ...  
+ * @version    1.0.1
+ * @since      1.0.0
+ * @see        App\Core\Router
+ * @todo       Les routes devront être définie dans un fichier dédié (routes.php) !!!
  */
 
+use App\Controllers\AccountController;
+use App\Controllers\AuthController;
 use App\Core\Config;
 use App\Core\Router;
 use App\Controllers\HomeController;
 use App\Core\Controller;
 use App\Core\HttpForbiddenException;
 use App\Core\HttpNotFoundException;
+use App\Core\Session;
 
 // Autoloader 
 require __DIR__ . '/../app/Core/Autoloader.php';
 
+Session::start();
 
 $ENV = Config::get('app.env', 'DEV');
 
@@ -36,6 +42,17 @@ try {
 
     // Déclaration des routes
     $router->get('/', [HomeController::class, 'index']);
+    //
+    $router->get('/register', [AuthController::class, 'registerForm']);
+    $router->post('/register', [AuthController::class, 'register']);
+
+    $router->get('/login', [AuthController::class, 'loginForm']);
+    $router->post('/login', [AuthController::class, 'login']);
+
+    $router->get('/logout', [AuthController::class, 'logout']);
+
+    $router->get('/account', [AccountController::class, 'index']);
+
 
     // Dispatch de la requête courante
     // Reçoit l'url et la méthode http (GET/POST)
@@ -81,7 +98,7 @@ try {
         // Vue générique
         Controller::renderError('500');
 
-        // Log en interne
+        // Log en interne (error_log)
         error_log('[' . date('Y-m-d H:i:s') . '] ' . $e->getMessage());
         error_log($e->getTraceAsString()); // Affiche la pile d'appels
     }

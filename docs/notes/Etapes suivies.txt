@@ -1,7 +1,7 @@
 											---------------------------------------
 											 P4L1 - Prj. TomTroc - Etapes suivies
 												Date : Samdi 6 décembre 2025
-												Maj : Lundi 8 décembre 2025   
+												Maj : Lundi 10 décembre 2025   
 											---------------------------------------
 											
 1. ANALYSE DU PROJET
@@ -120,18 +120,141 @@
 	- Layouts
 	- Database manager
 
-git add .
-git commit -m "feat(core): implement MVC foundation, routing, config system and error handling
+	git add .
+	git commit -m "feat(core): implement MVC foundation, routing, config system and error handling
 
-- Added custom autoloader (PSR-like)
-- Implemented centralized configuration system (Config class + /config files)
-- Added front controller with global exception handling (DEV/PROD modes)
-- Added HTTP error handling (403, 404, 500) with dedicated views
-- Improved Router to throw HTTP exceptions
-- Added base Controller with render() and renderError() workflows
-- Implemented unified layouts for normal and error views
-- Updated Database manager to use config system
-- Clean project structure and prepared foundation for feature development
-"
+	- Added custom autoloader
+	- Implemented centralized configuration system (Config class + /config files)
+	- Added front controller with global exception handling (DEV/PROD modes)
+	- Added HTTP error handling (403, 404, 500) with dedicated views
+	- Improved Router to throw HTTP exceptions
+	- Added base Controller with render() and renderError() workflows
+	- Implemented unified layouts for normal and error views
+	- Create & Updated Database manager to use config system
+	- Clean project structure and prepared foundation for feature development
+	"
 
 4. CRÉATION DS FEATURES
+
+	1) FEATURE AUTH
+	===============
+
+		BRANCHE
+		-------
+			git checkout -b feature/auth
+
+		OBJECTIF
+		--------
+			Implémenter un système complet d'authentification :
+				- Session sécurisée
+				- Inscription
+				- Connexion
+				- Déconnexion
+				- Page Mon Compte
+				- Gestion des erreurs et messages flash
+
+		A) SESSION
+		----------
+			Ajout /app/Core/Session.php
+			Adaptation du front-controller (public/index.php)
+
+			PRINCIPE DE FONCTIONNEMENT
+			--------------------------
+				• Connexion réussie :
+					Session::set('user_id', $user->getId());
+					Session::addFlash('success', 'Connexion réussie.');
+
+				• Vérification d'accès :
+					if (! Session::isLogged()) {
+						throw new HttpForbiddenException(
+							'Vous devez être connecté pour accéder à cette page.'
+						);
+					}
+
+				• Déconnexion :
+					Session::destroy();
+
+				• Messages flash dans le layout :
+					$success = Session::getFlashes('success');
+					$errors  = Session::getFlashes('error');
+
+		B) AUTHENTIFICATION
+		-------------------
+			1. Modèle User : app/Models/User.php
+				Roles du modèle :
+					(1) Représenter les données venant de la BDD (hydratation)
+					(2) Représenter les données venant du formulaire (front)
+				Workflow MVC :
+					Front → Controller → Validation → User (modèle) → Repository → BDD
+					BDD   → Repository → User (modèle) → Controller → Vue
+
+			2. UserRepository : app/Repositories/UserRepository.php
+				- findByEmail()
+				- findByPseudo()
+				- findById()
+				- create()
+				- verifyCredentials()
+				- hydrateUser()
+
+			3. AuthController : app/Controllers/AuthController.php
+				- registerForm()
+				- register()
+				- loginForm()
+				- login()
+				- logout()
+
+			4. Vues :
+				views/auth/register.php
+				views/auth/login.php
+
+			5. Ajout des routes :
+				GET  /register
+				POST /register
+				GET  /login
+				POST /login
+				GET  /logout
+
+		C) COMPTE UTILISATEUR
+		---------------------
+			Contrôleur :
+				app/Controllers/AccountController.php
+
+			Vue :
+				views/account/index.php
+
+			Nouvelle route :
+				GET /account   (accès restreint)
+
+		D) VERSIONING GIT/GITHUB
+		------------------------
+			git status
+			git add .
+			git commit -m "feat(auth): implement full authentication module
+
+			- Added AuthController (register/login/logout)
+			- Added AccountController and /account protected page
+			- Added register and login views (flash + old values)
+			- Extended Session with flash system + getUserId()
+			- Added User model (pseudo, email, passwordHash)
+			- Added UserRepository (find, create, credentials)
+			- Added routes + access control via HttpForbiddenException
+			"
+
+			git push origin feature/auth
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Rédiger titre + description
+				- Merger
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/auth
+
+	2) FEATURE BOOKS
+	================
+		BRANCHE
+		-------	
+			git checkout -b feature/books
