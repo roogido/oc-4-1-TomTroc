@@ -1,7 +1,7 @@
 											---------------------------------------
 											 P4L1 - Prj. TomTroc - Etapes suivies
 												Date : Samdi 6 décembre 2025
-												Maj : Lundi 10 décembre 2025   
+												Maj : Dimanche 14 décembre 2025   
 											---------------------------------------
 											
 1. ANALYSE DU PROJET
@@ -255,6 +255,180 @@
 
 	2) FEATURE BOOKS
 	================
+
+		BRANCHE
+		-------
+			git checkout -b feature/books
+
+		OBJECTIF
+		--------
+			Implémenter la gestion complète des livres :
+				- Ajout d’un livre par un utilisateur connecté
+				- Modification et suppression de ses propres livres
+				- Consultation publique des livres
+				- Affichage des livres de l’utilisateur dans "Mon compte"
+				- Gestion de l’upload d’image
+				- Affichage des derniers livres sur la page d’accueil
+
+		A) ENTITE BOOK
+		--------------
+			Fichier :
+				app/Models/Book.php
+
+			Rôle du modèle :
+				(1) Représenter un livre issu de la BDD (hydratation)
+				(2) Représenter un livre en cours de création/modification (formulaire)
+				(3) Porter les règles métier simples (statut, setters sécurisés)
+
+			Champs principaux :
+				- id
+				- user_id (propriétaire)
+				- title
+				- author
+				- description
+				- image_path
+				- status
+				- created_at / updated_at (gérés par la BDD)
+
+			Workflow MVC :
+				Front → Controller → Validation → Book (modèle) → Repository → BDD
+				BDD   → Repository → Book (modèle) → Controller → Vue
+
+		B) PERSISTANCE (BOOK REPOSITORY)
+		--------------------------------
+			Fichier :
+				app/Repositories/BookRepository.php
+
+			Méthodes :
+				- findById()
+				- findByUser()
+				- findAvailable()
+				- findLast()
+				- create()
+				- update()
+				- delete()
+				- hydrateBook()
+
+			Responsabilité :
+				- Accès à la base de données uniquement
+				- Aucune logique HTTP
+				- Aucune logique de session
+
+		C) CONTROLEUR BOOK
+		------------------
+			Fichier :
+				app/Controllers/BookController.php
+
+			Méthodes :
+				- show()       → affichage public du détail d’un livre
+				- addForm()    → formulaire d’ajout (accès restreint)
+				- add()        → traitement ajout + upload image
+				- editForm()   → formulaire d’édition (propriétaire uniquement)
+				- edit()       → traitement modification
+				- delete()     → suppression d’un livre
+
+			Règles de sécurité :
+				- Utilisateur connecté requis pour add / edit / delete
+				- Vérification du propriétaire du livre
+				- Exceptions HTTP (403 / 404) en cas d’erreur
+
+		D) UPLOAD DES IMAGES
+		-------------------
+			Dossier :
+				public/uploads/books/
+
+			Principe :
+				- Image optionnelle
+				- Validation du type MIME
+				- Nom de fichier unique (uniqid)
+				- Stockage du chemin relatif en BDD
+				- Une seule image haute résolution (x4)
+				- Redimensionnement via CSS selon la page
+
+		E) VUES BOOK
+		------------
+			Dossier :
+				views/book/
+
+			Fichiers :
+				- add.php   → formulaire ajout
+				- edit.php  → formulaire édition
+				- show.php  → détail public d’un livre
+
+			Règle :
+				- Aucune logique métier
+				- Affichage uniquement
+
+		F) INTEGRATION DANS LE COMPTE UTILISATEUR
+		-----------------------------------------
+			Contrôleur :
+				app/Controllers/AccountController.php
+
+			Adaptation :
+				- Récupération des livres du user connecté
+				- Affichage dans la section "Ma bibliothèque"
+
+			Vue :
+				views/account/index.php
+					- Liste des livres
+					- Boutons Modifier / Supprimer
+					- Lien Ajouter un livre
+
+		G) PAGE D’ACCUEIL
+		-----------------
+			Objectif :
+				- Afficher les derniers livres ajoutés
+
+			Implémentation :
+				- BookRepository::findLast()
+				- Appel depuis HomeController
+				- Affichage dans la vue home/index.php
+
+		H) ROUTES
+		---------
+			$router->get('/book/{id}', [BookController::class, 'show']);
+
+			$router->get('/book/add', [BookController::class, 'addForm']);
+			$router->post('/book/add', [BookController::class, 'add']);
+
+			$router->get('/book/{id}/edit', [BookController::class, 'editForm']);
+			$router->post('/book/{id}/edit', [BookController::class, 'edit']);
+
+			$router->post('/book/{id}/delete', [BookController::class, 'delete']);
+
+		I) VERSIONING GIT / GITHUB
+		--------------------------
+			git status
+			git add .
+			git commit -m "feat(books): implement book CRUD with image upload and home listing
+
+			- Added Book model and BookRepository
+			- Added BookController (CRUD + access control)
+			- Implemented image upload for books
+			- Integrated user books into account page
+			- Added public book detail page
+			- Displayed last books on home page
+			"
+
+			git push origin feature/books
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Rédiger titre + description
+				- Merger
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/books
+				git branch
+				git branch -r
+
+
+	3) FEATURE BOOKS-PUBLIC
+	=======================
 		BRANCHE
 		-------	
-			git checkout -b feature/books
+			git checkout -b feature/books-public
+			

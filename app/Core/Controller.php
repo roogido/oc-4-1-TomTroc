@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :      8 décembre 2025
- * Maj  :      10 décembre 2025
+ * Maj  :      13 décembre 2025
  *
  * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -28,7 +28,7 @@ abstract class Controller
 
     public function __construct()
     {
-        // Valeur par défaut du titre 
+        // Valeur par défaut du titre de la page
         $this->pageTitle = Config::get('app.title', 'TomTroc');
     }
 
@@ -52,9 +52,11 @@ abstract class Controller
      */
     protected function render(string $view, array $params = []): void
     {
+        // Paths complet pourles vues et le layout
         $viewsPath   = Config::get('app.paths.views');
         $layoutPath  = Config::get('app.paths.layout');        
 
+        // Path complet de la vue
         $viewFile = $viewsPath . $view . '.php';
 
         if (! file_exists($layoutPath)) {
@@ -68,8 +70,8 @@ abstract class Controller
         // Ajout du titre à la liste des paramètres transmis à la vue
         $params['pageTitle'] = $this->pageTitle;        
 
-        // Transforme un tableau associatif en variables locales 
-        // EXTR_SKIP évite que les variables critiques du layout soient écrasées par erreur
+        // Transforme un tableau associatif en variables locales EXTR_SKIP évite
+        // que les variables critiques du layout soient écrasées par erreur
         extract($params, EXTR_SKIP);
         require $layoutPath;
     }

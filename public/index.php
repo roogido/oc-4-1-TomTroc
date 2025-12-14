@@ -21,6 +21,7 @@
 
 use App\Controllers\AccountController;
 use App\Controllers\AuthController;
+use App\Controllers\BookController;
 use App\Core\Config;
 use App\Core\Router;
 use App\Controllers\HomeController;
@@ -52,6 +53,16 @@ try {
     $router->get('/logout', [AuthController::class, 'logout']);
 
     $router->get('/account', [AccountController::class, 'index']);
+
+    // Books
+    $router->get('/book/add', [BookController::class, 'addForm']);
+    $router->post('/book/add', [BookController::class, 'add']);
+
+    $router->get('/book/{id}', [BookController::class, 'show']);
+    $router->get('/book/{id}/edit', [BookController::class, 'editForm']);
+    $router->post('/book/{id}/edit', [BookController::class, 'edit']);
+    $router->post('/book/{id}/delete', [BookController::class, 'delete']);
+		    
 
 
     // Dispatch de la requête courante

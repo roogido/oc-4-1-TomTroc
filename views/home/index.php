@@ -1,10 +1,33 @@
-<?php
-/** @var string|null $lastBookTitle */
-?>
-<h1>TomTroc - Hello world from DB</h1>
+<h1>Rejoignez nos lecteurs passionnés</h1>
 
-<?php if ($lastBookTitle !== null): ?>
-    <p>Dernier livre en base : <?php echo htmlspecialchars($lastBookTitle, ENT_QUOTES, 'UTF-8'); ?></p>
-<?php else: ?>
-    <p>Aucun livre en base pour le moment.</p>
-<?php endif; ?>
+<section class="home-last-books">
+    <h2>Les derniers livres ajoutés</h2>
+
+    <?php if (empty($books)) : ?>
+        <p>Aucun livre disponible pour le moment.</p>
+    <?php else : ?>
+        <div>
+            <?php foreach ($books as $book) : ?>
+                <div style="display:inline-block; margin-right:10px; text-align:center;">
+                    <?php if ($book->getImagePath()) : ?>
+                        <img
+                            src="/<?= htmlspecialchars($book->getImagePath()) ?>"
+                            alt="<?= htmlspecialchars($book->getTitle()) ?>"
+                            width="200"
+                            height="200"
+                        >
+                    <?php else : ?>
+                        <div
+                            style="width:200px; height:200px; border:1px solid #ccc;"
+                        >
+                            Pas d’image
+                        </div>
+                    <?php endif; ?>
+
+                    <p><?= htmlspecialchars($book->getTitle()) ?></p>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</section>
+

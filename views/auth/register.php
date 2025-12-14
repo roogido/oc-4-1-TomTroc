@@ -1,7 +1,9 @@
 <?php
+/* VUE REGISTER (INSCRIPTION) */
 
 use App\Core\Session;
 
+// Récupération des données flash en Session
 $errors = Session::getFlashes('error');
 $success = Session::getFlashes('success');
 $oldAll = Session::getFlashes('old');

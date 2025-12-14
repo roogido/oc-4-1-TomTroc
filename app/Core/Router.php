@@ -74,7 +74,7 @@ class Router
         // On instancie la classe puis on exécute la méthode associée
         if (is_array($handler)) {
             [$class, $action] = $handler;
-            $controller       = new $class();
+            $controller       = new $class(); // Instanciation du contrôleur
             $controller->{$action}();
 
             return;
