@@ -1,8 +1,9 @@
 <?php
-// Messages flash éventuels
+/* VUE REGISTER-INDEX (ACCOUNT) */
 
 use App\Core\Session;
 
+// Récupération des données flash en Session
 $errors  = Session::getFlashes('error');
 $success = Session::getFlashes('success');
 ?>
@@ -42,9 +43,66 @@ $success = Session::getFlashes('success');
     <section class="account-library">
         <h2>Ma bibliothèque</h2>
 
-        <p>Ici apparaîtra la liste des livres de l’utilisateur.</p>
-        <p>(Fonctionnalité à implémenter plus tard.)</p>
+        <p>
+            <a href="/book/add" class="btn-add-book">➕ Ajouter un livre</a>
+        </p>
 
-        <a href="/book/add" class="btn-add-book">Ajouter un livre</a>
+        <?php if (empty($books)) : ?>
+            <p>Vous n’avez encore ajouté aucun livre.</p>
+        <?php else : ?>
+            <table class="library-table">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Titre</th>
+                        <th>Auteur</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($books as $book) : ?>
+                        <tr>
+                            <td>
+                                <?php if ($book->getImagePath()) : ?>
+                                    <img
+                                        src="/<?= htmlspecialchars($book->getImagePath()) ?>"
+                                        alt="<?= htmlspecialchars($book->getTitle()) ?>"
+                                        width="78"
+                                        height="78"
+                                    >
+                                <?php else : ?>
+                                    —
+                                <?php endif; ?>
+                            </td>
+
+                            <td><?= htmlspecialchars($book->getTitle()) ?></td>
+                            <td><?= htmlspecialchars($book->getAuthor()) ?></td>
+                            <td>
+                                <?= $book->getStatus() === 'available'
+                                    ? 'Disponible'
+                                    : 'Indisponible'
+                                ?>
+                            </td>
+                            <td>
+                                <a href="/book/<?= (int) $book->getId() ?>">Voir</a>
+                                |
+                                <a href="/book/<?= (int) $book->getId() ?>/edit">Modifier</a>
+                                |
+                                <form
+                                    method="post"
+                                    action="/book/<?= (int) $book->getId() ?>/delete"
+                                    style="display:inline;"
+                                    onsubmit="return confirm('Supprimer ce livre ?');"
+                                >
+                                    <button type="submit">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
     </section>
+
 </section>

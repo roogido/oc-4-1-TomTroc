@@ -19,24 +19,28 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Core\Database;
-use PDO;
+use App\Repositories\BookRepository;
+
 
 class HomeController extends Controller
 {
+    private BookRepository $books;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->books = new BookRepository();
+    }
+
     public function index(): void
     {
-        // Récupère la connexion à la BDD
-        $pdo = Database::getConnection();
-
-        // Pour le "hello world", on recupere un livre (ou rien si table vide)
-        $statement = $pdo->query('SELECT title FROM books ORDER BY created_at DESC LIMIT 1');
-        $book      = $statement->fetch(PDO::FETCH_ASSOC) ?: null;
+        // Récupère les 4 derniers livres disponibles
+        $lastBooks = $this->books->findLast(4);
 
         $this->setPageTitle('Accueil - TomTroc');
-        
+
         $this->render('home/index', [
-            'lastBookTitle' => $book['title'] ?? null,
+            'books' => $lastBooks,
         ]);
     }
 }

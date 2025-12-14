@@ -11,7 +11,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         -
+ * Maj :         13 décembre 2025
  *
  * @category     Controllers
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -94,6 +94,7 @@ class AuthController extends Controller
         // Validation 
         $errors = [];
 
+        // Contrôle la validité des données reçues
         if ($pseudo === '') {
             $errors[] = "Le pseudo est obligatoire.";
         }

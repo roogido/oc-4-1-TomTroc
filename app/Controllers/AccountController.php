@@ -25,12 +25,13 @@ use App\Core\Controller;
 use App\Core\Session;
 use App\Core\HttpForbiddenException;
 use App\Repositories\UserRepository;
+use App\Repositories\BookRepository;
 
 
 class AccountController extends Controller
 {
     private UserRepository $users;
-
+    private BookRepository $books;
 
     /**
      * Constructeur.
@@ -38,22 +39,24 @@ class AccountController extends Controller
      * Initialise le contrôleur et charge le UserRepository.
      *
      * @return void
-     */
+     */    
     public function __construct()
     {
         parent::__construct();
         $this->users = new UserRepository();
+        $this->books = new BookRepository();
     }
 
     /**
-     * Affiche la page "Mon compte" pour l'utilisateur connecté.
-     *
+     * Affiche la page "Mon compte" pour l'utilisateur connecté. Et
+     * Affchage de ses livres.
+     * 
      * Vérifie l'authentification, charge les données du profil via le
      * UserRepository, puis rend la vue correspondante.
      *
      * @throws HttpForbiddenException Si l'utilisateur n'est pas authentifié.
      * @return void
-     */
+     */    
     public function index(): void
     {
         if (! Session::isLogged()) {
@@ -64,15 +67,19 @@ class AccountController extends Controller
         $user   = $this->users->findById($userId);
 
         if (! $user) {
-            // Cas : si session invalide ou utilisateur supprimé
             Session::destroy();
             header('Location: /login');
             exit;
         }
 
+        // récupération des livres du user
+        $userBooks = $this->books->findByUser($userId);
+
         $this->setPageTitle("Mon compte");
         $this->render('account/index', [
-            'user' => $user,
+            'user'  => $user,
+            'books' => $userBooks,
         ]);
     }
 }
+
