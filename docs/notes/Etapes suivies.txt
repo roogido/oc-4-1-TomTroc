@@ -427,8 +427,153 @@
 
 
 	3) FEATURE BOOKS-PUBLIC
-	=======================
+	======================
+
 		BRANCHE
-		-------	
+		-------
 			git checkout -b feature/books-public
+
+		OBJECTIF
+		--------
+			Implémenter la consultation publique des livres :
+				- Page "Nos livres à l’échange"
+				- Recherche par titre
+				- Accès au détail d’un livre
+				- Navigation publique sans authentification
+				- Séparation claire livres publics / espace utilisateur
+
+		A) PAGE PUBLIQUE "NOS LIVRES À L’ÉCHANGE"
+		----------------------------------------
+			URL :
+				GET /books
+
+			Rôle :
+				- Afficher la liste des livres disponibles à l’échange
+				- Permettre une recherche par titre
+				- Donner accès à la page de détail d’un livre
+
+			Implémentation :
+				- BookController::index()
+				- Transmission des données à la vue book/index.php
+
+			Fonctionnalités :
+				- Récupération des livres avec statut "available"
+				- Filtrage optionnel via paramètre GET ?q=
+				- Affichage de l’image, du titre, de l’auteur
+				- Lien vers le détail du livre
+
+		B) ADAPTATION DU BOOK CONTROLLER
+		--------------------------------
+			Fichier :
+				app/Controllers/BookController.php
+
+			Méthodes concernées :
+				- index()   → page publique /books
+				- show()    → détail public d’un livre
+
+			Responsabilités :
+				- Récupérer les paramètres HTTP (GET)
+				- Appeler le repository
+				- Aucune logique métier
+				- Aucune logique SQL
+
+		C) ADAPTATION DU BOOK REPOSITORY
+		--------------------------------
+			Fichier :
+				app/Repositories/BookRepository.php
+
+			Nouvelles / adaptations de méthodes :
+				- findAllAvailable(?string $search = null)
+
+			Rôle :
+				- Retourner uniquement les livres disponibles
+				- Appliquer un filtre de recherche si présent
+				- Ne jamais dépendre du HTTP ou de la session
+
+			Règle :
+				- Toute logique SQL reste confinée au repository
+
+		D) VUE BOOK INDEX
+		-----------------
+			Fichier :
+				views/book/index.php
+
+			Responsabilité :
+				- Affichage uniquement
+				- Aucune logique métier
+				- Aucune requête SQL
+
+			Contenu :
+				- Formulaire de recherche (GET)
+				- Liste des livres disponibles
+				- Image cliquable menant au détail
+				- Message si aucun résultat
+
+		E) PAGE "DÉTAIL D’UN LIVRE"
+		---------------------------
+			URL :
+				GET /book/{id}
+
+			Implémentation :
+				- BookController::show()
+				- Vue : views/book/show.php
+
+			Fonction :
+				- Affichage public des informations complètes du livre
+				- Image en grand format
+				- Titre, auteur, description
+				- Propriétaire du livre
+
+			Accès :
+				- Public (aucune authentification requise)
+
+		F) ROUTES PUBLIQUES
+		-------------------
+			Fichier :
+				app/Routes/web.php
+
+			Routes ajoutées / utilisées :
+				$router->get('/books', [BookController::class, 'index']);
+				$router->get('/book/{id}', [BookController::class, 'show']);
+
+			Principe :
+				- Routes isolées dans un fichier dédié
+				- Aucune logique métier dans les routes
+
+		G) ADAPTATIONS TRANSVERSES
+		--------------------------
+			Corrections / ajustements :
+				- Amélioration de certaines vues existantes
+				- Harmonisation des liens de navigation
+				- Ajustements mineurs de repositories
+				- Sécurisation de l’affichage (htmlspecialchars)
+
+		H) VERSIONING GIT / GITHUB
+		--------------------------
+			git status
+			git add .
+			git commit -m "feat(books-public): public books listing with search and book detail links"
+
+			git push origin feature/books-public
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Rédiger titre + description
+				- Merger dans main
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/books-public
+				git branch
+				git branch -r
 			
+
+	4) FEATURE MESSAGING
+	====================			
+
+		BRANCHE
+		-------
+			git checkout -b feature/messaging	
+

@@ -9,22 +9,18 @@
  * PHP version 8.2.12
  *
  * Date  :     7 décembre 2025
- * Maj   :     12 décembre 2025
+ * Maj   :     15 décembre 2025
  *
  * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
- * @version    1.0.1
+ * @version    1.0.0
  * @since      1.0.0
  * @see        App\Core\Router
  * @todo       Les routes devront être définie dans un fichier dédié (routes.php) !!!
  */
 
-use App\Controllers\AccountController;
-use App\Controllers\AuthController;
-use App\Controllers\BookController;
 use App\Core\Config;
 use App\Core\Router;
-use App\Controllers\HomeController;
 use App\Core\Controller;
 use App\Core\HttpForbiddenException;
 use App\Core\HttpNotFoundException;
@@ -41,29 +37,8 @@ try {
     // Instanciation du router
     $router = new Router();
 
-    // Déclaration des routes
-    $router->get('/', [HomeController::class, 'index']);
-    //
-    $router->get('/register', [AuthController::class, 'registerForm']);
-    $router->post('/register', [AuthController::class, 'register']);
-
-    $router->get('/login', [AuthController::class, 'loginForm']);
-    $router->post('/login', [AuthController::class, 'login']);
-
-    $router->get('/logout', [AuthController::class, 'logout']);
-
-    $router->get('/account', [AccountController::class, 'index']);
-
-    // Books
-    $router->get('/book/add', [BookController::class, 'addForm']);
-    $router->post('/book/add', [BookController::class, 'add']);
-
-    $router->get('/book/{id}', [BookController::class, 'show']);
-    $router->get('/book/{id}/edit', [BookController::class, 'editForm']);
-    $router->post('/book/{id}/edit', [BookController::class, 'edit']);
-    $router->post('/book/{id}/delete', [BookController::class, 'delete']);
-		    
-
+    // Chargement des routes
+    require __DIR__ . '/../app/Routes/web.php';
 
     // Dispatch de la requête courante
     // Reçoit l'url et la méthode http (GET/POST)

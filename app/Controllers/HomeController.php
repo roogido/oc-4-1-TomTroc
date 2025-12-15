@@ -1,19 +1,22 @@
 <?php declare(strict_types=1);
 /**
- * class HomeController
+ * Class HomeController
  *
- * 
+ * Contrôleur de la page d’accueil.
+ *
+ * Responsable de l’affichage des contenus publics,
+ * notamment la liste des derniers livres disponibles à l’échange.
+ *
  * PHP version 8.2.12
- * 
+ *
  * Date :      8 décembre 2025
- * Maj  :
- * 
- * @category   
+ * Maj  :      14 décembre 2025
+ *
+ * @category   Controllers
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
  * @version    1.0.0
- * @since      
- * @see      
- * @todo       ...  
+ * @since      1.0.0
+ * @see        BookRepository
  */
 
 namespace App\Controllers;
@@ -26,12 +29,26 @@ class HomeController extends Controller
 {
     private BookRepository $books;
 
+    /**
+     * Initialise le contrôleur Home.
+     *
+     * Instancie le repository des livres nécessaire
+     * à l’affichage des contenus de la page d’accueil.
+     */
     public function __construct()
     {
         parent::__construct();
         $this->books = new BookRepository();
     }
 
+    /**
+     * Affiche la page d’accueil du site.
+     *
+     * Récupère les derniers livres disponibles à l’échange
+     * et les transmet à la vue d’accueil.
+     *
+     * @return void
+     */
     public function index(): void
     {
         // Récupère les 4 derniers livres disponibles

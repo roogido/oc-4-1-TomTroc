@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        12 décembre 2025
- * Maj :         
+ * Maj :         14 décembre 2025
  *
  * @category     Models
  * @package      App\Models
@@ -30,6 +30,7 @@ class Book
 
     private ?int $id = null;
     private int $userId;
+    private ?string $ownerPseudo = null;
     private string $title;
     private string $author;
     private string $description;
@@ -80,6 +81,11 @@ class Book
         return $this->userId;
     }
 
+    public function getOwnerPseudo(): ?string
+    {
+        return $this->ownerPseudo;
+    }    
+
     public function getTitle(): string
     {
         return $this->title;
@@ -113,6 +119,11 @@ class Book
     {
         $this->id = $id;
     }
+
+    public function setOwnerPseudo(string $pseudo): void
+    {
+        $this->ownerPseudo = $pseudo;
+    }    
 
     public function setTitle(string $title): void
     {

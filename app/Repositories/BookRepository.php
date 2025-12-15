@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        12 décembre 2025
- * Maj :         14 décembre 2025
+ * Maj :         15 décembre 2025
  *
  * @category     Repository
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -86,29 +86,45 @@ class BookRepository
     }
 
     /**
-     * Récupère tous les livres disponibles à l’échange.
+     * Récupère les livres disponibles à l’échange, avec filtre optionnel par titre.
      *
-     * Les livres sont filtrés par statut "available"
-     * et triés par date de création décroissante.
-     * 
+     * Les livres sont filtrés par statut "available".
+     * Si un terme de recherche est fourni, seuls les titres correspondants sont retournés.
+     * Le résultat est trié par date de création décroissante.
+     *
+     * @param string|null $search Terme de recherche sur le titre (optionnel)
      * @return Book[] Liste des livres disponibles
      */
-    public function findAvailable(): array
+    public function findAllAvailable(?string $search = null): array
     {
         $sql = "
-            SELECT *
-            FROM books
-            WHERE status = :status
-            ORDER BY created_at DESC
+            SELECT b.*, u.pseudo AS owner_pseudo
+            FROM books b
+            JOIN users u ON u.id = b.user_id
+            WHERE b.status = :status
         ";
 
+        $params = [
+            'status' => Book::STATUS_AVAILABLE,
+        ];
+
+        // Paramètre et  clause conditionnels concaténés si recherche
+        if ($search !== null && $search !== '') {
+            $sql .= " AND b.title LIKE :search";
+            $params['search'] = '%' . $search . '%';
+        }
+
+        $sql .= " ORDER BY b.created_at DESC";
+
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['status' => Book::STATUS_AVAILABLE]);
+        $stmt->execute($params);
 
         $books = [];
 
         while ($row = $stmt->fetch()) {
-            $books[] = $this->hydrateBook($row);
+            $book = $this->hydrateBook($row);
+            $book->setOwnerPseudo($row['owner_pseudo']); // voir point 2
+            $books[] = $book;
         }
 
         return $books;
@@ -127,10 +143,11 @@ class BookRepository
     public function findLast(int $limit = 4): array
     {
         $sql = "
-            SELECT *
-            FROM books
-            WHERE status = :status
-            ORDER BY created_at DESC
+            SELECT b.*, u.pseudo AS owner_pseudo
+            FROM books b
+            JOIN users u ON u.id = b.user_id
+            WHERE b.status = :status
+            ORDER BY b.created_at DESC
             LIMIT :limit
         ";
 
@@ -142,7 +159,9 @@ class BookRepository
         $books = [];
 
         while ($row = $stmt->fetch()) {
-            $books[] = $this->hydrateBook($row);
+            $book = $this->hydrateBook($row);
+            $book->setOwnerPseudo($row['owner_pseudo']);
+            $books[] = $book;
         }
 
         return $books;
