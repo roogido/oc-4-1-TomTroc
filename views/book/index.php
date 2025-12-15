@@ -28,9 +28,14 @@
                         height="200"
                     >
                     <p><strong><?= htmlspecialchars($book->getTitle()) ?></strong></p>
-                    <p><?= htmlspecialchars($book->getAuthor()) ?></p>
-                    <p><em>Vendu par : <?= htmlspecialchars($book->getOwnerPseudo()) ?></em></p>                    
+                    <p><?= htmlspecialchars($book->getAuthor()) ?></p>                  
                 </a>
+                <p>
+                    <em>Vendu par :</em>
+                    <a href="/users/<?= (int) $book->getUserId() ?>">
+                        <?= htmlspecialchars($book->getOwnerPseudo()) ?>
+                    </a>
+                </p>
             </div>
         <?php endforeach; ?>
     </div>    
