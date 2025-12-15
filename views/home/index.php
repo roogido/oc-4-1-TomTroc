@@ -10,21 +10,25 @@
             <?php foreach ($books as $book) : ?>
                 <div style="display:inline-block; margin-right:10px; text-align:center;">
                     <?php if ($book->getImagePath()) : ?>
-                        <img
-                            src="/<?= htmlspecialchars($book->getImagePath()) ?>"
-                            alt="<?= htmlspecialchars($book->getTitle()) ?>"
-                            width="200"
-                            height="200"
-                        >
+                        <a href="/book/<?= (int) $book->getId() ?>">
+                            <img
+                                src="/<?= htmlspecialchars($book->getImagePath()) ?>"
+                                alt="<?= htmlspecialchars($book->getTitle()) ?>"
+                                width="200"
+                                height="200"
+                            >
+
+                            <p><strong><?= htmlspecialchars($book->getTitle()) ?></strong></p>
+                            <p><?= htmlspecialchars($book->getAuthor()) ?></p>
+                            <p><em>Vendu par : <?= htmlspecialchars($book->getOwnerPseudo()) ?></em></p>                              
+                        </a>
                     <?php else : ?>
                         <div
                             style="width:200px; height:200px; border:1px solid #ccc;"
                         >
                             Pas d’image
                         </div>
-                    <?php endif; ?>
-
-                    <p><?= htmlspecialchars($book->getTitle()) ?></p>
+                    <?php endif; ?>                    
                 </div>
             <?php endforeach; ?>
         </div>

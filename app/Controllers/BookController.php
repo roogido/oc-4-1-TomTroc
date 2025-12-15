@@ -10,7 +10,7 @@
  * PHP version 8.2.12
  *
  * Date :        13 décembre 2025
- * Maj :         -
+ * Maj :         14 décembre 2025
  *
  * @category     Controllers
  * @package      App\Controllers
@@ -43,6 +43,33 @@ class BookController extends Controller
     {
         parent::__construct();
         $this->books = new BookRepository();  // Instanciation du reposository pour l'accès à la BDD
+    }
+
+    /**
+     * Affiche la liste des livres disponibles à l’échange.
+     *
+     * Permet une recherche optionnelle par titre via le paramètre GET "q".
+     * Charge les livres disponibles et rend la vue correspondante.
+     *
+     * @return void
+     */
+    public function index(): void
+    {
+        $search = isset($_GET['q']) ? trim($_GET['q']) : null;
+
+        // Pour bien repérer les valeurs nulles
+        if ($search === '') {
+            $search = null;
+        }
+
+        $books = $this->books->findAllAvailable($search);
+
+        $this->setPageTitle('Nos livres à l’échange');
+
+        $this->render('book/index', [
+            'books'  => $books,
+            'search' => $search,
+        ]);
     }
 
     /**
