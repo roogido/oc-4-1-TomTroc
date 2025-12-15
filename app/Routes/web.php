@@ -29,6 +29,9 @@ use App\Controllers\HomeController;
 use App\Controllers\AuthController;
 use App\Controllers\AccountController;
 use App\Controllers\BookController;
+use App\Controllers\MessageController;
+use App\Controllers\PageController;
+use App\Controllers\UserController;
 
 /** @var \App\Core\Router $router */
 
@@ -36,24 +39,36 @@ use App\Controllers\BookController;
 // Pages publiques
 $router->get('/', [HomeController::class, 'index']);
 
-// Espace utilisateur
+// Utilisateurs (public)
+$router->get('/users/{id}', [UserController::class, 'show']);
+
+// Authentification
 $router->get('/register', [AuthController::class, 'registerForm']);
 $router->post('/register', [AuthController::class, 'register']);
 
 $router->get('/login', [AuthController::class, 'loginForm']);
 $router->post('/login', [AuthController::class, 'login']);
 $router->get('/logout', [AuthController::class, 'logout']);
+
+// Espace utilisateur (privé)
 $router->get('/account', [AccountController::class, 'index']);
 
-// Bibliothèque
+// Bibliothèque publique
 $router->get('/books', [BookController::class, 'index']);
+$router->get('/book/{id}', [BookController::class, 'show']);
 
+// Bibliothèque privée (CRUD)
 $router->get('/book/add', [BookController::class, 'addForm']);
 $router->post('/book/add', [BookController::class, 'add']);
-
-$router->get('/book/{id}', [BookController::class, 'show']);
 $router->get('/book/{id}/edit', [BookController::class, 'editForm']);
 $router->post('/book/{id}/edit', [BookController::class, 'edit']);
 $router->post('/book/{id}/delete', [BookController::class, 'delete']);
 
-// Messagerie (à venir)
+// Messagerie
+$router->get('/messages', [MessageController::class, 'inbox']);
+$router->get('/messages/{userId}', [MessageController::class, 'thread']);
+$router->post('/messages/send', [MessageController::class, 'send']);
+
+// Pages légales
+$router->get('/privacy', [PageController::class, 'privacy']);
+$router->get('/legal', [PageController::class, 'legal']);

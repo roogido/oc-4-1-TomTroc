@@ -59,7 +59,8 @@ class BookRepository
 
     /**
      * Récupère tous les livres appartenant à un utilisateur.
-     *
+     * Utilisation : privé (pour Mon compte)
+     * 
      * @param int $userId Identifiant de l'utilisateur
      * @return Book[] Liste des livres de l'utilisateur
      */
@@ -76,6 +77,38 @@ class BookRepository
         $stmt->execute(['user_id' => $userId]);
 
         // Contiendra un tableau d'objets de type Book.
+        $books = [];
+
+        while ($row = $stmt->fetch()) {
+            $books[] = $this->hydrateBook($row);
+        }
+
+        return $books;
+    }
+
+    /**
+     * Récupère que les livres disponibles appartenant à un utilisateur.
+     * Utilisation : public (pour profil/biblio publique)
+     *
+     * @param int $userId Identifiant de l'utilisateur
+     * @return Book[] Liste des livres de l'utilisateur
+     */    
+    public function findPublicByUser(int $userId): array
+    {
+        $sql = "
+            SELECT *
+            FROM books
+            WHERE user_id = :user_id
+            AND status = :status
+            ORDER BY created_at DESC
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'user_id' => $userId,
+            'status'  => \App\Models\Book::STATUS_AVAILABLE,
+        ]);
+
         $books = [];
 
         while ($row = $stmt->fetch()) {

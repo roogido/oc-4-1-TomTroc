@@ -576,4 +576,192 @@
 		BRANCHE
 		-------
 			git checkout -b feature/messaging	
+			# supprime localement toutes les références distantes qui n’existent plus sur le remote :
+			git fetch --prune
+			git branch -r
+
+		OBJECTIF
+		--------
+			Implémenter un système de messagerie interne entre utilisateurs :
+				- Boîte de réception
+				- Fil de discussion entre deux utilisateurs
+				- Envoi de messages
+				- Accès restreint aux utilisateurs connectés
+				- Préparer les futures fonctionnalités sociales
+				- Compléter la navigation globale du site
+
+		A) ENTITE MESSAGE
+		-----------------
+			Fichier :
+				app/Models/Message.php
+
+			Rôle du modèle :
+				- Représenter un message échangé entre deux utilisateurs
+				- Contenir uniquement les données métier
+				- Ne contenir aucune logique HTTP ou SQL
+
+			Champs principaux :
+				- id
+				- sender_id
+				- receiver_id
+				- content
+				- created_at
+				- read_at
+
+			Règle :
+				- Le modèle Message est une entité métier pure
+
+		B) PERSISTANCE (MESSAGE REPOSITORY)
+		-----------------------------------
+			Fichier :
+				app/Repositories/MessageRepository.php
+
+			Méthodes prévues :
+				- findInboxByUser(int $userId)
+				- findThread(int $userId, int $otherUserId)
+				- create(Message $message)
+				- markAsRead(int $messageId)
+
+			Responsabilité :
+				- Accès à la base de données uniquement
+				- Aucune logique HTTP
+				- Aucune gestion de session
+
+		C) CONTROLEUR MESSAGE
+		---------------------
+			Fichier :
+				app/Controllers/MessageController.php
+
+			Méthodes :
+				- inbox()   → affichage de la boîte de réception
+				- thread()  → affichage d’une discussion entre deux utilisateurs
+				- send()    → envoi d’un message
+
+			Règles de sécurité :
+				- Utilisateur connecté requis
+				- Interdiction d’accéder à des conversations tierces
+				- Exceptions HTTP (403 / 404) en cas d’erreur
+
+		D) VUES MESSAGERIE
+		------------------
+			Dossier :
+				views/messages/
+
+			Fichiers :
+				- inbox.php   → liste des conversations
+				- thread.php  → fil de discussion
+
+			Règle :
+				- Affichage uniquement
+				- Aucune logique métier
+				- Aucune requête SQL
+
+		E) BIBLIOTHEQUE PUBLIQUE D’UN UTILISATEUR
+		-----------------------------------------
+			Objectif :
+				- Permettre la consultation publique du profil d’un utilisateur
+				- Afficher sa bibliothèque publique (livres disponibles)
+
+			Route :
+				GET /users/{id}
+
+			Implémentation :
+				- Controller : app/Controllers/UserController.php
+				- Méthode : show(int $id)
+
+			Vue :
+				views/users/show.php
+
+			Accès :
+				- Public
+				- Aucune authentification requise
+
+		F) STRUCTURATION DU LAYOUT (HEADER / FOOTER)
+		---------------------------------------------
+			Objectif :
+				- Centraliser la navigation globale
+				- Préparer l’intégration complète du site
+
+			Actions :
+				- Début d’implémentation d’un header commun
+				- Ajout d’un footer global
+				- Centralisation des liens principaux :
+					- Accueil
+					- Nos livres
+					- Mon compte
+					- Messagerie
+					- Mentions légales
+					- Politique de confidentialité
+
+		G) PAGES LEGALES
+		----------------
+			Routes ajoutées :
+				GET /legal
+				GET /privacy
+
+			Controller :
+				app/Controllers/PageController.php
+
+			Vues :
+				- views/pages/legal.php
+				- views/pages/privacy.php
+
+			Rôle :
+				- Pages institutionnelles statiques
+				- Aucune logique métier
+
+		H) ROUTES
+		---------
+			Fichier :
+				app/Routes/web.php
+
+			Routes ajoutées :
+				$router->get('/messages', [MessageController::class, 'inbox']);
+				$router->get('/messages/{userId}', [MessageController::class, 'thread']);
+				$router->post('/messages/send', [MessageController::class, 'send']);
+
+				$router->get('/users/{id}', [UserController::class, 'show']);
+
+				$router->get('/legal', [PageController::class, 'legal']);
+				$router->get('/privacy', [PageController::class, 'privacy']);
+
+		I) VERSIONING GIT / GITHUB
+		--------------------------
+			git status
+			git add .
+			git commit -m "feat(messaging): implement user messaging and public profiles
+
+			- Added Message model, repository and controller
+			- Implemented inbox and message threads
+			- Added public user profile with book listing
+			- Added global header and footer structure
+			- Added legal and privacy pages
+			"
+
+			git push origin feature/messaging
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Rédiger titre + description
+				- Merger dans main
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/messaging
+				git branch
+				git branch -r
+
+
+	5) FEATURE UI-STRUCTURE
+	=======================			
+
+		BRANCHE
+		-------
+			git checkout -b feature/ui-structure
+			git fetch --prune
+			git branch
+			git branch -r			
+
 

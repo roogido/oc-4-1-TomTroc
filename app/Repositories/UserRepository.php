@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         -
+ * Maj :         15 décembre 2025
  *
  * @category     Repository
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -98,6 +98,62 @@ class UserRepository
         $data = $stmt->fetch();
 
         return $data ? $this->hydrateUser($data) : null;
+    }
+
+    /**
+     * Retourne une durée lisible indiquant depuis combien de temps
+     * un utilisateur est inscrit sur la plateforme.
+     *
+     * La durée est calculée à partir de la date d’inscription (created_at)
+     * et exprimée en ces termes : aujourd’hui, quelques jours, X mois, X ans.
+     *
+     * @param int $userId Identifiant de l’utilisateur
+     * @return string Durée d’inscription formatée pour l’affichage
+     */
+    public function getMemberSince(int $userId): string
+    {
+        // Récupère uniquement la date d’inscription de l’utilisateur
+        $sql = "SELECT created_at FROM users WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id' => $userId]);
+
+        // fetchColumn() retourne la valeur de la première colonne
+        // ou false si aucun résultat
+        $createdAt = $stmt->fetchColumn();
+
+        // Si l’utilisateur n’existe pas ou que la date est absente
+        if (! $createdAt) {
+            return '';
+        }
+
+        // Création des objets DateTime pour calculer l’écart
+        $created = new \DateTime($createdAt);
+        $now     = new \DateTime();
+
+        // diff() retourne un DateInterval contenant années, mois, jours, etc.
+        $diff = $created->diff($now);
+
+        // Cas : inscription le jour même
+        if ($diff->y === 0 && $diff->m === 0 && $diff->d === 0) {
+            return 'aujourd’hui';
+        }
+
+        // Cas : moins d’un mois (quelques jours)
+        if ($diff->y === 0 && $diff->m === 0) {
+            return 'quelques jours';
+        }
+
+        // Cas : moins d’un an (affichage en mois)
+        if ($diff->y === 0) {
+            return $diff->m === 1
+                ? '1 mois'
+                : $diff->m . ' mois';
+        }
+
+        // Cas : un an ou plus (affichage en années)
+        return $diff->y === 1
+            ? '1 an'
+            : $diff->y . ' ans';
     }
 
     /**
