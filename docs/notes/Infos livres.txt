@@ -1,0 +1,84 @@
+--------------------------
+login : <email_address>
+password :  password (pour tous les utilisateurs)
+--------------------------
+Esther
+Alabaster
+Propriétaire : CamilleClubLit
+→ camille.clublit@tomtroc.test
+
+The Kinfolk Table
+Nathan Williams
+Propriétaire : Alexlecture
+→ alexlecture@tomtroc.test
+
+The Two Towers
+J.R.R Tolkien
+Propriétaire : Lotrfanclub67
+→ lotrfanclub67@tomtroc.test
+
+Wabi Sabi
+Beth Kempton
+Propriétaire : Alexlecture
+→ alexlecture@tomtroc.test
+
+Milk & honey
+Rupi Kaur
+Propriétaire : Hugo1990_12
+→ hugo1990_12@tomtroc.test
+
+Delight!
+Justin Rossow
+Propriétaire : Juju1432
+→ juju1432@tomtroc.test
+
+Milwaukee Mission
+Elder Cooper Low
+Propriétaire : Christiane75014
+→ christiane75014@tomtroc.test
+
+Minimalist Graphics
+Julia Schonlau
+Propriétaire : Hamzalecture
+→ hamzalecture@tomtroc.test
+
+Hygge
+Meik Wiking
+Propriétaire : Hugo1990_12
+→ hugo1990_12@tomtroc.test
+
+Innovation
+Matt Ridley
+Propriétaire : Lou&Ben50
+→ lou.ben50@tomtroc.test
+
+Psalms
+Alabaster
+Propriétaire : Lolobzh
+→ lolobzh@tomtroc.test
+
+Thinking, Fast & Slow
+Daniel Kahneman
+Propriétaire : Sas634
+→ sas634@tomtroc.test
+
+A Book Full Of Hope
+Rupi Kaur
+Propriétaire : ML95
+→ ml95@tomtroc.test
+
+The Subtle Art of Not Giving a F*ck
+(Titre tronqué à l'affichage) : The Subtle Art Of...
+Mark Manson
+Propriétaire : Verogo33
+→ verogo33@tomtroc.test
+
+Narnia
+C.S Lewis
+Propriétaire : AnnikaBrahms
+→ annika.brahms@tomtroc.test
+
+Company Of One
+Paul Jarvis
+Propriétaire : Victoirefabr912
+→ victoirefabr912@tomtroc.test

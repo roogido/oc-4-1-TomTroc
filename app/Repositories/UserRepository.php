@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         15 décembre 2025
+ * Maj :         17 décembre 2025
  *
  * @category     Repository
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -166,8 +166,8 @@ class UserRepository
     public function create(User $user): bool
     {
         $sql = "
-            INSERT INTO users (pseudo, email, password_hash)
-            VALUES (:pseudo, :email, :password_hash)
+            INSERT INTO users (pseudo, email, password_hash, avatar_path)
+            VALUES (:pseudo, :email, :password_hash, :avatar_path)
         ";
 
         $stmt = $this->pdo->prepare($sql);
@@ -176,8 +176,71 @@ class UserRepository
             'pseudo'        => $user->getPseudo(),
             'email'         => $user->getEmail(),
             'password_hash' => $user->getPasswordHash(),
+            'avatar_path'   => $user->getRawAvatarPath(),
         ]);
     }
+
+    /**
+     * Met à jour les informations du profil utilisateur.
+     *
+     * Met à jour l’email et le pseudo de l’utilisateur.
+     * Le mot de passe est mis à jour uniquement s’il est fourni.
+     *
+     * @param int         $userId        Identifiant de l’utilisateur
+     * @param string      $email         Nouvelle adresse email
+     * @param string      $pseudo        Nouveau pseudo
+     * @param string|null $passwordHash  Nouveau hash de mot de passe ou null
+     *
+     * @return bool True si la mise à jour a réussi, false sinon
+     */
+    public function updateProfile(
+        int $userId,
+        string $email,
+        string $pseudo,
+        ?string $passwordHash
+    ): bool {
+        $fields = [
+            'email'  => $email,
+            'pseudo' => $pseudo,
+        ];
+
+        $sql = "UPDATE users SET email = :email, pseudo = :pseudo" ; 
+
+        if ($passwordHash !== null) {
+            $sql .= ", password_hash = :password_hash";
+            $fields['password_hash'] = $passwordHash;
+        }
+
+        $sql .= " WHERE id = :id";
+        $fields['id'] = $userId;
+
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute($fields);
+    }
+
+    /**
+     * Met à jour l’avatar d’un utilisatueur.
+     *
+     * @param int    $userId      Identifiant de l’utilisateur.
+     * @param string $avatarPath  Nom du fichier avatar (valeur brute BDD).
+     *
+     * @return bool  true si la mise à jour a réussi, false sinon.
+     */
+    public function updateAvatar(int $userId, string $avatarPath): bool
+    {
+        $sql = "
+            UPDATE users
+            SET avatar_path = :avatar_path
+            WHERE id = :id
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute([
+            'avatar_path' => $avatarPath,
+            'id'          => $userId,
+        ]);
+    }    
 
     /**
      * Vérifie les identifiants d'un utilisateur.
@@ -214,7 +277,8 @@ class UserRepository
         $user = new User(
             $data['pseudo'],
             $data['email'],
-            $data['password_hash']
+            $data['password_hash'],
+            $data['avatar_path'] ?? null
         );
 
         $user->setId((int) $data['id']);

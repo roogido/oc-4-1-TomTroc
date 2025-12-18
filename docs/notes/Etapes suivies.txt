@@ -754,14 +754,229 @@
 				git branch -r
 
 
-	5) FEATURE UI-STRUCTURE
-	=======================			
+    5) FEATURE UI-STRUCTURE
+    =======================
 
-		BRANCHE
-		-------
-			git checkout -b feature/ui-structure
-			git fetch --prune
-			git branch
-			git branch -r			
+        BRANCHE
+        -------
+            git checkout -b feature/ui-structure
+            # Nettoie les références distantes supprimées
+            git fetch --prune
+            git branch
+            git branch -r
 
+        OBJECTIF
+        --------
+            Structurer l’interface globale du site pour coller à la maquette :
+                - Layout cohérent (header + footer) sur toutes les pages
+                - Page d’accueil complète (sections maquette)
+                - Harmonisation UI des pages auth (login/register) avec image
+                - Intégration progressive des items HTML (structure, classes CSS)
+                - Ajustements UI sur messagerie et profils publics
+                - Consolidation de la gestion d’avatar (affichage + upload)
+
+        A) STRUCTURE GLOBALE (LAYOUT)
+        -----------------------------
+            Fichier :
+                views/layout.php  (ou layout principal utilisé par Controller::render)
+
+            Objectif :
+                - Header et footer présents partout
+                - Navigation stable et future-proof (CSS à venir)
+
+            Contenu header :
+                - Logo TomTroc (lien vers /)
+                - Liens :
+                    - Accueil (/)
+                    - Nos livres à l’échange (/books)
+                    - Messagerie (/messages) (si connecté)
+                    - Mon compte (/account) (si connecté)
+                    - Connexion (/login) (si non connecté)
+                    - Inscription (/register) (si non connecté)
+
+            Contenu footer :
+                - Politique de confidentialité (/privacy)
+                - Mentions légales (/legal)
+                - TomTroc©
+
+            Règle :
+                - HTML uniquement (pas de logique métier)
+                - Les conditions d’affichage (connecté/non) restent simples et lisibles
+
+        B) PAGE D’ACCUEIL (HOME)
+        ------------------------
+            Fichiers :
+                app/Controllers/HomeController.php
+                views/home/index.php
+
+            Structure attendue (maquette) :
+                HOME
+                ├─ Hero
+                │  ├─ Texte (gauche)
+                │  └─ Image (droite + crédit)
+                │
+                ├─ Derniers livres ajoutés
+                │  ├─ Grille 4 livres (données depuis BookRepository::findLast)
+                │  └─ Bouton "Voir tous les livres" (lien /books)
+                │
+                ├─ Comment ça marche ?
+                │  ├─ Texte intro
+                │  └─ 4 étapes
+                │
+                ├─ Bandeau image pleine largeur
+                │
+                ├─ Nos valeurs
+                │  ├─ Texte
+                │  └─ Illustration cœur (svg/png)
+
+            Règles :
+                - Respect du HTML sémantique
+                - Préparation CSS : classes dédiées par bloc (home-hero, home-last, etc.)
+                - Images : chemins stables dans /public/assets/...
+
+        C) PAGES AUTH (REGISTER / LOGIN) AVEC IMAGE
+        -------------------------------------------
+            Fichiers :
+                views/auth/register.php
+                views/auth/login.php
+
+            Objectif :
+                - Préparer la mise en page 2 colonnes (form à gauche, image à droite)
+                - Intégrer l’image de fond/hero dans la structure HTML (sans CSS ici)
+
+            Image :
+                /assets/images/home/hero-banner.png  (ou image de la maquette)
+
+            Règle :
+                - Aucun élément supprimé
+                - Ajout de wrappers / classes CSS (auth-layout, auth-form, auth-media)
+
+        D) PROFIL PUBLIC UTILISATEUR (UI TABLE)
+        ---------------------------------------
+            Fichier :
+                views/users/show.php
+
+            Objectif :
+                - Layout proche maquette (profil à gauche, liste à droite)
+                - Liste sous forme de colonnes :
+                    PHOTO | TITRE | AUTEUR | DESCRIPTION
+                - Description tronquée (83 caractères + "…")
+
+            Règle :
+                - Structure CSS-ready (library-header, library-row, col-*)
+
+        E) ADAPTATION MESSAGERIE (UI + ROUTES)
+        --------------------------------------
+            Fichiers :
+                app/Controllers/MessageController.php
+                views/messages/inbox.php
+                views/messages/thread.php
+                app/Routes/web.php
+
+            Objectif :
+                - Harmoniser les liens (header) vers la messagerie
+                - Ajuster les vues pour coller au layout global (header/footer)
+                - Corriger/homogénéiser les routes si nécessaire :
+                    - /messages
+                    - /messages/{userId}
+                    - /messages/send
+
+            Règle :
+                - UI seulement (structure + classes)
+                - Pas de logique SQL dans les vues
+
+        F) GESTION AVATAR (UI + AFFICHAGE)
+        ----------------------------------
+            Fichiers typiques :
+                app/Core/AvatarUploader.php
+                app/Controllers/AccountController.php
+                app/Controllers/AuthController.php
+                views/account/index.php
+                views/users/show.php
+                views/messages/* (si avatar affiché)
+
+            Objectif :
+                - S’assurer que l’avatar est :
+                    - affiché correctement (public + privé)
+                    - mis à jour proprement (upload, remplacement, suppression ancien)
+                - Unifier les chemins d’images / conventions (avatar par défaut, etc.)
+
+            Règle :
+                - Cohérence des chemins (basename stocké, chemin reconstruit au rendu)
+                - Sécurité minimale (extensions, taille, move_uploaded_file)
+
+        G) INCLUSION PROGRESSIVE DES "ITEMS" (HTML ONLY)
+        ------------------------------------------------
+            Objectif :
+                - Poser la structure HTML des composants (boutons, cards, sections)
+                - Ajouter les classes nécessaires pour reproduire la maquette plus tard
+
+            Exemples :
+                - Cards livre (miniature + titre + auteur + vendeur)
+                - Boutons primaires/secondaires (classes stables)
+                - Sections de page (wrappers + containers)
+
+            Règle :
+                - Pas de CSS inline
+                - Pas de suppression d’éléments fonctionnels
+                - HTML lisible + sémantique + stable
+
+        H) ROUTES
+        ---------
+            Fichier :
+                app/Routes/web.php
+
+            Vérifications :
+                - Liens header/footer cohérents avec routes existantes :
+                    GET  /           (home)
+                    GET  /books       (bibliothèque publique)
+                    GET  /book/{id}   (détail livre)
+                    GET  /login
+                    GET  /register
+                    GET  /account     (privé)
+                    GET  /messages    (privé)
+                    GET  /privacy
+                    GET  /legal
+
+        I) VERSIONING GIT / GITHUB
+        --------------------------
+            git status
+            git add .
+            git commit -m "feat(ui): structure layout and home page sections
+
+            - Added global header/footer structure in layout
+            - Structured home page blocks to match the mockup
+            - Updated auth views to include media column (HTML structure)
+            - Improved public user profile layout (columns + trimmed description)
+            - Harmonized navigation links across views
+            - Adjusted messaging views/routes for UI consistency
+            - Consolidated avatar display/update integration
+            "
+
+            git push origin feature/ui-structure
+
+            Sur GitHub :
+                - Créer la Pull Request
+                - Rédiger titre + description
+                - Merger dans main
+                - Supprimer la branche distante
+
+            En local :
+                git checkout main
+                git pull
+                git branch -d feature/ui-structure
+                git branch
+                git branch -r
+	
+
+    6) FEATURE FIGMA-INTEGRATION
+    ============================
+
+        BRANCHE
+        -------
+            git checkout -b feature/figma-integration
+            # Nettoie les références distantes supprimées
+            git fetch --prune
+            git branch
+            git branch -r
 

@@ -10,7 +10,7 @@
  * PHP version 8.2.12
  *
  * Date :      15 décembre 2025
- * Maj  :      
+ * Maj  :      16 décembre 2025
  *
  * @category   Controllers
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -29,13 +29,10 @@ use App\Repositories\MessageRepository;
 use App\Repositories\UserRepository;
 use App\Models\Message;
 
-
-
 class MessageController extends Controller
 {
     private MessageRepository $messages;
     private UserRepository $users;
-
 
     public function __construct()
     {
@@ -45,7 +42,7 @@ class MessageController extends Controller
     }
 
     /**
-     * Inbox : liste des messages reçus par l'utilisateur connecté.
+     * Messagerie (liste des conversations)
      * Route : GET /messages
      */
     public function inbox(): void
@@ -54,17 +51,20 @@ class MessageController extends Controller
             throw new HttpForbiddenException('Accès interdit.');
         }
 
-        $userId   = Session::getUserId();
-        $messages = $this->messages->findReceivedMessages($userId);
+        $currentUserId = Session::getUserId();
+
+        $conversations = $this->messages->findConversationsByUser($currentUserId);
 
         $this->setPageTitle('Messagerie');
-        $this->render('messages/inbox', [
-            'messages' => $messages,
+        $this->render('messages/index', [
+            'conversations' => $conversations,
+            'thread'        => null,
+            'otherUser'     => null,
         ]);
     }
 
     /**
-     * Fil de discussion entre l'utilisateur connecté et un autre utilisateur.
+     * Fil de discussion avec un utilisateur
      * Route : GET /messages/{userId}
      */
     public function thread(int $userId): void
@@ -84,21 +84,22 @@ class MessageController extends Controller
             throw new HttpNotFoundException();
         }
 
-        // Récupération du fil
-        $thread = $this->messages->findThread($currentUserId, $userId);
+        $conversations = $this->messages->findConversationsByUser($currentUserId);
+        $thread        = $this->messages->findThread($currentUserId, $userId);
 
-        // Marque les messages reçus comme lus
+        // Marquer les messages reçus comme lus
         $this->messages->markAsRead($userId, $currentUserId);
 
-        $this->setPageTitle('Discussion avec ' . $otherUser->getPseudo());
-        $this->render('messages/thread', [
-            'thread'    => $thread,
-            'otherUser' => $otherUser,
+        $this->setPageTitle('Messagerie');
+        $this->render('messages/index', [
+            'conversations' => $conversations,
+            'thread'        => $thread,
+            'otherUser'     => $otherUser,
         ]);
     }
 
     /**
-     * Envoi d'un message.
+     * Envoi d'un message
      * Route : POST /messages/send
      */
     public function send(): void
@@ -121,7 +122,6 @@ class MessageController extends Controller
             throw new HttpForbiddenException('Action interdite.');
         }
 
-        // Vérifie que le destinataire existe
         if (!$this->users->findById($receiverId)) {
             throw new HttpNotFoundException();
         }

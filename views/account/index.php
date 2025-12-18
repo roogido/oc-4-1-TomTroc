@@ -11,32 +11,119 @@ $success = Session::getFlashes('success');
 <section class="account-page">
     <h1>Mon compte</h1>
 
-    <?php if (!empty($errors)) : ?>
-        <div class="alert alert-error">
-            <ul>
-                <?php foreach ($errors as $e) : ?>
-                    <li><?= htmlspecialchars($e) ?></li>
-                <?php endforeach; ?>
-            </ul>
+    <section class="account-profile">
+        <!-- Carte profil gauche -->
+        <div class="account-profile-summary">
+
+            <div class="account-avatar">
+                <img
+                    src="<?= htmlspecialchars($user->getAvatarPath()); ?>"
+                    alt="Avatar de <?= htmlspecialchars($user->getPseudo()); ?>"
+                    width="135"
+                    height="157"
+                >
+                <form
+                    method="post"
+                    action="/account/avatar"
+                    enctype="multipart/form-data"
+                >
+                    <input
+                        type="file"
+                        name="avatar"
+                        id="avatar"
+                        accept="image/*"
+                        style="display:none"
+                        onchange="this.form.submit()"
+                    >
+
+                    <label for="avatar">
+                        <small><u>modifier</u></small>
+                    </label>
+                </form>
+            </div>
+
+            <p class="account-pseudo">
+                <?= htmlspecialchars($user->getPseudo()); ?>
+            </p>
+
+            <p class="account-member-since">
+                Membre depuis <?= htmlspecialchars($memberSince); ?>
+            </p>
+
+            <p class="account-library-count">
+                <strong>BIBLIOTHÈQUE</strong><br>
+                <?= (int) $booksCount; ?> livres
+            </p>
+
+            <p>
+                <a href="/logout">Se déconnecter</a>
+            </p>
         </div>
-    <?php endif; ?>
 
-    <?php if (!empty($success)) : ?>
-        <div class="alert alert-success">
-            <?php foreach ($success as $msg) : ?>
-                <p><?= htmlspecialchars($msg) ?></p>
-            <?php endforeach; ?>
+        <!-- Carte profil droite : formulaire -->
+        <div class="account-profile-form">
+
+            <h2>Vos informations personnelles</h2>
+
+            <?php if (!empty($errors)) : ?>
+                <div class="alert alert-error">
+                    <ul>
+                        <?php foreach ($errors as $e) : ?>
+                            <li><?= htmlspecialchars($e) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($success)) : ?>
+                <div class="alert alert-success">
+                    <?php foreach ($success as $msg) : ?>
+                        <p><?= htmlspecialchars($msg) ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>            
+
+            <form method="post" action="/account">
+                <div>
+                    <label for="email">Adresse email</label><br>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value="<?= htmlspecialchars($user->getEmail()); ?>"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="password">Mot de passe</label><br>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="••••••••"
+                    >
+                </div>
+
+                <div>
+                    <label for="pseudo">Pseudo</label><br>
+                    <input
+                        type="text"
+                        id="pseudo"
+                        name="pseudo"
+                        value="<?= htmlspecialchars($user->getPseudo()); ?>"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <button type="submit">Enregistrer</button>
+                </div>
+
+            </form>
+
         </div>
-    <?php endif; ?>
-
-    <div class="account-info">
-        <p><strong>Pseudo :</strong> <?= htmlspecialchars($user->getPseudo()); ?></p>
-        <p><strong>Email :</strong> <?= htmlspecialchars($user->getEmail()); ?></p>
-    </div>
-
-    <div class="account-actions">
-        <a href="/logout" class="btn-logout">Se déconnecter</a>
-    </div>
+    </section>
 
     <hr>
 
@@ -53,11 +140,12 @@ $success = Session::getFlashes('success');
             <table class="library-table">
                 <thead>
                     <tr>
-                        <th>Photo</th>
-                        <th>Titre</th>
-                        <th>Auteur</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
+                        <th>PHOTO</th>
+                        <th>TITRE</th>
+                        <th>AUTEUR</th>
+                        <th>DESCRIPTION</th>
+                        <th>DISPONIBILITÉ</th>
+                        <th>ACTION</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,8 +173,8 @@ $success = Session::getFlashes('success');
                                 ?>
                             </td>
                             <td>
-                                <a href="/book/<?= (int) $book->getId() ?>">Voir</a>
-                                |
+                                <!-- <a href="/book/<?= (int) $book->getId() ?>">Voir</a>
+                                | -->
                                 <a href="/book/<?= (int) $book->getId() ?>/edit">Modifier</a>
                                 |
                                 <form
@@ -104,5 +192,4 @@ $success = Session::getFlashes('success');
             </table>
         <?php endif; ?>
     </section>
-
 </section>

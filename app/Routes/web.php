@@ -16,7 +16,7 @@
  * PHP version 8.2.12
  *
  * Date :        15 décembre 2025
- * Maj :         -
+ * Maj :         17 décembre 2025
  *
  * @category   Routes
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -52,6 +52,8 @@ $router->get('/logout', [AuthController::class, 'logout']);
 
 // Espace utilisateur (privé)
 $router->get('/account', [AccountController::class, 'index']);
+$router->post('/account', [AccountController::class, 'update']);
+$router->post('/account/avatar', [AccountController::class, 'updateAvatar']);
 
 // Bibliothèque publique
 $router->get('/books', [BookController::class, 'index']);

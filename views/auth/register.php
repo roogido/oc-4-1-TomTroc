@@ -10,65 +10,87 @@ $oldAll = Session::getFlashes('old');
 $old = $oldAll[0] ?? [];
 ?>
 
-<section class="auth-register">
-    <h1>Inscription</h1>
+<section class="auth-page auth-register">
+    <div class="auth-layout">
 
-    <?php if (!empty($errors)) : ?>
-        <div class="alert alert-error">
-            <ul>
-                <?php foreach ($errors as $e) : ?>
-                    <li><?= htmlspecialchars($e) ?></li>
-                <?php endforeach; ?>
-            </ul>
+        <!-- Colonne gauche : formulaire -->
+        <div class="auth-form">
+
+            <h1>Inscription</h1>
+
+            <?php if (!empty($errors)) : ?>
+                <div class="alert alert-error">
+                    <ul>
+                        <?php foreach ($errors as $e) : ?>
+                            <li><?= htmlspecialchars($e) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($success)) : ?>
+                <div class="alert alert-success">
+                    <?php foreach ($success as $msg) : ?>
+                        <p><?= htmlspecialchars($msg) ?></p>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="post" action="/register" enctype="multipart/form-data">
+
+                <div>
+                    <label>
+                        Pseudo
+                        <input type="text" name="pseudo" required>
+                    </label>
+                </div>
+
+                <div>
+                    <label>
+                        Adresse email
+                        <input type="email" name="email" required>
+                    </label>
+                </div>
+
+                <div>
+                    <label>
+                        Mot de passe
+                        <input type="password" name="password" required>
+                    </label>
+                </div>
+
+                <div>
+                    <label>
+                        Avatar (optionnel)
+                        <input type="file" name="avatar" accept="image/*">
+                    </label>
+                </div>
+
+                <div>
+                    <button type="submit">S'inscrire</button>
+                </div>
+
+            </form>
+
+            <p class="auth-link">
+                Déjà inscrit ?
+                <a href="/login">Connectez-vous</a>
+            </p>
+
         </div>
-    <?php endif; ?>
 
-    <?php if (!empty($success)) : ?>
-        <div class="alert alert-success">
-            <?php foreach ($success as $msg) : ?>
-                <p><?= htmlspecialchars($msg) ?></p>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-
-    <form method="post" action="/register">
-        <div class="form-group">
-            <label for="pseudo">Pseudo</label>
-            <input 
-                type="text" 
-                id="pseudo" 
-                name="pseudo" 
-                required 
-                value="<?= htmlspecialchars($old['pseudo'] ?? '') ?>"
+        <!-- Colonne droite : image décorative -->
+        <div class="auth-visual">
+            <img
+                src="/assets/images/home/hero-right.png"
+                alt=""
+                aria-hidden="true"
+                width="720"
+                height="886"
             >
         </div>
 
-        <div class="form-group">
-            <label for="email">Adresse email</label>
-            <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                required 
-                value="<?= htmlspecialchars($old['email'] ?? '') ?>"
-            >
-        </div>
+    </div>
 
-        <div class="form-group">
-            <label for="password">Mot de passe</label>
-            <input 
-                type="password" 
-                id="password" 
-                name="password" 
-                required 
-            >
-        </div>
-
-        <button type="submit">Créer mon compte</button>
-    </form>
-
-    <p class="auth-link">
-        Déjà inscrit ?
-        <a href="/login">Se connecter</a>
-    </p>
 </section>
+

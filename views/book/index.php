@@ -1,7 +1,7 @@
 <h1>Nos livres à l’échange</h1>
 
 <form method="get" action="/books">
-    <label for="q">Rechercher par titre :</label>
+    <label for="q">Rechercher un livre</label>
     <input
         type="text"
         id="q"
@@ -28,10 +28,10 @@
                         height="200"
                     >
                     <p><strong><?= htmlspecialchars($book->getTitle()) ?></strong></p>
-                    <p><?= htmlspecialchars($book->getAuthor()) ?></p>                  
+                    <p>Par :<?= htmlspecialchars($book->getAuthor()) ?></p>                  
                 </a>
                 <p>
-                    <em>Vendu par :</em>
+                    <em>Propriétaire :</em>
                     <a href="/users/<?= (int) $book->getUserId() ?>">
                         <?= htmlspecialchars($book->getOwnerPseudo()) ?>
                     </a>
