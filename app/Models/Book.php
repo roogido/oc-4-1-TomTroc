@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        12 décembre 2025
- * Maj :         14 décembre 2025
+ * Maj :         17 décembre 2025
  *
  * @category     Models
  * @package      App\Models
@@ -31,6 +31,7 @@ class Book
     private ?int $id = null;
     private int $userId;
     private ?string $ownerPseudo = null;
+    private ?string $ownerAvatarPath = null;
     private string $title;
     private string $author;
     private string $description;
@@ -86,6 +87,15 @@ class Book
         return $this->ownerPseudo;
     }    
 
+    public function getOwnerAvatarPath(): string
+    {
+        if (!empty($this->ownerAvatarPath)) {
+            return '/assets/images/avatars/' . ltrim($this->ownerAvatarPath, '/');
+        }
+
+        return User::DEFAULT_AVATAR;
+    }
+    
     public function getTitle(): string
     {
         return $this->title;
@@ -124,6 +134,11 @@ class Book
     {
         $this->ownerPseudo = $pseudo;
     }    
+
+    public function setOwnerAvatarPath(?string $avatarPath): void
+    {
+        $this->ownerAvatarPath = $avatarPath;
+    }
 
     public function setTitle(string $title): void
     {

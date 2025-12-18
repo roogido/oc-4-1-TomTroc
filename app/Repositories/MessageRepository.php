@@ -6,7 +6,7 @@
  * PHP version 8.2.12
  *
  * Date :        15 décembre 2025
- * Maj :         
+ * Maj :         16 décembre 2025
  *
  * @category     Repository
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -33,6 +33,26 @@ class MessageRepository
     public function __construct()
     {
         $this->pdo = Database::getConnection();
+    }
+
+    /**
+     * Compte le nombre de messages non lus pour un utilisateur.
+     */
+    public function countUnreadByUser(int $userId): int
+    {
+        $sql = "
+            SELECT COUNT(*)
+            FROM messages
+            WHERE receiver_id = :user_id
+            AND read_at IS NULL
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'user_id' => $userId,
+        ]);
+
+        return (int) $stmt->fetchColumn();
     }
 
     /**
@@ -85,6 +105,63 @@ class MessageRepository
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'user_id' => $userId,
+        ]);
+
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Récupère la liste des conversations d’un utilisateur.
+     *
+     * Une conversation = un interlocuteur unique avec :
+     * - son pseudo
+     * - le dernier message échangé
+     * - la date du dernier message
+     * - le nombre de messages non lus
+     *
+     * @param int $userId
+     * @return array
+     */
+    public function findConversationsByUser(int $userId): array
+    {
+        $sql = "
+            SELECT
+                u.id AS user_id,
+                u.pseudo,
+                m.content AS last_message,
+                m.created_at,
+                (
+                    SELECT COUNT(*)
+                    FROM messages mx
+                    WHERE mx.sender_id = u.id
+                    AND mx.receiver_id = :uid_unread
+                    AND mx.read_at IS NULL
+                ) AS unread_count
+            FROM messages m
+            JOIN users u
+                ON u.id = CASE
+                    WHEN m.sender_id = :uid_self_1
+                    THEN m.receiver_id
+                    ELSE m.sender_id
+                END
+            WHERE m.id IN (
+                SELECT MAX(id)
+                FROM messages
+                WHERE sender_id = :uid_self_2
+                OR receiver_id = :uid_self_3
+                GROUP BY
+                    LEAST(sender_id, receiver_id),
+                    GREATEST(sender_id, receiver_id)
+            )
+            ORDER BY m.created_at DESC
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'uid_unread' => $userId,
+            'uid_self_1' => $userId,
+            'uid_self_2' => $userId,
+            'uid_self_3' => $userId,
         ]);
 
         return $stmt->fetchAll();

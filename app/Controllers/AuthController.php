@@ -11,7 +11,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         13 décembre 2025
+ * Maj :         17 décembre 2025
  *
  * @category     Controllers
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -24,6 +24,7 @@
 
 namespace App\Controllers;
 
+use App\Core\AvatarUploader;
 use App\Core\Controller;
 use App\Core\Session;
 use App\Core\HttpForbiddenException;
@@ -82,46 +83,51 @@ class AuthController extends Controller
      */
     public function register(): void
     {
+        // Empêche l'inscription si l'utilisateur est déjà connecté
         if (Session::isLogged()) {
             throw new HttpForbiddenException("Vous êtes déjà connecté.");
         }
 
-        // Vérification que les données POST existent
+        // Récupération et nettoyage des données du formulaire
         $pseudo   = trim($_POST['pseudo']   ?? '');
         $email    = trim($_POST['email']    ?? '');
         $password = trim($_POST['password'] ?? '');
 
-        // Validation 
+        // Tableau collectant les erreurs de validation
         $errors = [];
 
-        // Contrôle la validité des données reçues
+        // Validation du pseudo
         if ($pseudo === '') {
             $errors[] = "Le pseudo est obligatoire.";
         }
-        // FILTER_VALIDATE_EMAIL : constante php, permettant de vlalider une addresse mail
+
+        // Validation du format de l'email
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = "Adresse email invalide.";
         }
+
+        // Validation de la longueur du mot de passe
         if ($password === '' || strlen($password) < 6) {
             $errors[] = "Le mot de passe doit contenir au moins 6 caractères.";
         }
 
-        // Vérification unicité email et pseudo
+        // Vérifie l'unicité de l'email en base
         if ($this->users->findByEmail($email)) {
             $errors[] = "Cet email est déjà utilisé.";
         }
 
+        // Vérifie l'unicité du pseudo en base
         if ($this->users->findByPseudo($pseudo)) {
             $errors[] = "Ce pseudo est déjà pris.";
         }
 
+        // En cas d'erreurs, on affiche les messages et on stoppe le traitement
         if (!empty($errors)) {
-            // On sauvegarde les erreurs en flash
             foreach ($errors as $err) {
                 Session::addFlash('error', $err);
             }
 
-            // On renvoie les anciennes valeurs du formulaire (sauf password)
+            // Conservation des valeurs saisies pour le formulaire
             Session::addFlash('old', [
                 'pseudo' => $pseudo,
                 'email'  => $email,
@@ -131,21 +137,35 @@ class AuthController extends Controller
             return;
         }
 
-        // Hashage sécurisé du mot de passe utilisateur.
-        // password_hash() applique un algorithme moderne (bcrypt/argon2 selon config),
-        // génère un salt aléatoire, et produit une empreinte non réversible.
-        // Le résultat doit être stocké en base (jamais le mot de passe en clair).
+        // Chemin de l'avatar utilisateur (optionnel)
+        $avatarPath = null;
+
+        try {
+            // Upload de l'avatar si un fichier est fourni
+            if (isset($_FILES['avatar'])) {
+                $avatarPath = AvatarUploader::upload($_FILES['avatar']);
+            }
+        } catch (\RuntimeException $e) {
+            // Gestion d'erreur d'upload sans bloquer l'inscription
+            Session::addFlash('error', $e->getMessage());
+        }
+
+        // Hashage sécurisé du mot de passe
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        // Création de l'objet User
-        $user = new User($pseudo, $email, $passwordHash);
+        // Instanciation de l'entité User
+        $user = new User($pseudo, $email, $passwordHash, $avatarPath);
 
-        // Insertion
+        // Persistance de l'utilisateur en base
         $this->users->create($user);
 
-        Session::addFlash('success', "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.");
+        // Message de confirmation
+        Session::addFlash(
+            'success',
+            "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter."
+        );
 
-        // Redirection vers login
+        // Redirection vers la page de connexion
         header('Location: /login');
         exit;
     }

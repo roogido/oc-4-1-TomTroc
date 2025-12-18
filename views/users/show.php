@@ -1,47 +1,91 @@
-<h1><?= htmlspecialchars($user->getPseudo()) ?></h1>
+<section class="user-public">
 
-<p>Membre depuis <?= htmlspecialchars($memberSince) ?></p>
+    <!-- Colonne gauche : profil -->
+    <aside class="user-profile">
+        <div class="user-avatar">
+            <?php if ($user->getAvatarPath()) : ?>
+                <img
+                    src="/<?= htmlspecialchars($user->getAvatarPath()) ?>"
+                    alt="Avatar de <?= htmlspecialchars($user->getPseudo()) ?>"
+                >
+            <?php endif; ?>
+        </div>
 
-<p>
-    <strong>BIBLIOTHÈQUE</strong><br>
-    <?= count($books) ?> livres
-</p>
+        <h1 class="user-name"><?= htmlspecialchars($user->getPseudo()) ?></h1>
 
-<?php if (\App\Core\Session::isLogged() && \App\Core\Session::getUserId() !== $user->getId()) : ?>
-    <p>
-        <a href="/messages/<?= (int) $user->getId() ?>">
-            Écrire un message
-        </a>
-    </p>
-<?php endif; ?>
+        <p class="user-since">
+            Membre depuis <?= htmlspecialchars($memberSince) ?>
+        </p>
 
-<hr>
+        <p class="user-library-count">
+            <strong>BIBLIOTHÈQUE</strong><br>
+            <?= count($books) ?> livres
+        </p>
 
-<section>
-    <?php if (empty($books)) : ?>
-        <p>Aucun livre.</p>
-    <?php else : ?>
-        <?php foreach ($books as $book) : ?>
-            <div style="margin-bottom:20px;">
-                <?php if ($book->getImagePath()) : ?>
-                    <img
-                        src="/<?= htmlspecialchars($book->getImagePath()) ?>"
-                        width="78"
-                        height="78"
-                        alt=""
-                    >
-                <?php endif; ?>
+        <?php if (\App\Core\Session::isLogged() && \App\Core\Session::getUserId() !== $user->getId()) : ?>
+            <a
+                class="btn btn-primary user-message-btn"
+                href="/messages/<?= (int) $user->getId() ?>"
+            >
+                Écrire un message
+            </a>
+        <?php endif; ?>
+    </aside>
 
-                <a href="/book/<?= (int) $book->getId() ?>">
-                    <?= htmlspecialchars($book->getTitle()) ?>
-                </a>
-                <br>
-                <?= htmlspecialchars($book->getAuthor()) ?>
+    <!-- Colonne droite : bibliothèque -->
+    <section class="user-library">
+        <div class="library-header">
+            <div class="col-photo">PHOTO</div>
+            <div class="col-title">TITRE</div>
+            <div class="col-author">AUTEUR</div>
+            <div class="col-description">DESCRIPTION</div>
+        </div>
+        <?php if (empty($books)) : ?>
+            <p>Aucun livre.</p>
+        <?php else : ?>
+            <?php foreach ($books as $book) : ?>
+                <div class="library-row">
 
-                <p style="margin-top:8px;">
-                    <?= nl2br(htmlspecialchars($book->getDescription())) ?>
-                </p>                
-            </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+                    <!-- PHOTO -->
+                    <div class="col-photo">
+                        <?php if ($book->getImagePath()) : ?>
+                            <img
+                                src="/<?= htmlspecialchars($book->getImagePath()) ?>"
+                                alt="<?= htmlspecialchars($book->getTitle()) ?>"
+                                width="78"
+                                height="78"
+                            >
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- TITRE -->
+                    <div class="col-title">
+                        <a href="/book/<?= (int) $book->getId() ?>">
+                            <?= htmlspecialchars($book->getTitle()) ?>
+                        </a>
+                    </div>
+
+                    <!-- AUTEUR -->
+                    <div class="col-author">
+                        <?= htmlspecialchars($book->getAuthor()) ?>
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    <div class="col-description">
+                        <?= htmlspecialchars(
+                            mb_strimwidth(
+                                $book->getDescription(),
+                                0,
+                                83,
+                                '…'
+                            )
+                        ) ?>
+                    </div>
+
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </section>
 </section>
+
+

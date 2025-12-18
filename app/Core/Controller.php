@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :      8 décembre 2025
- * Maj  :      13 décembre 2025
+ * Maj  :      17 décembre 2025
  *
  * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -21,15 +21,29 @@
 
 namespace App\Core;
 
+use App\Repositories\MessageRepository;
+use App\Core\Session;
+
+
 abstract class Controller
 {
     protected string $pageTitle;
+    protected int $unreadMessagesCount = 0;
+
 
 
     public function __construct()
     {
         // Valeur par défaut du titre de la page
         $this->pageTitle = Config::get('app.title', 'TomTroc');
+
+        // Permet l'affichage du nbre de messages non lus
+        if (Session::isLogged()) {
+            $repo = new MessageRepository();
+            $this->unreadMessagesCount = $repo->countUnreadByUser(
+                Session::getUserId()
+            );
+        }        
     }
 
     /**
@@ -69,6 +83,17 @@ abstract class Controller
 
         // Ajout du titre à la liste des paramètres transmis à la vue
         $params['pageTitle'] = $this->pageTitle;        
+
+        // Ajout du nbre de messages non lus
+        $params['unreadMessagesCount'] = $this->unreadMessagesCount;
+
+        // Injection de l'utilisateur connecté pour le layout
+        if (Session::isLogged()) {
+            $userRepo = new \App\Repositories\UserRepository();
+            $params['currentUser'] = $userRepo->findById(Session::getUserId());
+        } else {
+            $params['currentUser'] = null;
+        }
 
         // Transforme un tableau associatif en variables locales EXTR_SKIP évite
         // que les variables critiques du layout soient écrasées par erreur

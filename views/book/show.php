@@ -12,22 +12,33 @@
     <h1><?= htmlspecialchars($book->getTitle()) ?></h1>
 
     <div class="book-meta">
-        <p><strong>Auteur :</strong> <?= htmlspecialchars($book->getAuthor()) ?></p>
+        <p>Par <?= htmlspecialchars($book->getAuthor()) ?></p>
+
+        <div class="book-description">
+            <p>
+                <h2>DESCRIPTION</h2>
+                <?= nl2br(htmlspecialchars($book->getDescription())) ?>
+            </p>
+        </div>
+        
+        <?php /*
         <p>
             <strong>Disponibilité :</strong>
             <?= $book->getStatus() === 'available' ? 'Disponible' : 'Indisponible' ?>
         </p>
-
+        */ ?>
         <p>
-            <em>Vendu par :</em>
+            <h2>PROPRIÉTAIRE</h2>
+            <img
+                src="<?= htmlspecialchars($book->getOwnerAvatarPath()); ?>"
+                alt="Avatar de <?= htmlspecialchars($book->getOwnerPseudo()); ?>"
+                width="48"
+                height="48"
+            >            
             <a href="/users/<?= (int) $book->getUserId() ?>">
                 <?= htmlspecialchars($book->getOwnerPseudo()) ?>
             </a>
         </p>
-    </div>
-
-    <div class="book-description">
-        <p><?= nl2br(htmlspecialchars($book->getDescription())) ?></p>
     </div>
 
     <!-- Bloc messagerie -->

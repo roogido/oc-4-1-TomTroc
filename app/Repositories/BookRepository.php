@@ -47,14 +47,33 @@ class BookRepository
      */
     public function findById(int $id): ?Book
     {
-        $sql = "SELECT * FROM books WHERE id = :id LIMIT 1";
+        $sql = "
+            SELECT
+                b.*,
+                u.pseudo       AS owner_pseudo,
+                u.avatar_path  AS owner_avatar_path
+            FROM books b
+            JOIN users u ON u.id = b.user_id
+            WHERE b.id = :id
+            LIMIT 1
+        ";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
 
         $data = $stmt->fetch();
 
-        return $data ? $this->hydrateBook($data) : null;
+        if (! $data) {
+            return null;
+        }
+
+        $book = $this->hydrateBook($data);
+
+        // Hydratation du pseudo propriétaire & avatar
+        $book->setOwnerPseudo($data['owner_pseudo']);
+        $book->setOwnerAvatarPath($data['owner_avatar_path']);
+
+        return $book;
     }
 
     /**
