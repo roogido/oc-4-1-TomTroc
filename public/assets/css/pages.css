@@ -1,0 +1,600 @@
+/* ==================================================
+   PAGES – BASE
+   ================================================== */
+
+/* Zone de contenu principale */
+main {
+    width: 100%;
+}
+
+.page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 150px;
+}
+
+/* ==================================================
+   HOME – HERO
+   ================================================== */
+
+.home-hero {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 96px 150px;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 80px;
+    background-color: #F5F3EF;
+}
+
+/* -------- LEFT -------- */
+
+.home-hero-left h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.2;
+    margin: 0 0 32px;
+}
+
+.home-hero-left p {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 300;          /* Light */
+    line-height: 1.6;          /* ~ 24px */
+    color: #4A4A4A;            /* gris doux (maquette) */
+    max-width: 420px;          /* empêche l’étalement */
+    margin: 0 0 24px;
+}
+
+/* =========================
+   HOME – HERO RIGHT
+   ========================= */
+
+.home-hero-right {
+    width: 404px;
+}
+
+.home-hero-right img {
+    width: 100%;
+    height: 539px;        /* Figma: 404 x 539 */
+    object-fit: cover;
+    display: block;
+}
+
+/* photo (sous l’image, aligné à droite) */
+.home-hero-right p {
+    margin: 8px 0 0;      /* petit espace sous la photo */
+    text-align: right;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.2;
+
+    color: #4A4A4A;        /* “gris texte” de la maquette */
+    opacity: 0.8;
+}
+
+/* ==================================================
+   HOME – DERNIERS LIVRES
+   ================================================== */
+
+.home-last-books {
+    background-color: #FAF9F7;
+    max-width: 1440px;
+    margin: 0 auto;
+    /* max-height: 620px;     */
+    padding: 80px 150px;  
+    text-align: center;
+}
+
+/* Titre */
+.home-last-books h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 400;
+    margin-bottom: 48px;
+}
+
+/* ==================================================
+   GRILLE
+   ================================================== */
+
+.home-last-books-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    margin-bottom: 48px;
+}
+
+/* ==================================================
+   CARTE LIVRE
+   ================================================== */
+
+.book-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    text-align: left;
+
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Image */
+.book-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Contenu */
+.book-card-body {
+    padding: 16px;
+}
+
+.book-card-body h3 {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 4px;
+}
+
+.book-author {
+    font-size: 13px;
+    color: #6B6B6B;
+    margin: 0 0 12px;
+}
+
+.book-owner {
+    font-size: 12px;
+    color: #9A9A9A;
+}
+
+.book-owner a {
+    color: #00AC66;
+    text-decoration: none;
+}
+
+.book-owner a:hover {
+    text-decoration: underline;
+}
+
+/* ==================================================
+   CTA (Call To Action)
+   ================================================== */
+
+.home-last-books-cta {
+    display: flex;
+    justify-content: center;
+}
+
+/* Base bouton (commune) */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 180px;
+    height: 48px;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+
+    border-radius: 10px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Bouton principal */
+.btn-primary {
+    background-color: #00AC66;
+    color: #ffffff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+    background-color: #006D41;
+}
+
+.btn-primary:focus-visible {
+    outline: 2px solid #006D41;
+    outline-offset: 3px;
+}
+
+/* Bouton outline */
+.btn-outline {
+    border: 1px solid #00AC66;
+    color: #00AC66;
+    background-color: transparent;
+}
+
+.btn-outline:hover,
+.btn-outline:focus-visible {
+    background-color: #006D41;
+    color: #ffffff;
+}
+
+/* ==================================================
+   HOME – COMMENT ÇA MARCHE
+   ================================================== */
+
+.home-how-it-works {
+    max-width: 1440px;
+    margin: 0 auto;
+    /* max-height: 495px;  */
+    padding: 80px 150px;
+    text-align: center;
+}
+
+/* Titre */
+.home-how-it-works h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 16px;
+}
+
+/* Intro */
+.home-how-it-works .how-intro {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: #6B6B6B;
+    max-width: 520px;
+    margin: 0 auto 48px;
+}
+
+/* Grille des étapes */
+.how-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 48px;
+}
+
+/* Carte étape */
+.how-step {
+    background-color: #ffffff;
+    border-radius: 12px;
+
+    min-height: 120px;           
+    padding: 24px 20px;
+
+    display: flex;               /* centrage vertical */
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #292929;
+}
+
+.how-step p {
+    max-width: 180px;  
+    margin: 0;
+}
+
+/* CTA */
+.how-cta {
+    display: flex;
+    justify-content: center;
+}
+
+/* ==================================================
+   HOME – BANNER
+   ================================================== */
+
+.home-banner {
+    width: 100%;
+    background-color: #F5F3EF;
+}
+
+.home-banner picture {
+    display: block;
+    width: 100%;
+}
+
+.home-banner img {
+    width: 100%;
+    display: block;
+}
+
+
+/* ==================================================
+   HOME – NOS VALEURS
+   ================================================== */
+
+.home-values {
+    background-color: #FAF9F7;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 98px 150px 190px;
+    position: relative;
+}
+
+.home-values h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1;
+
+    width: 392px;
+    margin: 0 auto 32px;
+    text-align: left;
+
+    color: #292929;
+}
+
+.home-values-content {
+    width: 392px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+/* Paragraphes */
+.home-values-content p {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.25;          /* ← ajusté (meilleure lisibilité) */
+    color: #6B6B6B;
+
+    margin: 0 0 20px;
+}
+
+/* Signature */
+.home-values-content p:last-child {
+    margin-top: 40px;
+    margin-bottom: 0;
+}
+
+.home-values em {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    font-style: italic;
+    color: #4A4A4A;
+    opacity: 0.55;
+}
+
+/* Coeur vert */
+.home-values > img {
+    position: absolute;
+    width: 120px;
+    height: auto;
+    left: 43.5%;
+    bottom: 106px;
+    transform: translateX(220px);
+}
+
+/* ==================================================
+   RESPONSIVE – HOME 
+   Desktop-first
+   1) <= 1023px : layout tablette/mobile (hors mobile strict)
+   2) <= 768px  : mobile (image banner = comportement HERO)
+   3) <= 377px  : ultra small (1 colonne livres)
+   ================================================== */
+
+/* ==============================
+   < 1024px (tablette + mobile)
+   ============================== */
+@media (max-width: 1023px) {
+
+    /* ---------- BOUTONS ---------- */
+    .btn {
+        width: 100%;
+        max-width: 340px;
+        height: 56px;
+        border-radius: 12px;
+        justify-content: center;
+    }
+
+    .home-last-books-cta,
+    .how-cta {
+        display: flex;
+        justify-content: center;
+    }
+
+    /* ---------- HERO ---------- */
+    .home-hero {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        background-color: #F5F3EF;
+    }
+
+    .home-hero-right { order: 1; width: 100%; } 
+    .home-hero-left  { order: 2; }
+
+    .home-hero-right img {
+        width: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .home-hero-left {
+        padding: 24px 16px 48px;
+        text-align: center;
+    }
+
+    .home-hero-left p {
+        max-width: 340px;
+        margin: 0 auto 24px;
+    }
+
+    /* ---------- DERNIERS LIVRES ---------- */
+    .home-last-books {
+        padding: 64px 16px;
+        text-align: center;
+    }
+
+    .home-last-books h2 {
+        width: 100%;
+        margin-bottom: 32px;
+    }
+
+    .home-last-books-grid {
+        grid-template-columns: repeat(2, auto);
+        justify-content: center;
+        gap: 24px;
+    }
+
+    /* Cartes légèrement réduites (~ -10%) */
+    .book-card {
+        max-width: 200px;
+    }
+
+    .book-card a {
+        display: block;
+        overflow: hidden;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .book-card img {
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    /* ---------- COMMENT ÇA MARCHE ---------- */
+    .home-how-it-works {
+        padding: 64px 16px;
+        text-align: center;
+    }
+
+    .how-steps {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        justify-items: center;
+    }
+
+    .how-step {
+        width: 100%;
+        max-width: 340px;
+        padding: 24px 18px;
+    }
+
+    /* ---------- BANNER (<1024px = comme HERO) ---------- */
+    .home-banner {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #F5F3EF;
+    }
+
+    .home-banner picture {
+        display: block;
+        width: 100%;
+    }
+
+    .home-banner img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain;    /* pas de crop */
+        object-position: center;
+    }
+
+    /* ----------------- NOS VALEURS -----------------  */
+    .home-values {
+        padding: 64px 16px 96px;
+        text-align: center;
+    }
+
+    .home-values h2 {
+        width: auto;
+        max-width: 340px;
+        margin: 0 auto 24px;
+        text-align: center;
+    }
+
+    .home-values-content {
+        width: 100%;
+        max-width: 340px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .home-values-content p {
+        text-align: center;
+    }
+
+    /* Cœur : on quitte le positionnement absolu */
+    .home-values > img {
+        position: static;
+        display: block;
+        margin: 48px auto 0;
+        transform: none;
+        width: 96px;
+    }    
+}
+
+/* ==============================
+   <= 768px (mobile strict)
+   ============================== */
+@media (max-width: 768px) {
+
+    .home-hero-right,
+    .home-banner {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #F5F3EF;
+    }
+
+    .home-hero-right img,
+    .home-banner img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain;
+        object-position: center;
+    }
+
+    /* ---------- DERNIERS LIVRES ---------- */
+    .home-last-books-grid {
+        grid-template-columns: repeat(2, auto);
+        justify-content: center;
+        gap: 20px;
+    }
+
+    /* Réduction supplémentaire (~ -25% total) */
+    .book-card {
+        max-width: 170px;
+    }  
+}
+
+/* ==============================
+   <= 377px (ultra small)
+   ============================== */
+@media (max-width: 377px) {
+
+    .home-last-books-grid {
+        grid-template-columns: 1fr;
+        max-width: 340px;
+    }
+
+    .book-card img {
+        aspect-ratio: 3 / 4;
+        object-fit: cover;
+    }
+}

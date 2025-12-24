@@ -1,0 +1,473 @@
+/* header / footer / wrapper / composants globaux */
+
+/* =========================
+   GLOBAL
+   ========================= */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    color: #292929;
+    background-color: #000; /* fond latéral desktop */
+}
+
+.site-wrapper {
+    min-height: 100vh;
+    max-width: 1440px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: #F5F3EF; /* fond site */
+}
+
+main {
+    flex: 1 0 auto;
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;    
+}
+
+.logo img,
+.footer-logo img,
+.footer-logo-mobile img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* =========================
+   HEADER
+   ========================= */
+
+.site-header {
+    height: 80px;
+    background-color: #F5F3EF;
+}
+
+.header-container {
+    max-width: 1440px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-separator {
+    width: 1px;
+    height: 20px; 
+    background-color: rgba(41, 41, 41, 0.2);
+}
+
+/* =========================
+   HEADER LEFT
+   ========================= */
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 78px;
+}
+
+/* Logo header desktop */
+.site-header .logo img {
+    width: 155px;
+    height: 51px;
+}
+/* =========================
+   MENU PRINCIPAL
+   ========================= */
+
+.main-nav {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.main-nav a {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: normal;          /* Figma = Auto */
+    letter-spacing: 0.02em;
+    color: #292929;
+    text-decoration: none;
+}
+
+/* Hover + focus */
+.main-nav a:hover,
+.main-nav a:focus-visible,
+.header-action:hover,
+.header-action:focus-visible,
+.mobile-menu a:hover,
+.mobile-menu a:focus-visible {
+    font-weight: 800;
+}
+
+/* État actif */
+.main-nav a.is-active,
+.header-action.is-active,
+.mobile-menu a.is-active {
+    font-weight: 800;
+}
+
+/* Focus clavier WCAG */
+.main-nav a:focus-visible,
+.header-action:focus-visible {
+    outline: 2px solid rgba(41, 41, 41, 0.4);
+    outline-offset: 4px;
+}
+/* =========================
+   HEADER RIGHT
+   ========================= */
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Actions avec icône */
+.header-action {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 19px;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 400;          /* IDENTIQUE AU MENU */
+    letter-spacing: 0.02em;
+    color: #292929;
+    text-decoration: none;
+}
+
+.header-action img:not(.avatar) { /* Position de l'icone  par rapport à son élément */
+    margin-right: -16px;
+}
+
+.header-action.is-active {
+    font-weight: 800;
+    color: #292929;
+}
+
+/* Icônes */
+.header-action img {
+    display: block;
+}
+
+.header-action .badge {
+    position: absolute;
+    top: 0px;
+    right: -19px;
+}
+
+/* Badge messages */
+.badge {
+    background-color: #00AC66;
+    color: #FFFFFF;
+
+    min-width: 18px;
+    height: 18px;
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+
+    border-radius: 12px;
+    padding: 3px 6px;
+    box-shadow: 0 0 0 2px #F5F3EF;
+}
+
+/* Avatar - Global */
+.avatar {
+    display: block;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #eaeaea; /* fallback si image lente/manquante */
+}
+
+/* Avatar utilisateur – header desktop */
+.header-action .avatar {
+    width: 40px;
+    height: 40px;
+    margin-right: -14px;
+}
+
+/* =========================
+   FOOTER – DESKTOP
+   ========================= */
+
+.site-footer {
+    height: 61px;
+    background-color: #ffffff;
+}
+
+.footer-container {
+    max-width: 1440px;
+    height: 100%;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    padding-right: 46px;
+}
+
+/* Liens légaux */
+.footer-links {
+    display: flex;
+    gap: 40px;
+    margin-right: 23px;
+}
+
+.footer-links a {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    color: #292929;
+    text-decoration: none;
+}
+
+.footer-links a:focus-visible {
+    outline: 2px solid #292929;
+    outline-offset: 2px;
+}
+
+/* Bloc marque */
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 23px;
+}
+
+.footer-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    color: #292929;
+}
+
+.footer-logo {
+    width: 22px;
+    height: 17.36px;
+    display: block;
+}
+
+.mobile-header, .mobile-footer {
+    display: none;
+    box-sizing: border-box;
+}
+
+/* =========================
+    BURGER BUTTON (MOBILE)
+========================= */
+
+.burger {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+}
+
+.burger:focus-visible {
+    outline: 2px solid #009E5F;
+    outline-offset: 2px;
+}
+
+.burger-line {
+    width: 20px;
+    height: 2px;
+    background-color: #292929;
+    display: block;
+}    
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+@media (max-width: 1024px) {
+
+    /* =========================
+       STRUCTURE GLOBALE
+       ========================= */
+
+    .desktop-header,
+    .desktop-footer {
+        display: none;
+    }
+
+    main {
+        max-width: none;
+        padding: 0 16px;
+    }
+
+    .mobile-header,
+    .mobile-footer {
+        display: block;
+    }
+
+    .site-wrapper {
+        max-width: 100%;
+    }    
+
+    /* =========================
+       HEADER MOBILE
+       ========================= */      
+
+    .mobile-header {
+        height: 56px;
+        background-color: #F5F3EF;
+    }
+
+    .mobile-header .header-container {
+        height: 100%;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .mobile-header .logo img {
+        height: 28px;
+        width: auto;
+        display: block;
+    }
+
+    /* =========================
+       MENU MOBILE (BURGER)
+       ========================= */
+
+    .mobile-menu {
+        background-color: #F5F3EF;
+        border-top: 1px solid rgba(41, 41, 41, 0.1);
+    }
+
+    .mobile-menu ul {
+        list-style: none;
+        margin: 0;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .mobile-menu a {
+        position: relative; 
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;        
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        color: #292929;
+        text-decoration: none;
+    }
+
+        /* Ajustement icône ↔ texte */
+    .mobile-menu img:not(.avatar) {
+        margin-right: -7px;
+    }  
+
+    .mobile-menu a:focus-visible {
+        outline: 2px solid #009E5F;
+        outline-offset: 2px;
+    }
+
+    .mobile-menu a img {
+        display: block;
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Badge – menu mobile */
+    .mobile-menu .badge {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: -20px;
+    }
+
+    .mobile-menu .avatar {
+        width: 40px;
+        height: 40px;
+    }   
+
+    /* =========================
+       FOOTER – MOBILE
+       ========================= */
+    .site-footer {
+        height: auto;
+    }       
+
+    .mobile-footer {
+        width: 100%;
+        background-color: #FFFFFF;
+        padding: 32px 16px;
+        text-align: center;
+    }
+
+    .mobile-footer nav {
+        background-color: transparent;
+    }
+
+    .mobile-footer .footer-links {
+        list-style: none;
+        margin: 0 0 16px;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .mobile-footer .footer-links a {
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        color: #292929;
+        text-decoration: none;
+    }
+
+    .mobile-footer .footer-links a:focus-visible {
+        outline: 2px solid #009E5F;
+        outline-offset: 2px;
+    }
+
+    .mobile-footer .footer-copy {
+        font-size: 13px;
+        color: #292929;
+    }
+
+    /* Logo footer */
+    .mobile-footer .footer-logo-mobile {
+        margin-top: 12px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .mobile-footer .footer-logo-mobile img {
+        height: 18px;
+        width: auto;
+        display: block;
+    }
+}
+
+
+
