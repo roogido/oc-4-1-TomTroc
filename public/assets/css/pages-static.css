@@ -1,0 +1,35 @@
+/* ==================================================
+   STATIC PAGES (legal / privacy)
+   ================================================== */
+
+.page-static {
+    padding-top: 120px;
+    padding-bottom: 80px;
+}
+
+.page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 32px;
+}
+
+.page-content p {
+    max-width: 720px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #3A3A3A;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+
+    .page-header h1 {
+        font-size: 26px;
+        text-align: center;
+    }
+
+    .page-content p {
+        font-size: 14px;
+    }
+}

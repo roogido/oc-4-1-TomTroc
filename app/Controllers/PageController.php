@@ -10,7 +10,7 @@
  * PHP version 8.2.12
  *
  * Date :      15 décembre 2025
- * Maj :      
+ * Maj :       26 décmebre 2025
  *
  * @category   Controllers
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -29,12 +29,16 @@ class PageController extends Controller
     public function privacy(): void
     {
         $this->setPageTitle('Politique de confidentialité');
-        $this->render('pages/privacy');
+        $this->render('pages/privacy', [
+            'pageStyles' => ['pages-static.css'],
+        ]);
     }
 
     public function legal(): void
     {
         $this->setPageTitle('Mentions légales');
-        $this->render('pages/legal');
+        $this->render('pages/legal', [
+            'pageStyles' => ['pages-static.css'],
+        ]);
     }
 }
