@@ -1266,7 +1266,7 @@
 
 
 	8) FEATURE PAGES LEGALES
-	========================
+	=======================
 
 		BRANCHE
 		-------
@@ -1276,10 +1276,114 @@
 			git branch
 			git branch -r
 
+		OBJECTIF
+		--------
+			Intégrer les pages légales du site avec une mise en forme cohérente
+			avec le reste de l’interface (sans maquette Figma dédiée) :
+				- Mentions légales
+				- Politique de confidentialité
+				- Respect du layout global (header / footer)
+				- Pages statiques, HTML / CSS uniquement
 
-		Objectif prévu :
-			- Intégration Figma des pages :
-				- Mentions légales (/legal)
-				- Politique de confidentialité (/privacy)
-			- Respect strict de la maquette
-			- Pages statiques, HTML/CSS uniquement
+		A) PAGES LEGALES
+		----------------
+			URLs :
+				GET /legal
+				GET /privacy
+
+			Rôle :
+				- Afficher les informations légales obligatoires
+				- Pages publiques, sans authentification
+
+		B) CONTROLEUR
+		--------------
+			Fichier :
+				app/Controllers/PageController.php
+
+			Méthodes :
+				- legal()   → page Mentions légales
+				- privacy() → page Politique de confidentialité
+
+			Règle :
+				- Aucune logique métier
+				- Simple rendu de vues statiques
+
+		C) VUES
+		--------
+			Dossier :
+				views/pages/
+
+			Fichiers :
+				- legal.php
+				- privacy.php
+
+			Principe :
+				- Structure HTML alignée avec les autres pages
+				- Réutilisation des composants existants (titres, sections, wrappers)
+				- Intégration CSS cohérente (typographie, espacements)
+
+		D) INTEGRATION UI
+		------------------
+			Objectif :
+				- Rendu visuel homogène avec le site
+				- Utilisation du layout global (header/footer)
+				- Pas de dépendance à une maquette Figma spécifique
+
+			Règle :
+				- HTML sémantique
+				- Classes CSS réutilisables
+				- Pas de logique PHP complexe
+
+		E) ROUTES
+		----------
+			Fichier :
+				app/Routes/web.php
+
+			Routes utilisées :
+				$router->get('/legal', [PageController::class, 'legal']);
+				$router->get('/privacy', [PageController::class, 'privacy']);
+
+		F) VERSIONING GIT / GITHUB
+		--------------------------
+			git status
+			git add .
+			git commit -m "feat(ui): integrate legal and privacy pages layout
+
+			- Integrated legal and privacy pages UI
+			- Reused global layout and components
+			- Ensured visual consistency with existing pages
+			- Static HTML/CSS only (no business logic)
+			"
+
+			git push origin feature/figma-legal-pages
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Rédiger titre + description
+				- Merger dans main
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/figma-legal-pages
+				git branch
+				git branch -r
+
+	9) FEATURE DETAIL D'UN LIVRE
+	============================
+
+		BRANCHE
+		-------
+			git checkout -b feature/figma-book-detail
+			# Nettoie les références distantes supprimées
+			git fetch --prune
+			git branch
+			git branch -r
+
+		OBJECTIF (À VENIR)
+		------------------
+			- Intégration Figma de la page détail d’un livre
+			- Mise en page responsive
+			- Valorisation de l’image, des infos du livre et du propriétaire
+
