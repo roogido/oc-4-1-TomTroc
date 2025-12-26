@@ -6,7 +6,7 @@
  * PHP version 8.2.12
  *
  * Date :        15 décembre 2025
- * Maj :         16 décembre 2025
+ * Maj :         19 décembre 2025
  *
  * @category     Repository
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -128,6 +128,7 @@ class MessageRepository
             SELECT
                 u.id AS user_id,
                 u.pseudo,
+                u.avatar_path,
                 m.content AS last_message,
                 m.created_at,
                 (

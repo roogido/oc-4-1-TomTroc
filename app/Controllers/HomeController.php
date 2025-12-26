@@ -58,6 +58,7 @@ class HomeController extends Controller
 
         $this->render('home/index', [
             'books' => $lastBooks,
+            'pageStyles' => ['home.css'],
         ]);
     }
 }

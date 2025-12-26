@@ -152,20 +152,17 @@ $success = Session::getFlashes('success');
                     <?php foreach ($books as $book) : ?>
                         <tr>
                             <td>
-                                <?php if ($book->getImagePath()) : ?>
-                                    <img
-                                        src="/<?= htmlspecialchars($book->getImagePath()) ?>"
-                                        alt="<?= htmlspecialchars($book->getTitle()) ?>"
-                                        width="78"
-                                        height="78"
-                                    >
-                                <?php else : ?>
-                                    —
-                                <?php endif; ?>
+                                <img
+                                    src="<?= htmlspecialchars($book->getImagePathOrDefault()) ?>"
+                                    alt="<?= htmlspecialchars($book->getTitle()) ?>"
+                                    width="78"
+                                    height="78"
+                                >
                             </td>
 
                             <td><?= htmlspecialchars($book->getTitle()) ?></td>
                             <td><?= htmlspecialchars($book->getAuthor()) ?></td>
+                            <td><?= htmlspecialchars(mb_strimwidth($book->getDescription(), 0, 83, '…')) ?></td>
                             <td>
                                 <?= $book->getStatus() === 'available'
                                     ? 'Disponible'

@@ -16,12 +16,17 @@ function formatMessageDate(string $datetime): string
     $date = new DateTime($datetime);
     $now  = new DateTime();
 
+    // Cas : aujourd'hui
+    if ($date->format('Y-m-d') === $now->format('Y-m-d')) {
+        return $date->format('H:i');
+    }
+
+    // Cas : même année
     if ($date->format('Y') === $now->format('Y')) {
-        // même année
         return $date->format('d.m H:i');
     }
 
-    // année différente
+    // Cas : année différente
     return $date->format('d.m.Y H:i');
 }
 ?>
@@ -40,9 +45,15 @@ function formatMessageDate(string $datetime): string
                     <li class="conversation-item">
                         <a href="/messages/<?= (int) $conversation['user_id'] ?>">
 
+                            <?php
+                            $avatarPath = !empty($conversation['avatar_path'])
+                                ? '/uploads/avatars/' . $conversation['avatar_path']
+                                : \App\Models\User::DEFAULT_AVATAR;
+                            ?>
+
                             <img
-                                src="/assets/images/avatars/avatar-default.webp"
-                                alt=""
+                                src="<?= htmlspecialchars($avatarPath) ?>"
+                                alt="Avatar de <?= htmlspecialchars($conversation['pseudo']) ?>"
                                 width="48"
                                 height="48"
                             >
@@ -91,8 +102,8 @@ function formatMessageDate(string $datetime): string
 
             <div class="thread-header">
                 <img
-                    src="/assets/images/avatars/avatar-default.webp"
-                    alt=""
+                    src="<?= htmlspecialchars($otherUser->getAvatarPath()) ?>"
+                    alt="Avatar de <?= htmlspecialchars($otherUser->getPseudo()) ?>"
                     width="48"
                     height="48"
                     class="thread-avatar"
@@ -113,8 +124,8 @@ function formatMessageDate(string $datetime): string
 
                             <?php if (!$isMine) : ?>
                                 <img
-                                    src="/assets/images/avatars/avatar-default.webp"
-                                    alt=""
+                                    src="<?= htmlspecialchars($otherUser->getAvatarPath()) ?>"
+                                    alt="Avatar de <?= htmlspecialchars($otherUser->getPseudo()) ?>"
                                     width="24"
                                     height="24"
                                     class="message-avatar"
@@ -143,7 +154,14 @@ function formatMessageDate(string $datetime): string
             <!-- Le formulaire est TOUJOURS visible dès qu’un utilisateur est ciblé -->
             <form method="post" action="/messages/send">
                 <input type="hidden" name="receiver_id" value="<?= (int) $otherUser->getId() ?>">
-                <textarea name="content" required></textarea>
+
+                <textarea
+                    name="content"
+                    placeholder="Tapez votre message ici"
+                    required
+                    rows="3"
+                ></textarea>
+
                 <button type="submit">Envoyer</button>
             </form>
 

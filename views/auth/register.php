@@ -82,7 +82,7 @@ $old = $oldAll[0] ?? [];
         <!-- Colonne droite : image décorative -->
         <div class="auth-visual">
             <img
-                src="/assets/images/home/hero-right.png"
+                src="/assets/images/auth/auth-illustration.webp""
                 alt=""
                 aria-hidden="true"
                 width="720"

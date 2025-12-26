@@ -8,7 +8,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         17 décembre 2025
+ * Maj :         20 décembre 2025
  *
  * @category     Models
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -23,7 +23,7 @@ namespace App\Models;
 
 class User
 {
-    public const DEFAULT_AVATAR = '/assets/images/avatars/avatar-default.webp';
+    public const DEFAULT_AVATAR = '/uploads/avatars/avatar-default.webp';
 
     private ?int $id = null;
     private string $pseudo;
@@ -109,7 +109,7 @@ class User
     public function getAvatarPath(): string
     {
         if (!empty($this->avatarPath)) {
-            return '/assets/images/avatars/' . ltrim($this->avatarPath, '/');
+            return '/uploads/avatars/' . ltrim($this->avatarPath, '/');
         }
 
         return self::DEFAULT_AVATAR;

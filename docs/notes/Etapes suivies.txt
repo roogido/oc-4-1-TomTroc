@@ -969,14 +969,317 @@
                 git branch -r
 	
 
-    6) FEATURE FIGMA-INTEGRATION
-    ============================
+	6) FEATURE FIGMA-INTEGRATION
+	===========================
 
-        BRANCHE
-        -------
-            git checkout -b feature/figma-integration
-            # Nettoie les références distantes supprimées
-            git fetch --prune
-            git branch
-            git branch -r
+		BRANCHE
+		-------
+			git checkout -b feature/figma-integration
+			# Nettoie les références distantes supprimées
+			git fetch --prune
+			git branch
+			git branch -r
 
+		OBJECTIF
+		--------
+			Démarrer l’intégration visuelle de la maquette Figma
+			tout en consolidant le backend existant :
+
+				- Corriger les derniers bugs PHP identifiés
+				- Poser les bases CSS globales du projet
+				- Intégrer fidèlement les premières pages de la maquette
+				- Préparer une approche progressive page par page
+
+		A) STABILISATION BACKEND
+		------------------------
+			Objectif :
+				- S’assurer que toutes les fonctionnalités existantes
+				sont stables avant l’intégration graphique
+
+			Actions réalisées :
+				- Corrections de bugs PHP résiduels
+				- Ajustements mineurs de contrôleurs / repositories
+				- Vérification des routes et flux principaux
+				- Sécurisation de certains affichages (htmlspecialchars)
+
+			Règle :
+				- Aucun ajout fonctionnel majeur
+				- Priorité à la fiabilité avant le CSS
+
+		B) INTEGRATION DU LAYOUT GLOBAL (FIGMA)
+		---------------------------------------
+			Fichiers concernés :
+				- views/layout.php
+				- assets/css (nouveaux fichiers CSS)
+
+			Objectif :
+				- Intégrer le header et le footer selon la maquette Figma
+				- Rendre la navigation cohérente sur toutes les pages
+
+			Header :
+				- Logo TomTroc
+				- Menu principal (desktop + mobile)
+				- Bouton burger (accessibilité ARIA)
+				- Liens conditionnels (connecté / non connecté)
+
+			Footer :
+				- Liens légaux
+				- Copyright
+				- Structure prête pour extension
+
+			Règle :
+				- HTML + CSS uniquement
+				- Pas de logique métier ajoutée
+				- Respect strict de la structure Figma
+
+		C) PAGE D’ACCUEIL (HOME) – INTEGRATION FIGMA
+		--------------------------------------------
+			Fichiers :
+				- views/home/index.php
+				- assets/css/pages.css 
+
+			Objectif :
+				- Intégrer la page d’accueil selon la maquette Figma
+				- Respecter la hiérarchie visuelle et les espacements
+
+			Sections intégrées :
+				- Hero (texte + image)
+				- Derniers livres
+				- Comment ça marche
+				- Bandeaux visuels
+				- Nos valeurs
+
+			Responsive pris en compte :
+				- Desktop
+				- 1024 px
+				- 768 px
+				- 377 px (mobile)
+
+			Règle :
+				- Mobile-first ou approche progressive
+				- Images optimisées (webp)
+				- Classes CSS cohérentes et réutilisables
+
+		D) APPROCHE D’INTEGRATION PROGRESSIVE
+		-------------------------------------
+			Principe :
+				- Une feature = une zone de la maquette
+				- Une branche par grande page ou section
+
+			Avantage :
+				- Historique Git clair
+				- Relectures ciblées
+				- Risque limité par itération
+
+			Prochaine étape prévue :
+				- Intégration de la page "Nos livres à l’échange"
+
+		E) PREPARATION DES BRANCHES SUIVANTES
+		-------------------------------------
+			Branche suivante :
+				feature/figma-books-index
+
+			Objectif de la prochaine branche :
+				- Intégration complète de la page /books
+				- Grille de livres (desktop + responsive)
+				- Recherche visuelle
+				- Cartes livre conformes à Figma
+
+		F) VERSIONING GIT / GITHUB
+		--------------------------
+			git status
+			git add .
+			git commit -m "feat(figma): start figma integration and stabilize backend
+
+			- Fixed remaining backend bugs
+			- Integrated global header and footer from Figma
+			- Implemented home page layout (desktop + responsive)
+			- Added base CSS structure for future pages
+			- Prepared progressive Figma-driven workflow
+			"
+
+			git push origin feature/figma-integration
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Rédiger titre + description
+				- Merger dans main
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/figma-integration
+				git branch
+				git branch -r
+
+
+	7) FEATURE FIGMA-INTEGRATION
+	===========================
+
+		BRANCHE
+		-------
+			git checkout -b feature/figma-books-index
+			# Nettoie les références distantes supprimées
+			git fetch --prune
+			git branch
+			git branch -r
+
+	7) FEATURE FIGMA-BOOKS-INDEX
+	===========================
+
+		BRANCHE
+		-------
+			git checkout -b feature/figma-books-index
+			# Nettoie les références distantes supprimées
+			git fetch --prune
+			git branch
+			git branch -r
+
+		OBJECTIF
+		--------
+			Intégrer fidèlement la page publique
+			"Nos livres à l’échange" (/books) à partir de la maquette Figma :
+
+				- Intégration HTML/CSS conforme à la maquette
+				- Mise en page responsive complète
+				- Harmonisation avec les cartes livres déjà utilisées
+				- Aucune régression fonctionnelle sur l’existant
+
+		A) PAGE "NOS LIVRES À L’ÉCHANGE" (FIGMA)
+		---------------------------------------
+			Fichiers :
+				- views/book/index.php
+				- assets/css/books.css (ou équivalent)
+
+			Objectif :
+				- Traduire la maquette Figma en structure HTML/CSS
+				- Respecter la hiérarchie visuelle et les espacements
+
+			Contenu :
+				- Titre de page
+				- Champ de recherche stylé
+				- Grille de livres
+				- Message si aucun résultat
+
+		B) CARTES LIVRES (COMPONENT)
+		-----------------------------
+			Principe :
+				- Carte livre réutilisable
+				- Alignée visuellement avec les cartes de la home
+
+			Contenu d’une carte :
+				- Image du livre (ou image par défaut)
+				- Titre
+				- Auteur
+				- Pseudo du propriétaire
+				- Badge si livre indisponible
+
+			Règle :
+				- Structure HTML stable
+				- Classes CSS explicites
+				- Aucun CSS inline
+
+		C) GRILLE RESPONSIVE
+		--------------------
+			Comportement :
+				- Desktop large     : 4 colonnes
+				- Desktop / laptop  : 3 colonnes
+				- Tablette          : 2 colonnes
+				- Mobile            : 1 colonne
+
+			Implémentation :
+				- CSS Grid ou Flexbox
+				- Breakpoints cohérents avec la home
+
+			Règle :
+				- Lisibilité prioritaire
+				- Images redimensionnées via CSS
+
+		D) CHAMP DE RECHERCHE
+		---------------------
+			Objectif :
+				- Champ visuellement intégré à la maquette
+				- Responsive
+				- Clair et accessible
+
+			Fonctionnement :
+				- Basé sur la logique existante (?q=)
+				- Aucun changement backend
+
+			Règle :
+				- UI uniquement
+				- Pas de logique métier ajoutée
+
+		E) GESTION DES LIVRES INDISPONIBLES
+		----------------------------------
+			Objectif :
+				- Rendre visuellement identifiable un livre indisponible
+
+			Implémentation :
+				- Badge ou indicateur visuel
+				- Aucune suppression du livre de la liste publique
+
+			Règle :
+				- Information claire pour l’utilisateur
+				- Pas d’impact fonctionnel
+
+		F) NON-RÉGRESSION
+		-----------------
+			Vérifications :
+				- Page d’accueil inchangée
+				- Pages auth intactes
+				- Détail livre (/book/{id}) fonctionnel
+				- Routes et contrôleurs non modifiés
+
+			Principe :
+				- Intégration purement front (HTML/CSS)
+
+		G) VERSIONING GIT / GITHUB
+		--------------------------
+			git status
+			git add .
+			git commit -m "feat(books): integrate \"Nos livres à l’échange\" page with responsive layout
+
+			- Figma-faithful HTML/CSS integration of books index page
+			- Reusable book card component aligned with home page
+			- Responsive grid (4/3/2/1 columns depending on breakpoints)
+			- Search input styled and responsive
+			- Display unavailable books with visual badge
+			- No regression on existing pages
+			"
+
+			git push origin feature/figma-books-index
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Rédiger titre + description
+				- Merger dans main
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/figma-books-index
+				git branch
+				git branch -r
+
+
+	8) FEATURE PAGES LEGALES
+	========================
+
+		BRANCHE
+		-------
+			git checkout -b feature/figma-legal-pages
+			# Nettoie les références distantes supprimées
+			git fetch --prune
+			git branch
+			git branch -r
+
+
+		Objectif prévu :
+			- Intégration Figma des pages :
+				- Mentions légales (/legal)
+				- Politique de confidentialité (/privacy)
+			- Respect strict de la maquette
+			- Pages statiques, HTML/CSS uniquement

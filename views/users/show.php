@@ -1,11 +1,10 @@
 <section class="user-public">
-
     <!-- Colonne gauche : profil -->
     <aside class="user-profile">
         <div class="user-avatar">
             <?php if ($user->getAvatarPath()) : ?>
                 <img
-                    src="/<?= htmlspecialchars($user->getAvatarPath()) ?>"
+                    src="<?= htmlspecialchars($user->getAvatarPath()) ?>"
                     alt="Avatar de <?= htmlspecialchars($user->getPseudo()) ?>"
                 >
             <?php endif; ?>
@@ -48,14 +47,12 @@
 
                     <!-- PHOTO -->
                     <div class="col-photo">
-                        <?php if ($book->getImagePath()) : ?>
-                            <img
-                                src="/<?= htmlspecialchars($book->getImagePath()) ?>"
-                                alt="<?= htmlspecialchars($book->getTitle()) ?>"
-                                width="78"
-                                height="78"
-                            >
-                        <?php endif; ?>
+                        <img
+                            src="<?= htmlspecialchars($book->getImagePathOrDefault()) ?>"
+                            alt="<?= htmlspecialchars($book->getTitle()) ?>"
+                            width="78"
+                            height="78"
+                        >
                     </div>
 
                     <!-- TITRE -->

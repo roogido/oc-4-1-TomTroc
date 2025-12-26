@@ -1,0 +1,242 @@
+/* ==================================================
+   BOOKS – PAGE LISTING
+   ================================================== */
+
+.books {
+    background-color: #FAF9F7;
+    padding-top: 130px;
+    padding-bottom: 80px;    
+}
+
+/* ---------- HEADER ---------- */
+
+.books-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 48px;
+}
+
+.books-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    margin: 0;
+}
+
+.books-search input {
+    width: 280px;
+    height: 44px;
+    padding: 0 16px;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+
+    border-radius: 10px;
+    border: 1px solid #E0E0E0;
+}
+
+/* ---------- GRID ---------- */
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: center;
+    gap: 32px;
+}
+
+/* ---------- EMPTY ---------- */
+
+.books-empty {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #6B6B6B;
+}
+
+/* Dimensionnement pour la carte et l'image du livre */
+.books .book-card {
+    width: 200px;
+}
+
+.books .book-card img {
+    height: 200px;
+}
+
+.books .book-card-body {
+    padding: 12px;
+}
+
+.books-search input[type="search"] {
+    width: 322px;
+    height: 50px;
+
+    padding: 0 16px 0 40px; /* place pour l’icône */
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #2E2E2E;
+
+    border: 1px solid #E5E5E5;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+
+    background-image: url("/assets/images/books/search.webp");
+    background-repeat: no-repeat;
+    background-position: 14px center;
+    background-size: 16px 16px;
+
+    outline: none;
+}
+
+/* Wrapper image */
+.book-card-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+}
+
+/* Badge */
+.book-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.book-badge--unavailable {
+    background-color: #E54848;
+    color: #FFFFFF;
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+ /* ==================================================
+   <= 1023px — tablette
+   ================================================== */
+@media (max-width: 1023px) {
+
+    .books-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+    }
+
+    .books-search input {
+        width: 100%;
+        max-width: 340px;
+    }
+
+    .books-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+}
+
+/* ==================================================
+   <= 768px — bascule header
+   ================================================== */
+@media (max-width: 768px) {
+
+    .books-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .books-search {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .books-search input {
+        max-width: 320px;
+    }
+}
+
+/* ==================================================
+   <= 610px — grille 2 colonnes
+   ================================================== */
+@media (max-width: 610px) {
+
+    .books-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+/* ==================================================
+   <= 375px — mobile compact
+   ================================================== */
+@media (max-width: 375px) {
+
+    .page-inner {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    .book-card {
+        border-radius: 10px;
+    }
+
+    .book-card img {
+        height: 150px;
+    }
+
+    .book-card-body {
+        padding: 6px;
+    }
+
+    .book-card-body h3 {
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .book-author {
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+
+    .book-owner {
+        font-size: 10.5px;
+    }
+
+    .books-header h1 {
+        font-size: 26px;
+        line-height: 1.2;
+    }
+
+    .books-search input {
+        width: 100%;
+        max-width: 300px;
+        height: 44px;
+    }
+}
+
+/* ==================================================
+   <372px — 1 colonne centrée
+   ================================================== */
+@media (max-width: 372px) {
+
+    .books-grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    .book-card {
+        width: 100%;
+        max-width: 220px;
+    }
+}

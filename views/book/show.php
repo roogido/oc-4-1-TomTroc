@@ -1,12 +1,10 @@
-<?php if ($book->getImagePath()) : ?>
-    <div class="book-image">
-        <img
-            src="/<?= htmlspecialchars($book->getImagePath()) ?>"
-            alt="<?= htmlspecialchars($book->getTitle()) ?>"
-            style="max-width:300px;"
-        >
-    </div>
-<?php endif; ?>
+<div class="book-image">
+    <img
+        src="<?= htmlspecialchars($book->getImagePathOrDefault()) ?>"
+        alt="<?= htmlspecialchars($book->getTitle()) ?>"
+        style="max-width:300px;"
+    >
+</div>
 
 <section class="book-show">
     <h1><?= htmlspecialchars($book->getTitle()) ?></h1>

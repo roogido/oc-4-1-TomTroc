@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        12 décembre 2025
- * Maj :         15 décembre 2025
+ * Maj :         26 décembre 2025
  *
  * @category     Repository
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -183,6 +183,45 @@ class BookRepository
     }
 
     /**
+     * Récupère tous les livres (disponibles et indisponibles),
+     * avec filtre optionnel par titre.
+     *
+     * @param string|null $search
+     * @return Book[]
+     */
+    public function findAll(?string $search = null): array
+    {
+        $sql = "
+            SELECT b.*, u.pseudo AS owner_pseudo
+            FROM books b
+            JOIN users u ON u.id = b.user_id
+            WHERE 1 = 1
+        ";
+
+        $params = [];
+
+        if ($search !== null && $search !== '') {
+            $sql .= " AND b.title LIKE :search";
+            $params['search'] = '%' . $search . '%';
+        }
+
+        $sql .= " ORDER BY b.created_at DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $books = [];
+
+        while ($row = $stmt->fetch()) {
+            $book = $this->hydrateBook($row);
+            $book->setOwnerPseudo($row['owner_pseudo']);
+            $books[] = $book;
+        }
+
+        return $books;
+    }
+
+    /**
      * Retourne les derniers livres ajoutés disponibles.
      *
      * Les livres sont filtrés par statut "available"
@@ -241,6 +280,31 @@ class BookRepository
             'description' => $book->getDescription(),
             'image_path'  => $book->getImagePath(),
             'status'      => $book->getStatus(),
+        ]);
+    }
+
+    /**
+     * Met à jour l’image associée à un livre.
+     *
+     * @param int         $bookId    Identifiant du livre.
+     * @param string|null $imagePath Chemin relatif de l’image (ex: uploads/books/xxx.webp).
+     *
+     * @return bool True si la mise à jour a réussi, false sinon.
+     */
+    public function updateImage(int $bookId, ?string $imagePath): bool
+    {
+        $sql = "
+            UPDATE books
+            SET image_path = :image_path,
+                updated_at = NOW()
+            WHERE id = :id
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute([
+            'image_path' => $imagePath,
+            'id'         => $bookId,
         ]);
     }
 
