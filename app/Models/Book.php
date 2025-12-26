@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        12 décembre 2025
- * Maj :         17 décembre 2025
+ * Maj :         20 décembre 2025
  *
  * @category     Models
  * @package      App\Models
@@ -27,6 +27,9 @@ class Book
 {
     public const STATUS_AVAILABLE   = 'available';
     public const STATUS_UNAVAILABLE = 'unavailable';
+
+    public const DEFAULT_IMAGE = '/uploads/books/book-default.webp';
+
 
     private ?int $id = null;
     private int $userId;
@@ -90,7 +93,7 @@ class Book
     public function getOwnerAvatarPath(): string
     {
         if (!empty($this->ownerAvatarPath)) {
-            return '/assets/images/avatars/' . ltrim($this->ownerAvatarPath, '/');
+            return '/uploads/avatars/' . ltrim($this->ownerAvatarPath, '/');
         }
 
         return User::DEFAULT_AVATAR;
@@ -119,6 +122,22 @@ class Book
     public function getImagePath(): ?string
     {
         return $this->imagePath;
+    }
+
+    /**
+     * Retourne le chemin de l’image du livre ou l’image par défaut.
+     *
+     * Garantit un chemin absolu valide (préfixé par "/") pour un usage direct en HTML.
+     *
+     * @return string Chemin de l’image à afficher
+     */
+    public function getImagePathOrDefault(): string
+    {
+        if (!empty($this->imagePath)) {
+            return '/' . ltrim($this->imagePath, '/');
+        }
+
+        return self::DEFAULT_IMAGE;
     }
 
     // ---------

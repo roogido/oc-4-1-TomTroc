@@ -73,14 +73,13 @@ $old = $oldAll[0] ?? [];
         <!-- Colonne droite : image décorative -->
         <div class="auth-visual">
             <img
-                src="/assets/images/home/hero-right.png"
-                alt=""
+                src="/assets/images/auth/auth-illustration.webp"
+                alt="Bibliothèque remplie de livres, illustrant l’univers de l’échange et de la lecture"
                 aria-hidden="true"
                 width="720"
                 height="886"
             >
         </div>
-
     </div>
 </section>
 

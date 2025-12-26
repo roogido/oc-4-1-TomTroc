@@ -1,43 +1,61 @@
-<h1>Nos livres à l’échange</h1>
+<main class="books page">
+    <div class="page-inner">
+        <!-- HEADER PAGE -->
+        <header class="books-header">
+            <h1>Nos livres à l’échange</h1>
 
-<form method="get" action="/books">
-    <label for="q">Rechercher un livre</label>
-    <input
-        type="text"
-        id="q"
-        name="q"
-        value="<?= htmlspecialchars($search ?? '') ?>"
-    >
-    <button type="submit">Rechercher</button>
-</form>
+            <form method="get" action="/books" class="books-search">
+                <input
+                    type="search"
+                    name="q"
+                    placeholder="Rechercher un livre"
+                    value="<?= htmlspecialchars($search ?? '') ?>"
+                    aria-label="Rechercher un livre"
+                >
+            </form>
+        </header>
 
-<hr>
+        <?php if (empty($books)) : ?>
+            <p class="books-empty">Aucun livre disponible.</p>
+        <?php else : ?>
+            <section class="books-grid">
+                <?php foreach ($books as $book) : ?>
+                    <article class="book-card">
 
-<?php if (empty($books)) : ?>
-    <p>Aucun livre disponible.</p>
-<?php else : ?>
-    <div>
-        <?php foreach ($books as $book) : ?>
-            <div style="display:inline-block; width:220px; margin:10px; vertical-align:top;">
-                
-                <a href="/book/<?= (int) $book->getId() ?>">
-                    <img
-                        src="/<?= htmlspecialchars($book->getImagePath()) ?>"
-                        alt="<?= htmlspecialchars($book->getTitle()) ?>"
-                        width="200"
-                        height="200"
-                    >
-                    <p><strong><?= htmlspecialchars($book->getTitle()) ?></strong></p>
-                    <p>Par :<?= htmlspecialchars($book->getAuthor()) ?></p>                  
-                </a>
-                <p>
-                    <em>Propriétaire :</em>
-                    <a href="/users/<?= (int) $book->getUserId() ?>">
-                        <?= htmlspecialchars($book->getOwnerPseudo()) ?>
-                    </a>
-                </p>
-            </div>
-        <?php endforeach; ?>
-    </div>    
+                        <div class="book-card-image">
+                            <?php if ($book->getStatus() === 'unavailable') : ?>
+                                <span class="book-badge book-badge--unavailable">
+                                    Non dispo.
+                                </span>
+                            <?php endif; ?>
 
-<?php endif; ?>
+                            <a href="/book/<?= (int) $book->getId() ?>">
+                                <img
+                                    src="<?= htmlspecialchars($book->getImagePathOrDefault()) ?>"
+                                    alt="<?= htmlspecialchars($book->getTitle()) ?>"
+                                    loading="lazy"
+                                >
+                            </a>
+                        </div>
+
+                        <div class="book-card-body">
+                            <h3><?= htmlspecialchars($book->getTitle()) ?></h3>
+
+                            <p class="book-author">
+                                <?= htmlspecialchars($book->getAuthor()) ?>
+                            </p>
+
+                            <p class="book-owner">
+                                Propriétaire :
+                                <a href="/users/<?= (int) $book->getUserId() ?>">
+                                    <?= htmlspecialchars($book->getOwnerPseudo()) ?>
+                                </a>
+                            </p>
+                        </div>
+
+                    </article>
+                <?php endforeach; ?>
+            </section>
+        <?php endif; ?>
+    </div>
+</main>
