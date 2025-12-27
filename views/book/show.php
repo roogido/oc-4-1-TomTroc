@@ -1,65 +1,79 @@
-<div class="book-image">
-    <img
-        src="<?= htmlspecialchars($book->getImagePathOrDefault()) ?>"
-        alt="<?= htmlspecialchars($book->getTitle()) ?>"
-        style="max-width:300px;"
-    >
-</div>
+<section class="book-detail page">
 
-<section class="book-show">
-    <h1><?= htmlspecialchars($book->getTitle()) ?></h1>
-
-    <div class="book-meta">
-        <p>Par <?= htmlspecialchars($book->getAuthor()) ?></p>
-
-        <div class="book-description">
-            <p>
-                <h2>DESCRIPTION</h2>
-                <?= nl2br(htmlspecialchars($book->getDescription())) ?>
-            </p>
-        </div>
-        
-        <?php /*
-        <p>
-            <strong>Disponibilité :</strong>
-            <?= $book->getStatus() === 'available' ? 'Disponible' : 'Indisponible' ?>
-        </p>
-        */ ?>
-        <p>
-            <h2>PROPRIÉTAIRE</h2>
-            <img
-                src="<?= htmlspecialchars($book->getOwnerAvatarPath()); ?>"
-                alt="Avatar de <?= htmlspecialchars($book->getOwnerPseudo()); ?>"
-                width="48"
-                height="48"
-            >            
-            <a href="/users/<?= (int) $book->getUserId() ?>">
-                <?= htmlspecialchars($book->getOwnerPseudo()) ?>
-            </a>
-        </p>
+    <!-- Fil d’Ariane (plein largeur, aligné logo) -->
+    <div class="book-detail-breadcrumb-wrapper">
+        <nav class="breadcrumb book-detail-breadcrumb">
+            <a href="/books">Nos livres</a>
+            <span aria-hidden="true">›</span>
+            <span><?= htmlspecialchars($book->getTitle()) ?></span>
+        </nav>
     </div>
 
-    <!-- Bloc messagerie -->
-    <?php if (\App\Core\Session::isLogged() && \App\Core\Session::getUserId() !== $book->getUserId()) : ?>
-        <section class="book-contact">
-            <h2>Contacter le propriétaire</h2>
+    <div class="page-inner">
 
-            <form method="post" action="/messages/send">
-                <input type="hidden" name="receiver_id" value="<?= (int) $book->getUserId() ?>">
-                <textarea name="content" required></textarea>
-                <button type="submit">Envoyer un message</button>
-            </form>
-        </section>
+        <!-- Layout 2 colonnes -->
+        <div class="book-detail-layout">
 
-    <?php elseif (!\App\Core\Session::isLogged()) : ?>
-        <p>
-            <a href="/login">Connectez-vous</a> pour contacter le propriétaire.
-        </p>
-    <?php endif; ?>
-    <!-- Fin bloc messagerie -->
+            <!-- Colonne gauche : image -->
+            <div class="book-detail-image book-card-image">
+                <?php if ($book->getStatus() === 'unavailable') : ?>
+                    <span class="book-badge book-badge--unavailable">
+                        Non dispo.
+                    </span>
+                <?php endif; ?>
 
-    <p>
-        <a href="/books">← Retour aux livres à l’échange</a>
-    </p>
+                <img
+                    src="<?= htmlspecialchars($book->getImagePathOrDefault()) ?>"
+                    alt="<?= htmlspecialchars($book->getTitle()) ?>"
+                >
+            </div>
+
+            <!-- Colonne droite : contenu -->
+            <div class="book-detail-content">
+
+                <header class="book-detail-header">
+                    <h1><?= htmlspecialchars($book->getTitle()) ?></h1>
+
+                    <p class="book-detail-author">
+                        par <?= htmlspecialchars($book->getAuthor()) ?>
+                    </p>
+                </header>
+
+                <hr class="book-detail-separator">
+
+                <section class="book-detail-description">
+                    <h2>DESCRIPTION</h2>
+                    <p><?= nl2br(htmlspecialchars($book->getDescription())) ?></p>
+                </section>
+
+                <section class="book-detail-owner">
+                    <h2>PROPRIÉTAIRE</h2>
+
+                    <a
+                        href="/users/<?= (int) $book->getUserId() ?>"
+                        class="book-owner-card"
+                    >
+                        <img
+                            src="<?= htmlspecialchars($book->getOwnerAvatarPath()) ?>"
+                            alt="Avatar de <?= htmlspecialchars($book->getOwnerPseudo()) ?>"
+                            class="avatar avatar--md avatar--portrait"
+                        >
+                        <span><?= htmlspecialchars($book->getOwnerPseudo()) ?></span>
+                    </a>
+                </section>
+
+                <?php if (\App\Core\Session::isLogged() && \App\Core\Session::getUserId() !== $book->getUserId()) : ?>
+                    <div class="book-detail-action">
+                        <a
+                            href="/messages/<?= (int) $book->getUserId() ?>"
+                            class="btn btn-primary btn--full btn--responsive"
+                        >
+                            Envoyer un message
+                        </a>
+                    </div>
+                <?php endif; ?>
+
+            </div>
+        </div>
+    </div>
 </section>
-

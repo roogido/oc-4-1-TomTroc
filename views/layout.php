@@ -33,7 +33,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     <?php endif; ?>
 </head>
 <body>
-    <div class="site-wrapper">
+    <div class="site-wrapper<?= !empty($pageClass) ? ' ' . htmlspecialchars($pageClass) : '' ?>">
         <header class="site-header desktop-header">
             <nav class="header-container">
 
