@@ -1371,7 +1371,7 @@
 				git branch -r
 
 	9) FEATURE DETAIL D'UN LIVRE
-	============================
+	===========================
 
 		BRANCHE
 		-------
@@ -1381,9 +1381,90 @@
 			git branch
 			git branch -r
 
+		OBJECTIF
+		--------
+			Intégrer fidèlement la page "Détail d’un livre" selon la maquette :
+				- Mise en page claire et lisible
+				- Responsive desktop / tablet / mobile
+				- Valorisation du contenu du livre
+				- Amélioration de l’expérience utilisateur
+
+		A) PAGE DÉTAIL LIVRE (UI)
+		-------------------------
+			Fichiers :
+				views/book/show.php
+				public/assets/css/books.css (ou équivalent)
+
+			Structure :
+				- Layout 2 colonnes en desktop :
+					• Image du livre
+					• Informations + actions
+				- Passage en colonne unique en mobile
+
+		B) INTÉGRATION RESPONSIVE
+		-------------------------
+			Comportements :
+				- Desktop : image et contenu côte à côte
+				- Tablet : adaptation des espacements
+				- Mobile : empilement vertical logique
+
+			Règles :
+				- Aucune régression fonctionnelle
+				- Lisibilité conservée à toutes tailles
+
+		C) AJUSTEMENTS UI
+		-----------------
+			Actions réalisées :
+				- Alignement image / texte
+				- Harmonisation des marges et espacements
+				- Bouton d’action clairement visible
+				- Cohérence visuelle avec les autres pages
+
+		D) TESTS MANUELS
+		----------------
+			Vérifications :
+				- Accéder à la page détail d’un livre
+				- Redimensionner l’écran (desktop → mobile)
+				- Vérifier :
+					• Image
+					• Texte
+					• Bouton d’action
+					• Absence de débordement ou cassure UI
+
+		E) VERSIONING GIT / GITHUB
+		--------------------------
+			git status
+			git add .
+			git commit -m "feat(ui): integrate responsive book detail page"
+
+			git push origin feature/figma-book-detail
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Vérifier le rendu visuel
+				- Merger dans main
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/figma-book-detail
+				git branch
+				git branch -r
+
+
+	10) FEATURE BIBLIOTHEQUE UTILISATEUR
+	====================================
+
+		BRANCHE
+		-------
+			git checkout -b feature/user-library
+			# Nettoie les références distantes supprimées
+			git fetch --prune
+			git branch
+			git branch -r
+
 		OBJECTIF (À VENIR)
 		------------------
-			- Intégration Figma de la page détail d’un livre
+			- Intégration Figma de la bibliothèque utilisateur
 			- Mise en page responsive
-			- Valorisation de l’image, des infos du livre et du propriétaire
-

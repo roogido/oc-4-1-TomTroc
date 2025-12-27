@@ -17,7 +17,9 @@
             et d'histoires à travers les livres.
         </p>
         <p>
-            <a href="/books" class="btn btn-primary">Découvrir</a>
+            <a href="/books" class="btn btn-primary btn--md btn--responsive">
+                Découvrir
+            </a>
         </p>
     </div>
 
@@ -65,7 +67,7 @@
         </div>
 
         <div class="home-last-books-cta">
-            <a href="/books" class="btn btn-primary">
+            <a href="/books" class="btn btn-primary btn--md btn--responsive">
                 Voir tous les livres
             </a>
         </div>
@@ -100,7 +102,7 @@
     </div>
 
     <div class="how-cta">
-        <a href="/books" class="btn btn-outline">
+        <a href="/books" class="btn btn-outline btn--md btn--responsive">
             Voir tous les livres
         </a>
     </div>

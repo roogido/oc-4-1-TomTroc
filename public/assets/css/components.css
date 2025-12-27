@@ -64,6 +64,124 @@
 }
 
 /* ==================================================
+   BOOK DETAIL – OVERRIDE FOND GLOBAL
+   ================================================== */
+
+.site-wrapper.is-book-detail {
+    background-color: #FDFCF9;
+}
+
+/* ==================================================
+   COMPONENT – BOOK IMAGE + BADGE
+   ================================================== */
+
+/* Wrapper image (cartes + détail) */
+.book-card-image {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Badge état livre */
+.book-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Livre indisponible */
+.book-badge--unavailable {
+    background-color: #E54848;
+    color: #FFFFFF;
+}
+
+/* ==================================================
+   COMPONENT – BUTTONS
+   ================================================== */
+/* Base bouton (commune) */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 24px; /* largeur flexible par défaut */
+
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+
+    border-radius: 10px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Modificateurs largeur */
+.btn--sm { width: 140px; }
+.btn--md { width: 180px; }
+.btn--lg { width: 220px; }
+.btn--full { width: 100%; }
+
+/* Bouton principal */
+.btn-primary {
+    background-color: #00AC66;
+    color: #ffffff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+    background-color: #006D41;
+}
+
+.btn-primary:focus-visible {
+    outline: 2px solid #006D41;
+    outline-offset: 3px;
+}
+
+/* Bouton outline */
+.btn-outline {
+    border: 1px solid #00AC66;
+    color: #00AC66;
+    background-color: transparent;
+}
+
+.btn-outline:hover,
+.btn-outline:focus-visible {
+    background-color: #006D41;
+    color: #ffffff;
+}
+
+/* ==================================================
+   COMPONENT – AVATAR
+   ================================================== */
+
+/* Avatar générique */
+.avatar {
+    display: block;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #eaeaea; /* fallback image lente/manquante */
+}
+
+/* Avatar taille standard (48x48) */
+.avatar--md {
+    width: 48px;
+    height: 48px;
+}
+
+/* Ajustement visuel portrait (visage légèrement plus bas) */
+.avatar--portrait {
+    object-position: 65% 33%;
+}
+
+/* ==================================================
    RESPONSIVE – BOOK CARD
    (comportement commun HOME / BOOKS)
    ================================================== */

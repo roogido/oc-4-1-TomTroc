@@ -94,6 +94,8 @@ class BookController extends Controller
         $this->setPageTitle($book->getTitle());
         $this->render('book/show', [
             'book' => $book,
+            'pageStyles' => ['book-detail.css'],
+            'pageClass' => 'is-book-detail',
         ]);
     }
 

@@ -205,18 +205,13 @@ main {
     box-shadow: 0 0 0 2px #F5F3EF;
 }
 
-/* Avatar - Global */
-.avatar {
-    display: block;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: #eaeaea; /* fallback si image lente/manquante */
-}
-
 /* Avatar utilisateur – header desktop */
 .header-action .avatar {
     width: 40px;
     height: 40px;
+
+    object-fit: cover;
+    object-position: center 7%; 
     margin-right: -14px;
 }
 

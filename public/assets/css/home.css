@@ -120,53 +120,6 @@ main {
     justify-content: center;
 }
 
-/* Base bouton (commune) */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 180px;
-    height: 48px;
-
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none;
-
-    border-radius: 10px;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-/* Bouton principal */
-.btn-primary {
-    background-color: #00AC66;
-    color: #ffffff;
-}
-
-.btn-primary:hover,
-.btn-primary:focus-visible {
-    background-color: #006D41;
-}
-
-.btn-primary:focus-visible {
-    outline: 2px solid #006D41;
-    outline-offset: 3px;
-}
-
-/* Bouton outline */
-.btn-outline {
-    border: 1px solid #00AC66;
-    color: #00AC66;
-    background-color: transparent;
-}
-
-.btn-outline:hover,
-.btn-outline:focus-visible {
-    background-color: #006D41;
-    color: #ffffff;
-}
-
 /* ==================================================
    HOME – COMMENT ÇA MARCHE
    ================================================== */
@@ -340,12 +293,15 @@ main {
 
     /* ---------- BOUTONS ---------- */
     .btn {
-        width: 100%;
-        max-width: 340px;
         height: 56px;
         border-radius: 12px;
-        justify-content: center;
     }
+
+    /* Modificateur responsive full width */
+    .btn--responsive {
+        width: 100%;
+        max-width: 340px;
+    }    
 
     .home-last-books-cta,
     .how-cta {
