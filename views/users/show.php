@@ -1,88 +1,123 @@
-<section class="user-public">
-    <!-- Colonne gauche : profil -->
-    <aside class="user-profile">
-        <div class="user-avatar">
-            <?php if ($user->getAvatarPath()) : ?>
-                <img
-                    src="<?= htmlspecialchars($user->getAvatarPath()) ?>"
-                    alt="Avatar de <?= htmlspecialchars($user->getPseudo()) ?>"
-                >
-            <?php endif; ?>
-        </div>
+<section class="user-public page">
 
-        <h1 class="user-name"><?= htmlspecialchars($user->getPseudo()) ?></h1>
+    <div class="page-inner user-public-inner">
 
-        <p class="user-since">
-            Membre depuis <?= htmlspecialchars($memberSince) ?>
-        </p>
+        <div class="user-public-layout">
 
-        <p class="user-library-count">
-            <strong>BIBLIOTHÈQUE</strong><br>
-            <?= count($books) ?> livres
-        </p>
+            <!-- ================= LEFT : PROFILE CARD ================= -->
+            <aside class="user-profile-card">
 
-        <?php if (\App\Core\Session::isLogged() && \App\Core\Session::getUserId() !== $user->getId()) : ?>
-            <a
-                class="btn btn-primary user-message-btn"
-                href="/messages/<?= (int) $user->getId() ?>"
-            >
-                Écrire un message
-            </a>
-        <?php endif; ?>
-    </aside>
+                <div class="user-profile-avatar">
+                    <?php if ($user->getAvatarPath()) : ?>
+                        <div class="user-avatar">
+                            <img
+                                src="<?= htmlspecialchars($user->getAvatarPath()) ?>"
+                                alt="Avatar de <?= htmlspecialchars($user->getPseudo()) ?>"
+                                class="user-avatar-img"
+                            >
+                        </div>
+                    <?php endif; ?>
+                </div>
 
-    <!-- Colonne droite : bibliothèque -->
-    <section class="user-library">
-        <div class="library-header">
-            <div class="col-photo">PHOTO</div>
-            <div class="col-title">TITRE</div>
-            <div class="col-author">AUTEUR</div>
-            <div class="col-description">DESCRIPTION</div>
-        </div>
-        <?php if (empty($books)) : ?>
-            <p>Aucun livre.</p>
-        <?php else : ?>
-            <?php foreach ($books as $book) : ?>
-                <div class="library-row">
+                <hr class="user-profile-separator">
 
-                    <!-- PHOTO -->
-                    <div class="col-photo">
+                <h2 class="user-profile-name"><?= htmlspecialchars($user->getPseudo()) ?></h2>
+
+                <p class="user-profile-since">
+                    Membre depuis <?= htmlspecialchars($memberSince) ?>
+                </p>
+
+                <div class="user-profile-library">
+                    <p class="user-profile-library-label">BIBLIOTHÈQUE</p>
+
+                    <div class="user-profile-library-meta">
                         <img
-                            src="<?= htmlspecialchars($book->getImagePathOrDefault()) ?>"
-                            alt="<?= htmlspecialchars($book->getTitle()) ?>"
-                            width="78"
-                            height="78"
+                            src="/assets/icons/books_small_icon.svg"
+                            alt=""
+                            class="user-library-icon"
                         >
+                        <span class="user-profile-library-count">
+                            <?= count($books) ?> livres
+                        </span>
                     </div>
+                </div>
 
-                    <!-- TITRE -->
-                    <div class="col-title">
-                        <a href="/book/<?= (int) $book->getId() ?>">
-                            <?= htmlspecialchars($book->getTitle()) ?>
+                <?php if (\App\Core\Session::isLogged() && \App\Core\Session::getUserId() !== $user->getId()) : ?>
+                    <div class="user-profile-action">
+                        <a                     
+                            class="btn btn-outline btn--full user-message-btn"
+                            href="/messages/<?= (int) $user->getId() ?>"
+                        >
+                            Écrire un message
                         </a>
                     </div>
+                <?php endif; ?>
 
-                    <!-- AUTEUR -->
-                    <div class="col-author">
-                        <?= htmlspecialchars($book->getAuthor()) ?>
+            </aside>
+
+
+            <!-- ================= RIGHT : LIBRARY LIST ================= -->
+            <section class="user-library-card">
+
+                <div class="user-library-table">
+
+                    <!-- Header desktop -->
+                    <div class="user-library-head">
+                        <div class="col-photo">PHOTO</div>
+                        <div class="col-title">TITRE</div>
+                        <div class="col-author">AUTEUR</div>
+                        <div class="col-description">DESCRIPTION</div>
                     </div>
 
-                    <!-- DESCRIPTION -->
-                    <div class="col-description">
-                        <?= htmlspecialchars(
-                            mb_strimwidth(
-                                $book->getDescription(),
-                                0,
-                                83,
-                                '…'
-                            )
-                        ) ?>
-                    </div>
+                    <?php if (empty($books)) : ?>
+                        <p class="user-library-empty">Aucun livre.</p>
+                    <?php else : ?>
+                        <?php foreach ($books as $book) : ?>
+                            <article class="user-library-row">
+
+                                <!-- PHOTO -->
+                                <div class="col-photo">
+                                    <img
+                                        class="user-library-book-image"
+                                        src="<?= htmlspecialchars($book->getImagePathOrDefault()) ?>"
+                                        alt="<?= htmlspecialchars($book->getTitle()) ?>"
+                                        width="78"
+                                        height="78"
+                                    >
+                                </div>
+
+                                <!-- TITRE -->
+                                <div class="col-title">
+                                    <a class="user-library-book-link" href="/book/<?= (int) $book->getId() ?>">
+                                        <?= htmlspecialchars($book->getTitle()) ?>
+                                    </a>
+                                </div>
+
+                                <!-- AUTEUR -->
+                                <div class="col-author">
+                                    <?= htmlspecialchars($book->getAuthor()) ?>
+                                </div>
+
+                                <!-- DESCRIPTION -->
+                                <div class="col-description">
+                                    <?= htmlspecialchars(
+                                        mb_strimwidth(
+                                            $book->getDescription(),
+                                            0,
+                                            83,
+                                            '…'
+                                        )
+                                    ) ?>
+                                </div>
+
+                            </article>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
 
                 </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    </section>
+
+            </section>
+
+        </div>
+    </div>
 </section>
-
-

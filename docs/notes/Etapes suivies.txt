@@ -1453,8 +1453,8 @@
 				git branch -r
 
 
-	10) FEATURE BIBLIOTHEQUE UTILISATEUR
-	====================================
+	10) FEATURE BIBLIOTHÈQUE UTILISATEUR
+	===================================
 
 		BRANCHE
 		-------
@@ -1464,7 +1464,108 @@
 			git branch
 			git branch -r
 
-		OBJECTIF (À VENIR)
+		A) PAGE BIBLIOTHÈQUE UTILISATEUR (PUBLIC)
+		-----------------------------------------
+			URL :
+				GET /users/{id}
+
+			Fichier :
+				views/users/show.php
+
+			Rôle :
+				- Afficher le profil public d’un utilisateur
+				- Présenter sa bibliothèque de livres disponibles
+				- Permettre le contact via la messagerie
+
+		B) PROFIL UTILISATEUR (CARD)
+		-----------------------------
+			Contenu :
+				- Avatar utilisateur
+				- Pseudo
+				- Ancienneté (membre depuis)
+				- Nombre de livres
+				- Bouton "Envoyer un message" (si connecté)
+
+			Objectif :
+				- Carte claire et lisible
+				- Mise en valeur de l’utilisateur
+				- CTA visible et cohérent avec les composants globaux
+
+		C) LISTE DES LIVRES
+		-------------------
+			Comportement responsive :
+				- Desktop :
+					• Affichage sous forme de tableau
+					(PHOTO | TITRE | AUTEUR | DESCRIPTION)
+				- Tablet / Mobile :
+					• Affichage en cartes empilées
+
+			Règles :
+				- Description tronquée
+				- Images cohérentes avec le reste du site
+				- Navigation vers le détail du livre
+
+		D) RESPONSIVE & UX
 		------------------
-			- Intégration Figma de la bibliothèque utilisateur
-			- Mise en page responsive
+			Améliorations :
+				- Passage fluide en 1 colonne sur petits écrans
+				- Espacements et alignements harmonisés
+				- Lisibilité préservée sur toutes résolutions
+
+		E) COHÉRENCE UI
+		----------------
+			Ajustements :
+				- Styles de boutons alignés avec les composants globaux
+				- Typographies et espacements cohérents
+				- Réutilisation des patterns UI existants
+
+		F) TESTS MANUELS
+		----------------
+			Vérifications :
+				- Accéder à un profil utilisateur public
+				- Tester en desktop / tablet / mobile
+				- Vérifier :
+					• Profil
+					• Liste des livres
+					• Bouton messagerie
+					• Responsive
+
+		G) VERSIONING GIT / GITHUB
+		--------------------------
+			git status
+			git add .
+			git commit -m "feat(ui): redesign public user library with responsive layout
+
+			- Redesigned public user library page based on Figma
+			- Added profile card with avatar and actions
+			- Styled library as table (desktop) and cards (mobile)
+			- Improved responsive behavior
+			- Aligned buttons with global UI components
+			"
+
+			git push origin feature/user-library
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Vérifier le rendu UI
+				- Merger dans main
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/user-library
+				git branch
+				git branch -r
+
+	11) FEATURE ENREGISTREMENT UTILISATEUR (REGISTER)
+	=================================================
+
+		BRANCHE
+		-------
+			git checkout -b feature/figma-auth-register
+			# Nettoie les références distantes supprimées
+			git fetch --prune
+			git branch
+			git branch -r
+			

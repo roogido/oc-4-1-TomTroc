@@ -83,6 +83,8 @@ class UserController extends Controller
             'user'        => $user,
             'books'       => $books,
             'memberSince' => $memberSince,
+            'pageStyles' => ['user-public.css'],
+            'pageClass' => 'is-light-page',
         ]);
     }
 }

@@ -64,10 +64,10 @@
 }
 
 /* ==================================================
-   BOOK DETAIL – OVERRIDE FOND GLOBAL
+   PAGE – LIGHT BACKGROUND
    ================================================== */
 
-.site-wrapper.is-book-detail {
+.site-wrapper.is-light-page {
     background-color: #FDFCF9;
 }
 
