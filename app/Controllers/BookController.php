@@ -95,7 +95,7 @@ class BookController extends Controller
         $this->render('book/show', [
             'book' => $book,
             'pageStyles' => ['book-detail.css'],
-            'pageClass' => 'is-book-detail',
+            'pageClass' => 'is-light-page',
         ]);
     }
 
