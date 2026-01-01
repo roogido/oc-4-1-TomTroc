@@ -42,7 +42,7 @@ class AvatarUploader
 
         return FileUploader::upload(
             $file,
-            __DIR__ . '/../../public/assets/images/avatars',
+            __DIR__ . '/../../public' . User::AVATAR_UPLOAD_DIR,
             'avatar_',
             $oldFile
         );

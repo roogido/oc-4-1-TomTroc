@@ -5,13 +5,39 @@
  * Gère les interactions communes côté front-end (ex. menu mobile).
  *
  * Auteur : Salem Hadjali
- * Date   : Dimanche 21 décembre 2025
+ * Date   : 21 décembre 2025
+ * Maj    : 1er janvier 2026
+ * 
  */
 
 
+/**
+ * Gère les changements sur les champs input de type file.
+ * - Affiche le nom du fichier sélectionné si présent
+ * - Déclenche l’upload immédiat de l’avatar sur la page compte
+ */
+document.addEventListener('change', async (e) => {
+    const input = e.target;
+
+    if (!input.matches('.form-file-input')) {
+        return;
+    }
+
+    // --- CAS 1 : affichage du nom de fichier (register, book, etc.)
+    const fileNameContainer = input.closest('.form-group')?.querySelector('.form-file-name');
+    if (fileNameContainer) {
+        const fileName = input.files[0]?.name || 'Aucun fichier sélectionné';
+        fileNameContainer.textContent = fileName;
+    }
+
+    // --- CAS 2 : avatar account (upload immédiat)
+    if (input.id === 'avatar' && input.closest('.account-avatar-form')) {
+        await handleAvatarUpload(input);
+    }
+});
 
 /**
- * Initialise le menu mobile (burger).
+ * IIFE - Initialise le menu mobile (burger).
  *
  * - Ouvre / ferme le menu
  * - Met à jour aria-expanded
@@ -80,5 +106,253 @@
     handleResize();
 })();
 
+/**
+ * IIFE - Upload immédiatement un nouvel avatar utilisateur.
+ * Met à jour l’aperçu et envoie le fichier au backend via AJAX.
+ *
+ * @param {HTMLInputElement} input Champ file contenant l’avatar sélectionné
+ */
+async function handleAvatarUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const accountAvatar = document.getElementById('account-avatar-img');
+    const headerAvatar  = document.getElementById('header-avatar-img');
+
+    // Preview immédiat (UX)
+    if (accountAvatar) {
+        accountAvatar.src = URL.createObjectURL(file);
+    }
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+        const response = await fetch('/account/avatar', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        let data;
+        try {
+            data = await response.json();
+        } catch {
+            throw new Error('Réponse serveur invalide');
+        }
+
+        if (!response.ok || !data.success || !data.avatarPath) {
+            throw new Error(data?.message || 'Erreur inconnue');
+        }
+
+        console.log(data.avatarPath);
+        // Sync avatar account (sécurité cache)
+        if (accountAvatar) {
+            accountAvatar.src = data.avatarPath + '?v=' + Date.now();
+        }
+
+        // Sync avatar header
+        if (headerAvatar) {
+            headerAvatar.src = data.avatarPath + '?v=' + Date.now();
+        }
+
+        showAccountMessage(
+            'success',
+            'Votre avatar a été mis à jour avec succès.'
+        );
+
+    } catch (error) {
+        console.error(error);
+
+        showAccountMessage(
+            'error',
+            'Une erreur est survenue lors de la mise à jour de votre avatar.'
+        );
+    }
+}
+
+/**
+ * Password visibility toggle.
+ *
+ * Gère l’affichage / masquage du mot de passe pour les champs `input[type="password"]`
+ * associés à un bouton `data-password-toggle`.
+ * - Le bouton n’apparaît que si une valeur réelle est saisie (hors placeholder).
+ * - Le champ repasse automatiquement en mode masqué si la valeur est effacée.
+ * - Accessibilité assurée via `aria-label` et `aria-pressed`.
+ *
+ * Utilisé dans les vues : login, register, account.
+ */
+(() => {
+    'use strict';
+
+    const SELECTOR = '[data-password-toggle]';
+
+    const getInput = (btn) => {
+        const wrapper = btn.closest('.password-field');
+        if (!wrapper) return null;
+        return wrapper.querySelector('input[type="password"], input[type="text"]');
+    };
+
+    const setButtonVisibility = (btn, input) => {
+        const hasValue = input.value.trim().length > 0; // placeholder ne compte pas
+        btn.classList.toggle('is-visible', hasValue);
+
+        // Si l’utilisateur efface, on repasse en mode masqué
+        if (!hasValue && input.type === 'text') {
+            input.type = 'password';
+            btn.setAttribute('aria-pressed', 'false');
+            btn.setAttribute('aria-label', 'Afficher le mot de passe');
+        }
+    };
+
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest(SELECTOR);
+        if (!btn) return;
+
+        const input = getInput(btn);
+        if (!input) return;
+
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+
+        btn.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+        btn.setAttribute('aria-label', isHidden ? 'Masquer le mot de passe' : 'Afficher le mot de passe');
+    });
+
+    document.addEventListener('input', (e) => {
+        const input = e.target;
+        if (!(input instanceof HTMLInputElement)) return;
+        if (input.type !== 'password' && input.type !== 'text') return;
+
+        const wrapper = input.closest('.password-field');
+        if (!wrapper) return;
+
+        const btn = wrapper.querySelector(SELECTOR);
+        if (!btn) return;
+
+        setButtonVisibility(btn, input);
+    });
+
+    // Init au chargement (cas: old values / autofill)
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll(SELECTOR).forEach((btn) => {
+            const input = getInput(btn);
+            if (!input) return;
+            setButtonVisibility(btn, input);
+        });
+    });
+})();
+
+/**
+ * Gère l’aperçu d’une image sélectionnée via un champ fichier.
+ */
+
+(() => {
+    'use strict';
+
+    const fileInput = document.getElementById('image');
+    const previewImg = document.getElementById('book-image-preview');
+
+    if (!fileInput || !previewImg) {
+        return;
+    }
+
+    fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            previewImg.src = e.target.result;
+        };
+
+        reader.readAsDataURL(file);
+    });
+})();
+
+/**
+ * Gère la confirmation de suppression via une modale avant soumission de formulaire.
+ */
+(() => {
+    'use strict';
+
+    const modal = document.getElementById('confirm-modal');
+    if (!modal) {
+        return;
+    }
+
+    let pendingForm = null;
+
+    document.addEventListener('click', (e) => {
+        const deleteForm = e.target.closest('.js-confirm-delete');
+        if (!deleteForm) {
+            return;
+        }
+
+        e.preventDefault();
+        pendingForm = deleteForm;
+
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+    });
+
+    modal.querySelector('[data-confirm-cancel]').addEventListener('click', () => {
+        pendingForm = null;
+        closeModal();
+    });
+
+    modal.querySelector('[data-confirm-ok]').addEventListener('click', () => {
+        if (pendingForm) {
+            pendingForm.submit();
+        }
+    });
+
+    function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+})();
+
+/**
+ * Affiche un message global dans la page compte
+ * @param {'error'|'success'} type
+ * @param {string} message
+ */
+function showAccountMessage(type, message) {
+    const container = document.querySelector('.account-page');
+    if (!container) return;
+
+    // Supprime tous les messages existants
+    container.querySelectorAll('.alert').forEach(el => el.remove());
+
+    const div = document.createElement('div');
+    div.className = `alert alert-${type}`;
+    div.setAttribute('role', 'alert');
+
+    div.innerHTML = `
+        <button type="button" class="alert-close" aria-label="Fermer le message">
+            &times;
+        </button>
+        <p>${message}</p>
+    `;
+
+    const title = container.querySelector('h1');
+    title.after(div);
+
+    // Fermeture manuelle
+    div.querySelector('.alert-close').addEventListener('click', () => {
+        div.remove();
+    });
+}
 
 

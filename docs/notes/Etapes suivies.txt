@@ -1558,8 +1558,9 @@
 				git branch
 				git branch -r
 
-	11) FEATURE ENREGISTREMENT UTILISATEUR (REGISTER)
-	=================================================
+
+	11) FEATURE AUTH UI (LOGIN / REGISTER)
+	=====================================
 
 		BRANCHE
 		-------
@@ -1568,4 +1569,105 @@
 			git fetch --prune
 			git branch
 			git branch -r
-			
+
+		OBJECTIF
+		--------
+			Harmoniser et fiabiliser les interfaces d’authentification :
+				- Alignement visuel avec les maquettes Figma
+				- Mutualisation des composants UI
+				- Amélioration de l’accessibilité et de la lisibilité
+				- Préparation à l’évolution future du design system
+				- Mise en place du rendu des vues (book) add/edit
+				- Modale de confirmation
+				- Scripts (functions dans main.js) js associés 
+
+		A) PAGES CONCERNÉES
+		------------------
+			Vues :
+				- views/auth/register.php
+				- views/auth/login.php
+
+			Rôle :
+				- Inscription utilisateur
+				- Connexion utilisateur
+				- Affichage clair des erreurs et messages système
+
+		B) STRUCTURE UI COMMUNE
+		-----------------------
+			Changements :
+				- Structure de formulaire unifiée (wrappers, classes)
+				- Champs cohérents entre login et register
+				- Boutons et messages harmonisés
+
+			Objectif :
+				- Réduction de la duplication HTML
+				- Meilleure maintenabilité
+				- Comportement visuel homogène
+
+		C) CSS & COMPOSANTS
+		-------------------
+			Actions :
+				- Centralisation des règles CSS communes
+				- Réutilisation des composants (inputs, boutons, alerts)
+				- Suppression des styles spécifiques redondants
+
+		D) ACCESSIBILITÉ & UX
+		---------------------
+			Améliorations :
+				- Meilleure gestion des erreurs
+				- Labels explicites
+				- Structure compatible navigation clavier / lecteurs d’écran
+
+		E) ALIGNEMENT FIGMA
+		-------------------
+			Principes :
+				- Layout conforme aux maquettes
+				- Espacements et hiérarchie visuelle respectés
+				- Anticipation responsive (desktop / mobile)
+
+		F) NON-RÉGRESSION
+		-----------------
+			Garantie :
+				- Aucun changement fonctionnel
+				- Aucun impact sur la logique backend
+				- Authentification inchangée côté PHP
+
+		G) VERSIONING GIT / GITHUB
+		--------------------------
+			git status
+			git add .
+			git commit -m "feat(ui): refactor auth views for UI consistency
+
+			- Unified login and register form structure
+			- Centralized shared UI components and CSS
+			- Improved accessibility and error display
+			- Aligned layouts with Figma designs
+			- No functional regression
+			"
+
+			git push origin feature/figma-auth-register
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Vérifier les vues login / register
+				- Merger dans main
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/figma-auth-register
+				git branch
+				git branch -r
+
+
+	12) FEATURE MESSAGERIE 
+	======================
+
+		BRANCHE
+		-------
+			git checkout -b feature/figma-messaging-ui
+			# Nettoie les références distantes supprimées
+			git fetch --prune
+			git branch
+			git branch -r			

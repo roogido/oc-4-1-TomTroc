@@ -114,6 +114,5 @@ class FileUploader
 
         // Retourne le nom du fichier enregistré
         return $fileName;
-
     }
 }

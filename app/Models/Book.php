@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        12 décembre 2025
- * Maj :         20 décembre 2025
+ * Maj :         1er janvier 2026
  *
  * @category     Models
  * @package      App\Models
@@ -28,7 +28,8 @@ class Book
     public const STATUS_AVAILABLE   = 'available';
     public const STATUS_UNAVAILABLE = 'unavailable';
 
-    public const DEFAULT_IMAGE = '/uploads/books/book-default.webp';
+    public const IMAGE_UPLOAD_DIR = 'uploads/books';
+    public const DEFAULT_IMAGE    = 'uploads/books/book-default.webp';
 
 
     private ?int $id = null;
@@ -133,11 +134,7 @@ class Book
      */
     public function getImagePathOrDefault(): string
     {
-        if (!empty($this->imagePath)) {
-            return '/' . ltrim($this->imagePath, '/');
-        }
-
-        return self::DEFAULT_IMAGE;
+        return $this->imagePath ?: self::DEFAULT_IMAGE;
     }
 
     // ---------

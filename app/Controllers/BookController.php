@@ -10,7 +10,7 @@
  * PHP version 8.2.12
  *
  * Date :        13 décembre 2025
- * Maj :         26 décembre 2025
+ * Maj :         1er janvier 2026
  *
  * @category     Controllers
  * @package      App\Controllers
@@ -113,7 +113,13 @@ class BookController extends Controller
         }
 
         $this->setPageTitle('Ajouter un livre');
-        $this->render('book/add');
+        $this->render('book/add', [
+            'allowImageEdit' => true,
+            'showStatus'     => false,
+            'submitLabel'    => 'Ajouter le livre',
+            'pageStyles' => ['book-form.css'],        
+            'pageClass' => 'is-light-page',            
+        ]);
     }
 
     /**
@@ -132,44 +138,44 @@ class BookController extends Controller
             throw new HttpForbiddenException('Accès refusé.');
         }
 
-        // Récupération et nettoyage des données du formulaire
+        // Récupération et nettoyage des données
         $title       = trim($_POST['title'] ?? '');
         $author      = trim($_POST['author'] ?? '');
         $description = trim($_POST['description'] ?? '');
-        $status      = $_POST['status'] ?? Book::STATUS_AVAILABLE;
+
+        // Statut par défaut (non soumis par le formulaire)
+        $status = Book::STATUS_AVAILABLE;
 
         $errors = [];
 
         // Validation des champs obligatoires
+        // Validation titre
         if ($title === '') {
-            $errors[] = 'Le titre est obligatoire.';
+            $errors['title'] = 'Le titre est obligatoire.';
         }
+
+        // Validation auteur
         if ($author === '') {
-            $errors[] = 'L’auteur est obligatoire.';
+            $errors['author'] = 'L’auteur est obligatoire.';
         }
+
+        // Validation description
         if ($description === '') {
-            $errors[] = 'La description est obligatoire.';
+            $errors['description'] = 'La description est obligatoire.';
         }
-
-        // Validation du statut métier
-        if (! in_array($status, [Book::STATUS_AVAILABLE, Book::STATUS_UNAVAILABLE], true)) {
-            $errors[] = 'Statut invalide.';
-        }
-
+ 
         // En cas d’erreurs, stockage en session et réaffichage du formulaire
-        if (! empty($errors)) {
-            foreach ($errors as $e) {
-                Session::addFlash('error', $e);
-            }
+        if (!empty($errors)) {
 
-            // Conservation des valeurs saisies
-            Session::addFlash('old', [
-                'title'       => $title,
-                'author'      => $author,
-                'description' => $description,
-                'status'      => $status,
-            ]);
+            Session::addFlash(
+                'error',
+                'Données invalides. Veuillez corriger les champs en erreur.'
+            );
 
+            Session::addFlash('error', $errors);
+            Session::addFlash('old', $_POST);
+
+            $this->setPageTitle('Ajouter un livre');
             $this->render('book/add');
             return;
         }
@@ -315,8 +321,14 @@ class BookController extends Controller
         }
 
         $this->setPageTitle('Modifier un livre');
+
         $this->render('book/edit', [
             'book' => $book,
+            'allowImageEdit' => true,
+            'showStatus'     => true,
+            'submitLabel'    => 'Enregistrer les modifications',
+            'pageStyles' => ['book-form.css'],        
+            'pageClass' => 'is-light-page',            
         ]);
     }
 
@@ -348,6 +360,7 @@ class BookController extends Controller
             throw new HttpForbiddenException('Ce livre ne vous appartient pas.');
         }
 
+        // Récupération et nettoyage des données
         $title       = trim($_POST['title'] ?? '');
         $author      = trim($_POST['author'] ?? '');
         $description = trim($_POST['description'] ?? '');
@@ -355,27 +368,73 @@ class BookController extends Controller
 
         $errors = [];
 
+        // Validation des champs obligatoires
+        // Validation titre
         if ($title === '') {
-            $errors[] = 'Le titre est obligatoire.';
+            $errors['title'] = 'Le titre est obligatoire.';
         }
+
+        // Validation auteur
         if ($author === '') {
-            $errors[] = 'L’auteur est obligatoire.';
+            $errors['author'] = 'L’auteur est obligatoire.';
         }
+
+        // Validation description
         if ($description === '') {
-            $errors[] = 'La description est obligatoire.';
+            $errors['description'] = 'La description est obligatoire.';
         }
 
         if (! in_array($status, [Book::STATUS_AVAILABLE, Book::STATUS_UNAVAILABLE], true)) {
-            $errors[] = 'Statut invalide.';
+            $errors['status'] = 'Statut invalide.';
+        }    
+
+        // En cas d’erreurs, stockage en session et réaffichage du formulaire
+        if (!empty($errors)) {
+
+            Session::addFlash(
+                'error',
+                'Données invalides. Veuillez corriger les champs en erreur.'
+            );
+
+            Session::addFlash('error', $errors);
+            Session::addFlash('old', $_POST);
+
+            $this->setPageTitle('Modifier un livre');
+            $this->render('book/edit', [
+                'book' => $book,
+            ]);
+
+            return;
         }
 
-        if (! empty($errors)) {
-            foreach ($errors as $e) {
-                Session::addFlash('error', $e);
-            }
+        // Gestion de l’image (optionnelle en édition)
+        if (! empty($_FILES['image']['name'])) {
+            try {
+                $oldImagePath = $book->getImagePath();
 
-            header("Location: /book/{$id}/edit");
-            exit;
+                // Upload de la nouvelle image
+                $newImage = FileUploader::upload(
+                    $_FILES['image'],
+                    __DIR__ . '/../../public/' . Book::IMAGE_UPLOAD_DIR,
+                    'book_'
+                );
+
+                // Chemin relatif pour la BDD
+                $imagePath =  Book::IMAGE_UPLOAD_DIR . '/' . $newImage;
+
+                // Mise à jour de l'image dans l'objet Book
+                $book->setImagePath($imagePath);        
+
+            } catch (\RuntimeException $e) {
+                Session::addFlash('error', $e->getMessage());
+                Session::addFlash('old', $_POST);
+
+                $this->setPageTitle('Modifier un livre');
+                $this->render('book/edit', [
+                    'book' => $book,
+                ]);
+                return;
+            }
         }
 
         $book->setTitle($title);
@@ -384,6 +443,11 @@ class BookController extends Controller
         $book->setStatus($status);
 
         $this->books->update($book);
+
+        // Suppression de l'ancienne image
+        if ($oldImagePath !== null) {
+            $this->deleteBookImageIfNeeded($oldImagePath);          
+        }
 
         Session::addFlash('success', 'Livre modifié avec succès.');
         header('Location: /account');
@@ -418,10 +482,40 @@ class BookController extends Controller
             throw new HttpForbiddenException('Ce livre ne vous appartient pas.');
         }
 
+        // Suppression de l'ancienne image du livre
+        $imagePath = $book->getImagePath();
+        $this->deleteBookImageIfNeeded($imagePath);
+
+        // Suppression du livre en BDD
         $this->books->delete($id);
 
         Session::addFlash('success', 'Livre supprimé.');
         header('Location: /account');
         exit;
     }
+
+    /**
+     * Supprime le fichier image associé à un livre s’il existe.
+     *
+     * @param string|null $imagePath Chemin relatif de l'image à supprimer.
+     * @return void
+     */
+    private function deleteBookImageIfNeeded(?string $imagePath): void
+    {
+        if ($imagePath === null || $imagePath === '') {
+            return;
+        }
+
+        $publicDir = realpath(__DIR__ . '/../../public');
+        if ($publicDir === false) {
+            return;
+        }
+
+        $fullPath = $publicDir . DIRECTORY_SEPARATOR . ltrim($imagePath, '/');
+
+        if (is_file($fullPath)) {
+            unlink($fullPath);
+        }
+    }
+
 }

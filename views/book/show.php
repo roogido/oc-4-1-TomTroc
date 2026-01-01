@@ -23,7 +23,7 @@
                 <?php endif; ?>
 
                 <img
-                    src="<?= htmlspecialchars($book->getImagePathOrDefault()) ?>"
+                    src="/<?= htmlspecialchars($book->getImagePathOrDefault()) ?>"
                     alt="<?= htmlspecialchars($book->getTitle()) ?>"
                 >
             </div>
