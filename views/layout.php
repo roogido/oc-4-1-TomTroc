@@ -14,13 +14,13 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     <title><?= htmlspecialchars($pageTitle ?? 'Tom Troc') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Fonts : Inter (poids nécessaires à la maquette) -->
+    <!-- Google Fonts : Inter + Playfair Display -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Playfair+Display:wght@400;500;600&display=swap"
         rel="stylesheet"
-    >    
+    >
 
     <link rel="stylesheet" href="/assets/css/reset.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
@@ -107,10 +107,12 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                                 <img
                                     src="<?= htmlspecialchars($currentUser->getAvatarPath()); ?>"
                                     alt="Avatar de <?= htmlspecialchars($currentUser->getPseudo()); ?>"
-                                    class="avatar"
+                                    class="avatar avatar--header"
                                     width="40"
                                     height="40"
+                                    id="header-avatar-img"
                                 >
+
                                 <span>Mon compte</span>
                             </a>
                         </li>
@@ -280,7 +282,8 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         </footer>
     </div>
 
-    
+    <?php require __DIR__ . '/partials/confirm-modal.php'; ?>
+
     <script src="/assets/js/main.js"></script>
 </body>
 </html>

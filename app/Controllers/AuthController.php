@@ -11,7 +11,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         17 décembre 2025
+ * Maj :         29 décembre 2025
  *
  * @category     Controllers
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -67,7 +67,10 @@ class AuthController extends Controller
         }
 
         $this->setPageTitle('Inscription');
-        $this->render('auth/register');
+        $this->render('auth/register', [
+            'pageStyles' => ['auth.css'],
+            'pageClass' => 'is-light-page',
+        ]);
     }
 
     /**
@@ -98,43 +101,35 @@ class AuthController extends Controller
 
         // Validation du pseudo
         if ($pseudo === '') {
-            $errors[] = "Le pseudo est obligatoire.";
+            $errors['pseudo'] = 'Le pseudo est requis.';
+        } elseif ($this->users->findByPseudo($pseudo)) {
+            $errors['pseudo'] = "Ce pseudo est déjà pris.";
         }
 
         // Validation du format de l'email
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = "Adresse email invalide.";
+            $errors['email'] = 'Adresse email invalide.';
+        } elseif ($this->users->findByEmail($email)) {
+            $errors['email'] = "Cet email est déjà utilisé.";
         }
 
         // Validation de la longueur du mot de passe
         if ($password === '' || strlen($password) < 6) {
-            $errors[] = "Le mot de passe doit contenir au moins 6 caractères.";
+            $errors['password'] = "Minimum 6 caractères requis.";
         }
 
-        // Vérifie l'unicité de l'email en base
-        if ($this->users->findByEmail($email)) {
-            $errors[] = "Cet email est déjà utilisé.";
-        }
-
-        // Vérifie l'unicité du pseudo en base
-        if ($this->users->findByPseudo($pseudo)) {
-            $errors[] = "Ce pseudo est déjà pris.";
-        }
-
-        // En cas d'erreurs, on affiche les messages et on stoppe le traitement
+        // En cas d'erreurs, on place les messages d'ereur en flash
         if (!empty($errors)) {
-            foreach ($errors as $err) {
-                Session::addFlash('error', $err);
-            }
 
-            // Conservation des valeurs saisies pour le formulaire
+            Session::addFlash('error', $errors);
+
             Session::addFlash('old', [
                 'pseudo' => $pseudo,
                 'email'  => $email,
             ]);
 
-            $this->render('auth/register');
-            return;
+            header('Location: /register');
+            exit;
         }
 
         // Chemin de l'avatar utilisateur (optionnel)
@@ -187,7 +182,10 @@ class AuthController extends Controller
         }
 
         $this->setPageTitle('Connexion');
-        $this->render('auth/login');
+        $this->render('auth/login', [
+            'pageStyles' => ['auth.css'],
+            'pageClass' => 'is-light-page',
+        ]);    
     }
 
     /**
@@ -203,49 +201,54 @@ class AuthController extends Controller
      */
     public function login(): void
     {
+        // Empêche la connexion si l'utilisateur est déjà connecté
         if (Session::isLogged()) {
             throw new HttpForbiddenException("Vous êtes déjà connecté.");
         }
 
-        $email    = trim($_POST['email']    ?? '');
+        // Récupération et nettoyage des données
+        $email    = trim($_POST['email'] ?? '');
         $password = trim($_POST['password'] ?? '');
 
+        // Tableau d'erreurs par champ
         $errors = [];
 
+        // Validation email
         if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = "Adresse email invalide.";
+            $errors['email'] = 'Adresse email invalide.';
         }
 
+        // Validation mot de passe
         if ($password === '') {
-            $errors[] = "Le mot de passe est obligatoire.";
+            $errors['password'] = 'Le mot de passe est requis.';
         }
 
+        // Erreurs de validation
         if (!empty($errors)) {
-            foreach ($errors as $err) {
-                Session::addFlash('error', $err);
-            }
-
+            Session::addFlash('error', $errors);
             Session::addFlash('old', ['email' => $email]);
 
-            $this->render('auth/login');
-            return;
+            header('Location: /login');
+            exit;
         }
 
         // Vérification des identifiants
         $user = $this->users->verifyCredentials($email, $password);
 
         if (!$user) {
-            Session::addFlash('error', "Identifiants incorrects.");
+            // Erreur globale (pas liée à un champ précis)
+            Session::addFlash('error', 'Identifiants incorrects.');
             Session::addFlash('old', ['email' => $email]);
-            $this->render('auth/login');
-            return;
+
+            header('Location: /login');
+            exit;
         }
 
-        // Auth OK : on enregistre en session
+        // Authentification OK
         Session::set('user_id', $user->getId());
 
-        Session::addFlash('success', "Connexion réussie !");
-        header('Location: /account'); // Redirige vers la page Mon Compte
+        Session::addFlash('success', 'Connexion réussie !');
+        header('Location: /account');
         exit;
     }
 

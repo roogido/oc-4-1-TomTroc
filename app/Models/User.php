@@ -8,7 +8,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         20 décembre 2025
+ * Maj :         30 décembre 2025
  *
  * @category     Models
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -23,6 +23,7 @@ namespace App\Models;
 
 class User
 {
+    public const AVATAR_UPLOAD_DIR = '/uploads/avatars/';
     public const DEFAULT_AVATAR = '/uploads/avatars/avatar-default.webp';
 
     private ?int $id = null;
@@ -100,8 +101,11 @@ class User
     /**
      * Retourne le chemin public de l’avatar prêt pour l’affichage.
      *
-     * Si l’utilisateur possède un avatar personnalisé, l’URL publique complète
-     * est générée. Sinon, le chemin vers l’avatar par défaut est retourné.
+     * Si l’utilisateur possède un avatar personnalisé et que le fichier existe
+     * réellement sur le disque, l’URL publique correspondante est retournée.
+     * Dans le cas contraire (avatar manquant, supprimé ou invalide), le chemin
+     * vers l’avatar par défaut est utilisé.
+     *
      * Cette méthode est destinée exclusivement aux vues et à l’affichage HTML.
      *
      * @return string URL publique de l’avatar.
@@ -109,11 +113,16 @@ class User
     public function getAvatarPath(): string
     {
         if (!empty($this->avatarPath)) {
-            return '/uploads/avatars/' . ltrim($this->avatarPath, '/');
+            $relativePath = self::AVATAR_UPLOAD_DIR . '/' . ltrim($this->avatarPath, '/');
+            $absolutePath = $_SERVER['DOCUMENT_ROOT'] . $relativePath;
+
+            if (is_file($absolutePath)) {
+                return $relativePath;
+            }
         }
 
         return self::DEFAULT_AVATAR;
-    }  
+    }
 
     // Retourne le mot de passe déjà hashé (jamais le mot de passe en clair)
     public function getPasswordHash(): string
