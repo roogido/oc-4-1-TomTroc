@@ -1,11 +1,11 @@
-<main class="page page-static">
+<div class="page page-static">
     <div class="page-inner">
 
         <header class="page-header">
-            <h1>Mentions légales</h1>
+            <h1 class="page-title">Mentions légales</h1>
         </header>
 
-        <section class="page-content">
+        <div class="page-content">
             <p>
                 Tom Troc© — Association à but non lucratif.
             </p>
@@ -17,7 +17,7 @@
             <p>
                 Hébergement : environnement de développement local.
             </p>
-        </section>
+        </div>
 
     </div>
-</main>
+</div>

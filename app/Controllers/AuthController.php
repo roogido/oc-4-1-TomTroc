@@ -11,14 +11,14 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         29 décembre 2025
+ * Maj :         3 janvier 2026
  *
  * @category     Controllers
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
  * @version      1.0.0
  * @since        1.0.0
  * @see          App\Repositories\UserRepository
- * @todo         Ajouter la validation avancée (regex pseudo, force du mot de passe)
+ * @todo         
  */
 
 
@@ -29,7 +29,10 @@ use App\Core\Controller;
 use App\Core\Session;
 use App\Core\HttpForbiddenException;
 use App\Repositories\UserRepository;
-use App\Models\User;
+use App\Service\Auth\AuthRegisterValidator;
+use App\Service\Auth\AuthRegistrationService;
+use App\Service\Auth\AuthLoginValidator;
+use App\Service\Auth\AuthAuthenticationService;
 
 
 class AuthController extends Controller
@@ -86,81 +89,49 @@ class AuthController extends Controller
      */
     public function register(): void
     {
-        // Empêche l'inscription si l'utilisateur est déjà connecté
         if (Session::isLogged()) {
             throw new HttpForbiddenException("Vous êtes déjà connecté.");
         }
 
-        // Récupération et nettoyage des données du formulaire
-        $pseudo   = trim($_POST['pseudo']   ?? '');
-        $email    = trim($_POST['email']    ?? '');
-        $password = trim($_POST['password'] ?? '');
+        // Validation
+        $validator = new AuthRegisterValidator($this->users);
+        $result    = $validator->validate($_POST);
 
-        // Tableau collectant les erreurs de validation
-        $errors = [];
-
-        // Validation du pseudo
-        if ($pseudo === '') {
-            $errors['pseudo'] = 'Le pseudo est requis.';
-        } elseif ($this->users->findByPseudo($pseudo)) {
-            $errors['pseudo'] = "Ce pseudo est déjà pris.";
-        }
-
-        // Validation du format de l'email
-        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'Adresse email invalide.';
-        } elseif ($this->users->findByEmail($email)) {
-            $errors['email'] = "Cet email est déjà utilisé.";
-        }
-
-        // Validation de la longueur du mot de passe
-        if ($password === '' || strlen($password) < 6) {
-            $errors['password'] = "Minimum 6 caractères requis.";
-        }
-
-        // En cas d'erreurs, on place les messages d'ereur en flash
-        if (!empty($errors)) {
-
-            Session::addFlash('error', $errors);
-
+        if (!empty($result['errors'])) {
+            Session::addFlash('error', $result['errors']);
             Session::addFlash('old', [
-                'pseudo' => $pseudo,
-                'email'  => $email,
+                'pseudo' => $result['data']['pseudo'],
+                'email'  => $result['data']['email'],
             ]);
 
             header('Location: /register');
             exit;
         }
 
-        // Chemin de l'avatar utilisateur (optionnel)
-        $avatarPath = null;
-
+        // Upload avatar (optionnel, non bloquant)
+        $avatar = null;
         try {
-            // Upload de l'avatar si un fichier est fourni
-            if (isset($_FILES['avatar'])) {
-                $avatarPath = AvatarUploader::upload($_FILES['avatar']);
+            if (!empty($_FILES['avatar'])) {
+                $avatar = AvatarUploader::upload($_FILES['avatar']);
             }
         } catch (\RuntimeException $e) {
-            // Gestion d'erreur d'upload sans bloquer l'inscription
             Session::addFlash('error', $e->getMessage());
         }
 
-        // Hashage sécurisé du mot de passe
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        // Création utilisateur
+        $service = new AuthRegistrationService($this->users);
+        $service->register(
+            $result['data']['pseudo'],
+            $result['data']['email'],
+            $result['data']['password'],
+            $avatar
+        );
 
-        // Instanciation de l'entité User
-        $user = new User($pseudo, $email, $passwordHash, $avatarPath);
-
-        // Persistance de l'utilisateur en base
-        $this->users->create($user);
-
-        // Message de confirmation
         Session::addFlash(
             'success',
             "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter."
         );
 
-        // Redirection vers la page de connexion
         header('Location: /login');
         exit;
     }
@@ -206,45 +177,34 @@ class AuthController extends Controller
             throw new HttpForbiddenException("Vous êtes déjà connecté.");
         }
 
-        // Récupération et nettoyage des données
-        $email    = trim($_POST['email'] ?? '');
-        $password = trim($_POST['password'] ?? '');
+        // Validation des données
+        $validator = new AuthLoginValidator();
+        $result    = $validator->validate($_POST);
 
-        // Tableau d'erreurs par champ
-        $errors = [];
-
-        // Validation email
-        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = 'Adresse email invalide.';
-        }
-
-        // Validation mot de passe
-        if ($password === '') {
-            $errors['password'] = 'Le mot de passe est requis.';
-        }
-
-        // Erreurs de validation
-        if (!empty($errors)) {
-            Session::addFlash('error', $errors);
-            Session::addFlash('old', ['email' => $email]);
+        if (!empty($result['errors'])) {
+            Session::addFlash('error', $result['errors']);
+            Session::addFlash('old', ['email' => $result['email']]);
 
             header('Location: /login');
             exit;
         }
 
-        // Vérification des identifiants
-        $user = $this->users->verifyCredentials($email, $password);
-
-        if (!$user) {
-            // Erreur globale (pas liée à un champ précis)
-            Session::addFlash('error', 'Identifiants incorrects.');
-            Session::addFlash('old', ['email' => $email]);
+        // Authentification
+        try {
+            $authService = new AuthAuthenticationService($this->users);
+            $user = $authService->authenticate(
+                $result['email'],
+                $result['password']
+            );
+        } catch (\RuntimeException $e) {
+            Session::addFlash('error', $e->getMessage());
+            Session::addFlash('old', ['email' => $result['email']]);
 
             header('Location: /login');
             exit;
         }
 
-        // Authentification OK
+        // Connexion réussie
         Session::set('user_id', $user->getId());
 
         Session::addFlash('success', 'Connexion réussie !');

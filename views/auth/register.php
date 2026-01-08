@@ -1,23 +1,12 @@
 <?php
 /* VUE REGISTER (INSCRIPTION) */
 
-use App\Core\Session;
+use App\View\FlashHelper;
 
-// Récupération des données flash en Session
-$errorsAll = Session::getFlashes('error');
-$success  = Session::getFlashes('success');
-$oldAll   = Session::getFlashes('old');
-
-/*
- * Convention :
- * - $errors : tableau associatif par champ
- * - $old    : valeurs précédemment saisies
- */
-$errors = $errorsAll[0] ?? [];
-$old    = $oldAll[0] ?? [];
-
-$isFieldErrors = is_array($errors);
-$isGlobalError = !empty($errorsAll) && !$isFieldErrors;
+// Récupération des messages flash normalisés :
+//  - (erreurs globales, erreurs par champ, anciennes valeurs, succès)
+//  extract() : créer automatiquement les variables utilisables directement dans la vue
+extract(FlashHelper::extract());
 ?>
 
 <section class="auth-page auth-register">
@@ -28,25 +17,8 @@ $isGlobalError = !empty($errorsAll) && !$isFieldErrors;
 
             <h1 class="page-title">Inscription</h1>
 
-            <!-- ===== Global errors (fallback) ===== -->
-            <?php if ($isGlobalError) : ?>
-                <div class="alert alert-error" role="alert">
-                    <ul>
-                        <?php foreach ($errorsAll as $e) : ?>
-                            <li><?= htmlspecialchars($e) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
-
-            <!-- ===== Success messages ===== -->
-            <?php if (!empty($success)) : ?>
-                <div class="alert alert-success" role="status">
-                    <?php foreach ($success as $msg) : ?>
-                        <p><?= htmlspecialchars($msg) ?></p>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+            <!-- ===== Alertes : success/errors  ===== -->
+            <?php require __DIR__ . '/../partials/alerts.php'; ?>
 
             <form method="post" action="/register" enctype="multipart/form-data" novalidate>
 

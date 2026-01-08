@@ -1661,8 +1661,8 @@
 				git branch -r
 
 
-	12) FEATURE MESSAGERIE 
-	======================
+	12) FEATURE MESSAGERIE (UI FIGMA)
+	================================
 
 		BRANCHE
 		-------
@@ -1670,4 +1670,92 @@
 			# Nettoie les références distantes supprimées
 			git fetch --prune
 			git branch
-			git branch -r			
+			git branch -r
+
+		OBJECTIF
+		--------
+			Finaliser l’intégration UI Figma de la messagerie
+			et consolider l’architecture UI / contrôleurs.
+
+		A) UI LIVRES (ADD / EDIT)
+		-------------------------
+			- Intégration complète UI Figma
+			- Layout responsive (desktop / tablette / mobile)
+			- Formulaire mutualisé :
+				views/book/_book-form.php
+			- CSS commun centralisé :
+				assets/css/components.css
+			- CSS spécifique isolé par page
+			- Modale de confirmation custom (sans confirm natif)
+			- Gestion fiable des images :
+				upload / preview / suppression
+			- Messages flash normalisés (FlashHelper)
+
+		B) REFACTOR CONTROLLERS
+		-----------------------
+			Contrôleurs concernés :
+				- BookController
+				- AccountController
+				- AuthController
+
+			Actions :
+				- Allègement des contrôleurs
+				- Validation déplacée hors contrôleurs
+				- Logique métier déplacée dans des services
+				- Respect strict MVC + Services
+
+			Rôle final des contrôleurs :
+				- Lecture des entrées HTTP
+				- Appel des services
+				- Gestion des redirections et flashes
+
+		C) MESSAGERIE (UI)
+		------------------
+			- Nouvelle interface conforme Figma
+			- Layout responsive
+			- États vides améliorés
+			- Scroll maîtrisé des conversations et messages
+
+		D) STABILITÉ
+		------------
+			Aucun régression fonctionnelle :
+				- Authentification OK
+				- Compte utilisateur OK
+				- Livres (add / edit / delete) OK
+				- Messagerie OK
+				- Upload images OK
+				- Messages flash OK
+
+		E) VERSIONING GIT / GITHUB
+		--------------------------
+			git status
+			git add .
+			git commit -m "feat(ui): finalize messaging UI and refactor controllers"
+
+			git push origin feature/figma-messaging-ui
+
+			Sur GitHub :
+				- Créer la Pull Request
+				- Vérifier UI + responsive
+				- Merger dans main
+				- Supprimer la branche distante
+
+			En local :
+				git checkout main
+				git pull
+				git branch -d feature/figma-messaging-ui
+				git branch
+				git branch -r
+
+
+	13) FEATURE ADMIN FOUNDATION
+	============================
+
+		BRANCHE
+		-------
+			git checkout -b feature/admin-foundation
+			# Nettoie les références distantes supprimées
+			git fetch --prune
+			git branch
+			git branch -r
+

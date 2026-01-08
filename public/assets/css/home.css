@@ -30,12 +30,7 @@ main {
 }
 
 /* -------- LEFT -------- */
-
 .home-hero-left h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px;
-    font-weight: 400;
-    line-height: 1.2;
     margin: 0 0 32px;
 }
 
@@ -85,18 +80,12 @@ main {
 
 .home-last-books {
     background-color: #FAF9F7;
-    max-width: 1440px;
-    margin: 0 auto;
-    /* max-height: 620px;     */
-    padding: 80px 150px;  
+    padding: 80px 0;
     text-align: center;
 }
 
 /* Titre */
 .home-last-books h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 400;
     margin-bottom: 48px;
 }
 
@@ -105,11 +94,9 @@ main {
    ================================================== */
 
 .home-last-books-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 32px;
-    margin-bottom: 48px;
-}
+   max-width: 920px;
+   margin: 0 auto 48px;
+} 
 
 /* ==================================================
    CTA (Call To Action)
@@ -134,9 +121,6 @@ main {
 
 /* Titre */
 .home-how-it-works h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px;
-    font-weight: 400;
     margin-bottom: 16px;
 }
 
@@ -224,15 +208,10 @@ main {
 }
 
 .home-values h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px;
-    font-weight: 400;
     line-height: 1;
-
     width: 392px;
     margin: 0 auto 32px;
     text-align: left;
-
     color: #292929;
 }
 
@@ -348,8 +327,8 @@ main {
     }
 
     .home-last-books-grid {
-        grid-template-columns: repeat(2, auto);
-        justify-content: center;
+        grid-template-columns: repeat(2, 1fr);
+        justify-items: center;
         gap: 24px;
     }
 
@@ -448,33 +427,25 @@ main {
         object-fit: contain;
         object-position: center;
     }
+}
 
-    /* ---------- DERNIERS LIVRES ---------- */
+/* ==============================
+   <= 610px
+   ============================== */
+@media (max-width: 610px) {
     .home-last-books-grid {
-        grid-template-columns: repeat(2, auto);
-        justify-content: center;
+        grid-template-columns: repeat(2, 1fr);
         gap: 20px;
     }
-
-    /* Réduction supplémentaire (~ -25% total) */
-    .book-card {
-        max-width: 170px;
-    }  
 }
+
 
 /* ==============================
    <= 377px (ultra small)
    ============================== */
-@media (max-width: 377px) {
-
+@media (max-width: 372px) {
     .home-last-books-grid {
         grid-template-columns: 1fr;
-        max-width: 340px;
         justify-items: center;
-    }
-
-    .book-card img {
-        aspect-ratio: 3 / 4;
-        object-fit: cover;
     }
 }

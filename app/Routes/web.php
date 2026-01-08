@@ -16,7 +16,7 @@
  * PHP version 8.2.12
  *
  * Date :        15 décembre 2025
- * Maj :         18 décembre 2025
+ * Maj :         3 janvier 2026
  *
  * @category   Routes
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -74,7 +74,6 @@ $router->get('/books', [BookController::class, 'index']);
 $router->get('/book/add', [BookController::class, 'addForm']);
 $router->post('/book/add', [BookController::class, 'add']);
 
-$router->post('/book/{id}/image', [BookController::class, 'updateImage']);
 $router->get('/book/{id}/edit', [BookController::class, 'editForm']);
 $router->post('/book/{id}/edit', [BookController::class, 'edit']);
 $router->post('/book/{id}/delete', [BookController::class, 'delete']);
@@ -98,6 +97,7 @@ $router->get('/users/{id}', [UserController::class, 'show']);
 // ==================================================
 $router->get('/messages', [MessageController::class, 'inbox']);
 $router->post('/messages/send', [MessageController::class, 'send']);
+$router->get('/messages/new', [MessageController::class, 'new']);
 $router->get('/messages/{userId}', [MessageController::class, 'thread']);
 
 

@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date  :     7 décembre 2025
- * Maj   :     15 décembre 2025
+ * Maj   :     8 janvier 2026
  *
  * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -38,7 +38,13 @@ try {
     $router = new Router();
 
     // Chargement des routes
-    require __DIR__ . '/../app/Routes/web.php';
+    $routesFile = Config::get('app.paths.routes');
+
+    if (!file_exists($routesFile)) {
+        throw new RuntimeException('Routes file not found.');
+    }
+
+    require $routesFile;
 
     // Dispatch de la requête courante
     // Reçoit l'url et la méthode http (GET/POST)

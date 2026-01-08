@@ -13,7 +13,7 @@
  * PHP version 8.2.12
  *
  * Date :        17 décembre 2025
- * Maj :         19 décembre 2025
+ * Maj :         3 janvier 2026
  *
  * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -26,9 +26,18 @@
 namespace App\Core;
 
 use App\Models\User;
+use App\Service\Upload\FileUploader;
+
 
 class AvatarUploader
 {
+    /**
+     * Gère l’upload d’un avatar utilisateur et supprime l’ancien si nécessaire.
+     *
+     * @param array       $file      Données du fichier uploadé ($_FILES).
+     * @param string|null $oldAvatar Chemin de l’avatar précédent.
+     * @return string|null Chemin du nouvel avatar ou null si aucun fichier n’est fourni.
+     */
     public static function upload(array $file, ?string $oldAvatar = null): ?string
     {
         if (empty($file['name'])) {
@@ -40,12 +49,15 @@ class AvatarUploader
             ? $oldAvatar
             : null;
 
+        $uploadDir = Config::get('app.paths.avatar_uploads');
+
         return FileUploader::upload(
             $file,
-            __DIR__ . '/../../public' . User::AVATAR_UPLOAD_DIR,
+            $uploadDir,
             'avatar_',
             $oldFile
         );
-    }
+    }    
+
 }
 

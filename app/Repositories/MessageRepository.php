@@ -2,18 +2,22 @@
 /**
  * Class MessageRepository
  *
+ * Repository dédié à la gestion des messages privés entre utilisateurs.
+ * Centralise les opérations d’accès aux données liées aux conversations,
+ * aux fils de discussion et aux états de lecture.
  *
  * PHP version 8.2.12
  *
  * Date :        15 décembre 2025
- * Maj :         19 décembre 2025
+ * Maj :         6 janvier 2026
  *
  * @category     Repository
+ * @package      App\Repositories
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
  * @version      1.0.0
  * @since        1.0.0
- * @see          
- * @todo         
+ * @see          \PDO
+ * @todo         Optimiser certaines requêtes (index, pagination si nécessaire).
  */
 
 namespace App\Repositories;
@@ -37,6 +41,9 @@ class MessageRepository
 
     /**
      * Compte le nombre de messages non lus pour un utilisateur.
+     *
+     * @param int $userId Identifiant de l’utilisateur.
+     * @return int Nombre de messages non lus.
      */
     public function countUnreadByUser(int $userId): int
     {

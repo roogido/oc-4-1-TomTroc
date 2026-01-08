@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :      8 décembre 2025
- * Maj  :      
+ * Maj  :      8 janvier 2026
  *
  * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -29,6 +29,16 @@ class Database
 {
     private static ?PDO $connection = null;
 
+    /**
+     * Retourne une instance PDO unique pour l’application.
+     *
+     * La connexion est initialisée à la première demande (lazy loading)
+     * à partir de la configuration et réutilisée ensuite.
+     *
+     * @return PDO Instance de connexion à la base de données
+     *
+     * @throws PDOException En cas d’échec de connexion à la base
+     */
     public static function getConnection(): PDO
     {
         if (self::$connection instanceof PDO) {

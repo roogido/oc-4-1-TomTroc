@@ -34,3 +34,6 @@ Thumbs.db
 # dumps DB
 /sql/dumps/*
 !/sql/dumps/.gitkeep
+
+# Local DB config
+config/database.local.php

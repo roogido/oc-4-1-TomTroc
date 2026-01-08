@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        12 décembre 2025
- * Maj :         31 décembre 2025
+ * Maj :         3 janvier 2026
  *
  * @category     Controllers
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -21,13 +21,15 @@
 
 namespace App\Controllers;
 
-use App\Core\AvatarUploader;
 use App\Core\Controller;
 use App\Core\Session;
 use App\Core\HttpForbiddenException;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Repositories\BookRepository;
+use App\Service\Account\AccountFormValidator;
+use App\Service\Account\AccountProfileService;
+use App\Service\Account\AvatarService;
 
 
 class AccountController extends Controller
@@ -74,25 +76,7 @@ class AccountController extends Controller
             exit;
         }
 
-        // récupération des livres du user
-        $userBooks = $this->books->findByUser($userId);
-
-        // Ancienneté de l'utilisateur
-        $memberSince = $this->users->getMemberSince($userId);
-
-        // Nombre de livres
-        $booksCount = count($userBooks);
-
-        $this->setPageTitle("Mon compte");
-
-        $this->render('account/index', [
-            'user'  => $user,
-            'books' => $userBooks,
-            'memberSince' => $memberSince,
-            'booksCount'  => $booksCount,    
-            'pageStyles' => ['account.css'],        
-            'pageClass' => 'is-light-page',
-        ]);
+        $this->renderAccountPage($user);
     }
 
     /**
@@ -114,7 +98,7 @@ class AccountController extends Controller
     public function update(): void
     {
         if (!Session::isLogged()) {
-            throw new HttpForbiddenException("Vous devez être connecté.");
+            throw new HttpForbiddenException('Vous devez être connecté.');
         }
 
         $userId = Session::getUserId();
@@ -126,90 +110,41 @@ class AccountController extends Controller
             exit;
         }
 
-        // Récupération POST
-        $email    = trim($_POST['email'] ?? '');
-        $pseudo   = trim($_POST['pseudo'] ?? '');
-        $password = trim($_POST['password'] ?? '');
+        // Données brutes
+        $data = [
+            'email'    => $_POST['email'] ?? '',
+            'pseudo'   => $_POST['pseudo'] ?? '',
+            'password' => $_POST['password'] ?? '',
+        ];
 
-        $errors = [];
+        // Validation
+        $validator = new AccountFormValidator($this->users);
+        $result    = $validator->validate($data, $user);
 
-        // Validation email
-        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = "Adresse email invalide.";
-        }
-
-        // Validation pseudo
-        if ($pseudo === '') {
-            $errors['pseudo'] = "Le pseudo est obligatoire.";
-        }
-
-        // Unicité email (si changé)
-        $existingByEmail = $this->users->findByEmail($email);
-        if ($existingByEmail && $existingByEmail->getId() !== $userId) {
-            $errors['email'] = "Cet email est déjà utilisé.";
-        }
-
-        // Unicité pseudo (si changé)
-        $existingByPseudo = $this->users->findByPseudo($pseudo);
-        if ($existingByPseudo && $existingByPseudo->getId() !== $userId) {
-            $errors['pseudo'] = "Ce pseudo est déjà pris.";
-        }
-
-        // Mot de passe optionnel
-        $passwordHash = null;
-        if ($password !== '') {
-            if (strlen($password) < 6) {
-                $errors['password'] = "Le mot de passe doit contenir au moins 6 caractères.";
-            } else {
-                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-            }
-        }
-
-        // Erreurs 
-        if (!empty($errors)) {
-            // Erreur générique
+        if (!empty($result['errors'])) {
             Session::addFlash(
                 'error',
                 'Données invalides. Veuillez corriger les champs en erreur.'
             );
 
-            // Erreurs par champ
-            Session::addFlash('error', $errors);
-
-            // Anciennes valeurs
+            Session::addFlash('error', $result['errors']);
             Session::addFlash('old', $_POST);
 
-            // récupération des livres du user
-            $userBooks = $this->books->findByUser($userId);
+            $this->renderAccountPage($user);
 
-            // Ancienneté de l'utilisateur
-            $memberSince = $this->users->getMemberSince($userId);
-
-            // Nombre de livres
-            $booksCount = count($userBooks);
-
-            $this->setPageTitle("Mon compte");
-
-            $this->render('account/index', [
-                'user'        => $user,
-                'books'       => $userBooks,
-                'memberSince' => $memberSince,
-                'booksCount'  => $booksCount,
-                'pageStyles'  => ['account.css'],
-                'pageClass'   => 'is-light-page',
-            ]);
             return;
         }
 
-        // Mise à jour
-        $this->users->updateProfile(
-            $userId,
-            $email,
-            $pseudo,
-            $passwordHash
+        // Mise à jour profil
+        $profileService = new AccountProfileService($this->users);
+        $profileService->updateProfile(
+            $user,
+            trim($data['email']),
+            trim($data['pseudo']),
+            $result['passwordHash']
         );
 
-        Session::addFlash('success', "Vos informations ont été mises à jour.");
+        Session::addFlash('success', 'Vos informations ont été mises à jour.');
         header('Location: /account');
         exit;
     }
@@ -246,32 +181,19 @@ class AccountController extends Controller
 
         if (!Session::isLogged()) {
             if ($isAjax) {
-                http_response_code(403);
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Accès non autorisé.'
-                ]);
-                exit;
+                $this->jsonError('Accès non autorisé.', 403);
             }
 
-            throw new HttpForbiddenException("Vous devez être connecté.");
+            throw new HttpForbiddenException('Vous devez être connecté.');
         }
 
-        $userId = Session::getUserId();
-        $user   = $this->users->findById($userId);
+        $user = $this->users->findById(Session::getUserId());
 
-        if (!$user) {
+        if (! $user) {
             Session::destroy();
 
             if ($isAjax) {
-                http_response_code(401);
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Session invalide.'
-                ]);
-                exit;
+                $this->jsonError('Session invalide.', 401);
             }
 
             header('Location: /login');
@@ -280,13 +202,7 @@ class AccountController extends Controller
 
         if (empty($_FILES['avatar']) || $_FILES['avatar']['error'] !== UPLOAD_ERR_OK) {
             if ($isAjax) {
-                http_response_code(400);
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Aucun fichier valide envoyé.'
-                ]);
-                exit;
+                $this->jsonError('Aucun fichier valide envoyé.', 400);
             }
 
             Session::addFlash('error', 'Aucun fichier sélectionné.');
@@ -295,20 +211,20 @@ class AccountController extends Controller
         }
 
         try {
-            $newAvatar = AvatarUploader::upload(
-                $_FILES['avatar'],
-                $user->getRawAvatarPath()
+            $avatarService = new AvatarService();
+            $newAvatar     = $avatarService->updateAvatar(
+                $user,
+                $_FILES['avatar'] ?? []
             );
+
+            $this->users->updateAvatar($user->getId(), $newAvatar);
         } catch (\RuntimeException $e) {
 
             if ($isAjax) {
-                http_response_code(400);
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Impossible de mettre à jour votre avatar.'
-                ]);
-                exit;
+                $this->jsonError(
+                    'Impossible de mettre à jour votre avatar.',
+                    400
+                );
             }
 
             Session::addFlash('error', $e->getMessage());
@@ -316,27 +232,11 @@ class AccountController extends Controller
             exit;
         }
 
-        if (!$this->users->updateAvatar($userId, $newAvatar)) {
-            if ($isAjax) {
-                http_response_code(500);
-                header('Content-Type: application/json');
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Erreur interne.'
-                ]);
-                exit;
-            }
-
-            Session::addFlash('error', 'Erreur lors de la mise à jour.');
-            header('Location: /account');
-            exit;
-        }
-
         if ($isAjax) {
             header('Content-Type: application/json');
             echo json_encode([
-                'success'    => true,
-                'avatarPath'=> User::AVATAR_UPLOAD_DIR . $newAvatar
+                'success'     => true,
+                'avatarPath'  => User::AVATAR_UPLOAD_DIR . $newAvatar
             ]);
             exit;
         }
@@ -345,5 +245,51 @@ class AccountController extends Controller
         header('Location: /account');
         exit;
     }
+
+    /**
+     * Affiche la page de compte de l’utilisateur.
+     *
+     * Récupère les informations nécessaires (livres, ancienneté, statistiques)
+     * puis rend la vue utilisateur.
+     *
+     * @param User $user Utilisateur connecté.
+     * @return void
+     */
+    private function renderAccountPage(User $user): void
+    {
+        $userId = $user->getId();
+
+        // Données nécessaires au rendu
+        // récupération des livres du user
+        $userBooks   = $this->books->findByUser($userId);
+
+        // Ancienneté de l'utilisateur
+        $memberSince = $this->users->getMemberSince($userId);
+
+        // Nombre de livres
+        $booksCount  = count($userBooks);
+
+        $this->setPageTitle('Mon compte');
+
+        $this->render('account/index', [
+            'user'        => $user,
+            'books'       => $userBooks,
+            'memberSince' => $memberSince,
+            'booksCount'  => $booksCount,
+            'pageStyles'  => ['account.css'],
+            'pageClass'   => 'is-light-page',
+        ]);
+    }
+
+    private function jsonError(string $message, int $status): void
+    {
+        http_response_code($status);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'message' => $message
+        ]);
+        exit;
+    }    
 }
 

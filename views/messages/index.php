@@ -1,172 +1,282 @@
 <?php declare(strict_types=1);
-/* VUE POUR LA MESSAGERIE */
 
 use App\Core\Session;
 
 /**
- * @var array $conversations   // liste des discussions (colonne gauche)
- * @var array|null $thread     // messages de la discussion sélectionnée
+ * @var array      $conversations
+ * @var array|null $thread
  * @var App\Models\User|null $otherUser
  */
 
 $currentUserId = Session::getUserId();
 
-function formatMessageDate(string $datetime): string
+function formatMessageDate(string $datetime): array
 {
     $date = new DateTime($datetime);
     $now  = new DateTime();
 
-    // Cas : aujourd'hui
+    // Aujourd’hui → heure seule
     if ($date->format('Y-m-d') === $now->format('Y-m-d')) {
-        return $date->format('H:i');
+        return [
+            'date' => null,
+            'time' => $date->format('H:i'),
+        ];
     }
 
-    // Cas : même année
+    // Même année → DD.MM + heure
     if ($date->format('Y') === $now->format('Y')) {
-        return $date->format('d.m H:i');
+        return [
+            'date' => $date->format('d.m'),
+            'time' => $date->format('H:i'),
+        ];
     }
 
-    // Cas : année différente
-    return $date->format('d.m.Y H:i');
+    // Année différente → DD.MM.YYYY + heure
+    return [
+        'date' => $date->format('d.m.Y'),
+        'time' => $date->format('H:i'),
+    ];
 }
 ?>
 
-<h1>Messagerie</h1>
+<div class="messages-page">
+    <div class="messages-inner">
+        <div class="messages-layout">
 
-<div class="messaging-layout">
+            <!-- ======================
+                COLONNE CONVERSATIONS
+                ====================== -->
+            <aside class="messages-list">
+                <h1 class="page-title">Messagerie</h1>
 
-    <!-- COLONNE GAUCHE : conversations -->
-    <aside class="messaging-sidebar">
-        <?php if (empty($conversations)) : ?>
-            <p>Aucune discussion.</p>
-        <?php else : ?>
-            <ul>
-                <?php foreach ($conversations as $conversation) : ?>
-                    <li class="conversation-item">
-                        <a href="/messages/<?= (int) $conversation['user_id'] ?>">
+                <?php if (empty($conversations)) : ?>
+                    <ul class="conversations conversations--users">
 
+                        <?php foreach ($users as $user) : ?>
+                            <li class="conversation">
+                                <a
+                                    href="/messages/<?= (int) $user['id'] ?>"
+                                    class="conversation-link"
+                                >
+                                    <div class="conversation-inner">
+                                        <img
+                                            src="<?= htmlspecialchars(
+                                                $user['avatar_path']
+                                                    ? '/uploads/avatars/' . $user['avatar_path']
+                                                    : \App\Models\User::DEFAULT_AVATAR
+                                            ) ?>"
+                                            alt="Avatar de <?= htmlspecialchars($user->getPseudo()) ?>"
+                                            class="avatar avatar--md avatar--portrait"
+                                        >
+
+                                        <div class="conversation-body">
+                                            <strong class="conversation-name">
+                                                <?= htmlspecialchars($user['pseudo']) ?>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+
+                    </ul>
+                <?php else : ?>
+                    <ul class="conversations">
+
+                        <?php foreach ($conversations as $conversation) : ?>
                             <?php
-                            $avatarPath = !empty($conversation['avatar_path'])
-                                ? '/uploads/avatars/' . $conversation['avatar_path']
-                                : \App\Models\User::DEFAULT_AVATAR;
+                                $avatarPath = !empty($conversation['avatar_path'])
+                                    ? '/uploads/avatars/' . $conversation['avatar_path']
+                                    : \App\Models\User::DEFAULT_AVATAR;
+
+                                $isActive = (
+                                    $otherUser !== null
+                                    && (int) $conversation['user_id'] === (int) $otherUser->getId()
+                                );
                             ?>
 
+                            <li class="conversation <?= $isActive ? 'conversation--active' : '' ?>">
+                                <a
+                                    href="/messages/<?= (int) $conversation['user_id'] ?>"
+                                    class="conversation-link"
+                                >
+                                    <div class="conversation-inner">
+                                        <img
+                                            src="<?= htmlspecialchars($avatarPath) ?>"
+                                            alt=""
+                                            class="avatar avatar--md avatar--portrait"
+                                        >
+
+                                        <div class="conversation-body">
+
+                                            <div class="conversation-head">
+                                                <span class="conversation-name">
+                                                    <?= htmlspecialchars($conversation['pseudo']) ?>
+                                                </span>
+
+                                                <?php if (!empty($conversation['created_at'])) : ?>
+                                                    <?php $date = formatMessageDate($conversation['created_at']); ?>
+
+                                                    <span class="conversation-date">
+                                                        <?= htmlspecialchars(
+                                                            trim(($date['date'] ? $date['date'] . ' ' : '') . $date['time'])
+                                                        ) ?>
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+
+                                            <p class="conversation-preview">
+                                                <?= htmlspecialchars(
+                                                    mb_strimwidth($conversation['last_message'] ?? '', 0, 48, '…')
+                                                ) ?>
+                                            </p>
+
+                                        </div>
+
+                                        <?php if ($conversation['unread_count'] > 0) : ?>
+                                            <span class="conversation-badge">
+                                                <?= (int) $conversation['unread_count'] ?>
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+
+                    </ul>
+                <?php endif; ?>
+
+            </aside>
+
+            <!-- ======================
+                ZONE DISCUSSION
+                ====================== -->
+            <div class="messages-thread" aria-labelledby="thread-title">
+
+                <?php if ($otherUser === null) : ?>
+                    <div class="messages-thread--empty">
+                        <div class="messages-empty">
+
+                            <?php if (empty($conversations)) : ?>
+                                <p class="messages-empty-title">Aucune discussion</p>
+                                <p>
+                                    Pour le moment, vous n’avez échangé avec aucun utilisateur.
+                                    <br>
+                                    Démarrez une discussion pour commencer.
+                                </p>
+                            <?php else : ?>
+                                <p class="messages-empty-title">Sélectionnez une discussion</p>
+                                <p>
+                                    Choisissez une conversation dans la colonne de gauche
+                                    <br>
+                                    pour afficher les messages.
+                                </p>
+                            <?php endif; ?>
+
+                        </div>
+                    </div>
+                <?php else : ?>
+
+                    <!-- En-tête discussion -->
+                    <header class="thread-header">
+
+                        <a href="/messages" class="thread-back">
+                            ← retour
+                        </a>
+
+                        <div class="thread-user">
                             <img
-                                src="<?= htmlspecialchars($avatarPath) ?>"
-                                alt="Avatar de <?= htmlspecialchars($conversation['pseudo']) ?>"
-                                width="48"
-                                height="48"
+                                src="<?= htmlspecialchars($otherUser->getAvatarPath()) ?>"
+                                alt="Avatar de <?= htmlspecialchars($otherUser->getPseudo()) ?>"
+                                class="avatar avatar--md avatar--portrait"
                             >
 
-                            <div class="conversation-content">
+                            <span class="thread-username">
+                                <?= htmlspecialchars($otherUser->getPseudo()) ?>
+                            </span>
+                        </div>
 
-                                <div class="conversation-header">
-                                    <strong><?= htmlspecialchars($conversation['pseudo']) ?></strong>
+                    </header>
 
-                                    <?php if (!empty($conversation['created_at'])) : ?>
-                                        <span class="conversation-date">
-                                            <?= formatMessageDate($conversation['created_at']) ?>
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
+                    <!-- Messages -->
+                    <div
+                        class="thread-body"
+                        tabindex="0"
+                        role="region"
+                        aria-labelledby="thread-title"
+                    >
+                        <?php foreach ($thread ?? [] as $message) : ?>
+                            <?php
+                                $isMine = ((int) $message['sender_id'] === $currentUserId);
+                                $formattedDate = formatMessageDate($message['created_at']);
+                            ?>
 
-                                <div class="conversation-preview">
-                                    <?= htmlspecialchars(
-                                        mb_strimwidth($conversation['last_message'] ?? '', 0, 56, '…')
-                                    ) ?>
-                                </div>
+                            <div class="message <?= $isMine ? 'message--mine' : 'message--other' ?>">
 
-                            </div>
-
-                            <?php if ($conversation['unread_count'] > 0) : ?>
-                                <span class="conversation-badge">
-                                    <?= (int) $conversation['unread_count'] ?>
-                                </span>
-                            <?php endif; ?>
-
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
-    </aside>
-
-    <!-- ZONE DROITE : fil de discussion -->
-    <section class="messaging-thread">
-
-        <?php if ($otherUser === null) : ?>
-
-            <p>Sélectionnez une discussion.</p>
-
-        <?php else : ?>
-
-            <div class="thread-header">
-                <img
-                    src="<?= htmlspecialchars($otherUser->getAvatarPath()) ?>"
-                    alt="Avatar de <?= htmlspecialchars($otherUser->getPseudo()) ?>"
-                    width="48"
-                    height="48"
-                    class="thread-avatar"
-                >
-
-                <h2><?= htmlspecialchars($otherUser->getPseudo()) ?></h2>
-            </div>
-         
-            <div class="thread-messages">
-
-                <?php if (!empty($thread)) : ?>
-                    <?php foreach ($thread as $message) : ?>
-                        <?php
-                            $isMine = ((int) $message['sender_id'] === (int) $currentUserId);
-                        ?>
-
-                        <div class="message <?= $isMine ? 'message-mine' : 'message-other' ?>">
-
-                            <?php if (!$isMine) : ?>
-                                <img
-                                    src="<?= htmlspecialchars($otherUser->getAvatarPath()) ?>"
-                                    alt="Avatar de <?= htmlspecialchars($otherUser->getPseudo()) ?>"
-                                    width="24"
-                                    height="24"
-                                    class="message-avatar"
-                                >
-                            <?php endif; ?>
-
-                            <div class="message-content">
                                 <div class="message-meta">
+                                    <?php if (! $isMine) : ?>
+                                        <img
+                                            src="<?= htmlspecialchars($otherUser->getAvatarPath()) ?>"
+                                            alt="Avatar de <?= htmlspecialchars($otherUser->getPseudo()) ?>"
+                                            class="avatar avatar--thread"
+                                        >
+                                    <?php endif; ?>
+
                                     <span class="message-date">
-                                        <?= formatMessageDate($message['created_at']) ?>
+                                        <?php if (!empty($formattedDate['date'])) : ?>
+                                            <span class="message-date__day">
+                                                <?= htmlspecialchars($formattedDate['date']) ?>
+                                            </span>
+                                        <?php endif; ?>
+
+                                        <span class="message-date__time">
+                                            <?= htmlspecialchars($formattedDate['time']) ?>
+                                        </span>
                                     </span>
                                 </div>
 
-                                <div class="message-text">
-                                    <?= nl2br(htmlspecialchars($message['content'])) ?>
+                                <div class="message-content">
+                                    <p class="message-text">
+                                        <?= nl2br(htmlspecialchars($message['content'])) ?>
+                                    </p>
                                 </div>
 
                             </div>
+                        <?php endforeach; ?>
 
-                        </div>
-                    <?php endforeach; ?>
+                    </div>
+
+                    <!-- Formulaire envoi -->
+                    <form
+                        method="post"
+                        action="/messages/send"
+                        class="thread-form"
+                    >
+                        <input
+                            type="hidden"
+                            name="receiver_id"
+                            value="<?= (int) $otherUser->getId() ?>"
+                        >
+
+                        <textarea
+                            name="content"
+                            placeholder="Tapez votre message ici"
+                            required
+                        ></textarea>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn--md"
+                        >
+                            Envoyer
+                        </button>
+                    </form>
+
                 <?php endif; ?>
 
             </div>
 
-            <!-- Le formulaire est TOUJOURS visible dès qu’un utilisateur est ciblé -->
-            <form method="post" action="/messages/send">
-                <input type="hidden" name="receiver_id" value="<?= (int) $otherUser->getId() ?>">
-
-                <textarea
-                    name="content"
-                    placeholder="Tapez votre message ici"
-                    required
-                    rows="3"
-                ></textarea>
-
-                <button type="submit">Envoyer</button>
-            </form>
-
-        <?php endif; ?>
-
-    </section>
-
+        </div>
+    </div>
 </div>

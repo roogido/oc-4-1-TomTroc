@@ -1,45 +1,39 @@
 /* ==================================================
-   BOOK DETAIL – ALIGNEMENT GLOBAL (FIGMA)
+   BOOK DETAIL
    ================================================== */
 
 .book-detail .page-inner {
     max-width: none;
     margin: 0;
-
-    padding-left: 150px;  /* aligné logo */
-    padding-right: 150px;
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .book-detail-layout {
     display: grid;
-    grid-template-columns: 620px 520px; /* 620 + 520 = 1140 */
-    column-gap: 96px;
-
-    padding-top: 96px;
-    padding-bottom: 96px;
-
-    max-width: 1140px;
-    margin: 0 auto;
+    grid-template-columns: 720px 570px;
+    /* column-gap: 85px; */
+    padding-top: 0;
+    padding-bottom: 0;
+    max-width: 1290px;
 }
-
 
 /* ==================================================
    LEFT COLUMN – IMAGE
    ================================================== */
 
 .book-detail-image {
+    width: 720px;
+    height: 863px;
+    flex: 0 0 720px;
     position: relative;
-    height: 100%;
-    display: flex;
-    min-height: 650px; 
 }
 
 .book-detail-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-
-    border-radius: 16px;
+    border-radius: 0;
     display: block;
 }
 
@@ -51,7 +45,11 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    max-width: 520px;
+    width: 570px;
+    padding-right: 0;
+    padding-left: 85px;
+    padding-top:59px;
+    box-sizing: border-box;    
 }
 
 /* ==================================================
@@ -89,14 +87,6 @@
    HEADER
    ================================================== */
 
-.book-detail-header h1 {
-    font-family: "Playfair Display", serif;
-    font-size: 42px;
-    font-weight: 400;
-    line-height: 1.2;
-    margin-bottom: 12px;
-}
-
 .book-detail-author {
     font-size: 16px;
     color: #6B6B6B;
@@ -122,9 +112,6 @@
 }   
 
 .book-detail-description h2 {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
     margin-bottom: 16px;
 }
 
@@ -147,12 +134,10 @@
 
 .book-detail-owner {
     margin-top: 24px;
+    margin-bottom: 80px;
 }
 
 .book-detail-owner h2 {
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
     margin-bottom: 16px;
 }
 
@@ -169,14 +154,24 @@
     width: fit-content;
 }
 
+.book-owner-card:hover {
+    color: #00AC66;
+}
+
+.book-owner-card img {
+    transition: filter 0.2s ease;
+}
+
+.book-owner-card:hover img {
+    filter: sepia(1) hue-rotate(85deg) saturate(4);
+}
+
 /* ==================================================
    ACTION
    ================================================== */
 
 .book-detail-action {
-    margin-top: auto;
-    padding-top: 48px;
-    min-height: 56px; /* stabilise la colonne */
+    min-height: 56px;
 }
 
 /* ==================================================
@@ -188,6 +183,7 @@
 
 @media (max-width: 1500px) {
 
+    /* Gouttières globales – OK */
     .book-detail .page-inner {
         padding-left: clamp(24px, 4vw, 140px);
         padding-right: clamp(24px, 4vw, 140px);
@@ -198,20 +194,31 @@
         padding-right: clamp(24px, 4vw, 140px);
     }
 
+    /* === LAYOUT : image prioritaire === */
     .book-detail-layout {
-        grid-template-columns:
-            minmax(420px, 1.1fr)
-            minmax(360px, 0.9fr);
+        grid-template-columns: auto 1fr;
         column-gap: clamp(48px, 6vw, 96px);
         max-width: 100%;
     }
 
+    /* === IMAGE : RESPONSIVE PROPORTIONNELLE === */
     .book-detail-image {
-        min-height: clamp(520px, 45vw, 650px);
+        width: min(720px, 48vw);
+        height: auto;
+        aspect-ratio: 720 / 863;
     }
 
+    .book-detail-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* === TEXTE : S’ADAPTE APRÈS L’IMAGE === */
     .book-detail-content {
-        max-width: none;
+        width: auto;
+        max-width: 570px;
+        padding-left: clamp(48px, 6vw, 85px);
     }
 }
 
@@ -289,11 +296,6 @@
        HEADER
        ================================================== */
 
-    .book-detail-header h1 {
-        font-size: 32px;
-        line-height: 1.2;
-    }
-
     .book-detail-author {
         font-size: 15px;
     }
@@ -328,11 +330,28 @@
    ================================================== */
 
 @media (max-width: 500px) {
+    /* =========================
+       LAYOUT GLOBAL
+       - supprime les marges latérales
+       ========================= */
 
-    /* ===== FIL D’ARIANE : plein viewport ===== */
+    main {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .book-detail .page-inner {
+        padding-left: 0;
+        padding-right: 0;
+    }    
+
+    /* =========================
+       FIL D’ARIANE
+       ========================= */
+
     .book-detail-breadcrumb-wrapper {
-        width: 100vw;
-        margin-left: calc(50% - 50vw);
+        width: 100%;
+        margin: 0;
     }
 
     .book-detail-breadcrumb {
@@ -340,16 +359,56 @@
         padding-right: 16px;
     }
 
-    /* ===== IMAGE : plein viewport ===== */
+    .book-detail-layout {
+        display: block;      /* on sort du grid desktop */
+        max-width: 100%;
+        padding-top: 0;
+        padding-bottom: 80px;
+    }    
+
+    /* =========================
+       IMAGE
+       - pleine largeur naturelle
+       - aucun hack viewport
+       - ratio Figma conservé
+       ========================= */
+
     .book-detail-image {
-        width: 100vw;
-        max-width: none;
-        margin-left: calc(50% - 50vw);
-        aspect-ratio: 1 / 1;
-        border-radius: 0;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 720 / 863;
+        margin: 0;
     }
 
     .book-detail-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
         border-radius: 0;
     }
+
+    /* =========================
+       CONTENU TEXTE
+       - léger retrait Figma
+       - titre / auteur alignés
+       ========================= */
+
+    .book-detail-content {
+        width: 100%;
+        padding-left: 16px;
+        padding-right: 16px;
+        padding-top: 24px;
+        box-sizing: border-box;
+    }
+
+    .book-detail-owner {
+        margin-top: 24px;
+        margin-bottom: 40px;
+    }    
+
+    .book-detail-action {
+        margin-top: 0;
+        padding-top: 0;
+    }
 }
+

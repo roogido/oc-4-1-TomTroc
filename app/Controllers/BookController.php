@@ -10,7 +10,7 @@
  * PHP version 8.2.12
  *
  * Date :        13 décembre 2025
- * Maj :         1er janvier 2026
+ * Maj :         3 janvier 2026
  *
  * @category     Controllers
  * @package      App\Controllers
@@ -24,12 +24,15 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
-use App\Core\FileUploader;
 use App\Core\Session;
-use App\Core\HttpForbiddenException;
-use App\Core\HttpNotFoundException;
 use App\Repositories\BookRepository;
 use App\Models\Book;
+use App\Service\Book\BookAccessChecker;
+use App\Service\Book\BookFormErrorHandler;
+use App\Service\Book\BookFormValidator;
+use App\Service\Book\BookImageService;
+use App\Core\HttpForbiddenException;
+use App\Core\HttpNotFoundException;
 
 
 class BookController extends Controller
@@ -123,172 +126,82 @@ class BookController extends Controller
     }
 
     /**
-     * Traite la soumission du formulaire d’ajout d’un livre.
+     * Traite l’ajout d’un nouveau livre.
      *
-     * Vérifie l’authentification, valide les données reçues,
-     * gère l’upload optionnel de l’image et persiste le livre.
+     * Vérifie l’authentification, valide les données du formulaire,
+     * gère l’upload de l’image et crée le livre en base de données.
      *
      * @return void
-     * @throws HttpForbiddenException Si l’utilisateur n’est pas connecté
+     *
+     * @throws HttpForbiddenException Si l’utilisateur n’est pas authentifié.
      */
     public function add(): void
     {
-        // Accès réservé aux utilisateurs connectés
-        if (! Session::isLogged()) {
+        if (!Session::isLogged()) {
             throw new HttpForbiddenException('Accès refusé.');
         }
 
-        // Récupération et nettoyage des données
-        $title       = trim($_POST['title'] ?? '');
-        $author      = trim($_POST['author'] ?? '');
-        $description = trim($_POST['description'] ?? '');
+        // Données brutes issues du formulaire (nettoyées)
+        $data = [
+            'title'       => trim($_POST['title'] ?? ''),
+            'author'      => trim($_POST['author'] ?? ''),
+            'description' => trim($_POST['description'] ?? ''),
+            'status'      => Book::STATUS_AVAILABLE,
+        ];
 
-        // Statut par défaut (non soumis par le formulaire)
-        $status = Book::STATUS_AVAILABLE;
+        // Validation métier des données du formulaire
+        $validator = new BookFormValidator();
+        $errors = $validator->validate($data);
 
-        $errors = [];
-
-        // Validation des champs obligatoires
-        // Validation titre
-        if ($title === '') {
-            $errors['title'] = 'Le titre est obligatoire.';
-        }
-
-        // Validation auteur
-        if ($author === '') {
-            $errors['author'] = 'L’auteur est obligatoire.';
-        }
-
-        // Validation description
-        if ($description === '') {
-            $errors['description'] = 'La description est obligatoire.';
-        }
- 
-        // En cas d’erreurs, stockage en session et réaffichage du formulaire
+        // En cas d'erreur réafficher le formulaire
         if (!empty($errors)) {
+            $errorHandler = new BookFormErrorHandler();
+            $errorHandler->handle($errors, $_POST);
 
-            Session::addFlash(
-                'error',
-                'Données invalides. Veuillez corriger les champs en erreur.'
+            $this->renderBookForm(
+                'book/add',
+                'Ajouter un livre',
+                [
+                    'allowImageEdit' => true,
+                    'submitLabel'    => 'Ajouter le livre',
+                ]
             );
-
-            Session::addFlash('error', $errors);
-            Session::addFlash('old', $_POST);
-
-            $this->setPageTitle('Ajouter un livre');
-            $this->render('book/add');
             return;
         }
 
-        // Gestion de l’image (optionnelle)
-        $imagePath = null;
-
-        // Upload uniquement si un fichier a été soumis
-        if (! empty($_FILES['image']['name'])) {
-            try {
-                // Upload sécurisé du fichier image
-                $newImage = FileUploader::upload(
-                    $_FILES['image'],
-                    __DIR__ . '/../../public/uploads/books',
-                    'book_'
-                );
-
-                // Chemin relatif stocké en base de données
-                $imagePath = 'uploads/books/' . $newImage;
-
-            } catch (\RuntimeException $e) {
-                // Gestion des erreurs d’upload
-                Session::addFlash('error', $e->getMessage());
-                $this->render('book/add');
-                return;
-            }
-        }
-
-        // Création de l’objet Book
+        // Création de l’entité Book
         $book = new Book(
             Session::getUserId(),
-            $title,
-            $author,
-            $description,
-            $status,
-            $imagePath
+            $data['title'],
+            $data['author'],
+            $data['description'],
+            $data['status']
         );
 
-        // Insertion en base
+        // Gestion de l’upload de l’image
+        try {
+            $imageService = new BookImageService();
+            $imageService->update($book, $_FILES['image'] ?? []);
+        } catch (\RuntimeException $e) {
+            $errorHandler = new BookFormErrorHandler();
+            $errorHandler->handle(['image' => $e->getMessage()], $_POST);
+
+            $this->renderBookForm(
+                'book/add',
+                'Ajouter un livre',
+                [
+                    'allowImageEdit' => true,
+                    'submitLabel'    => 'Ajouter le livre',
+                ]
+            );
+            return;
+        }
+
+        // Persistance en BDD
         $this->books->create($book);
 
-        // Message de succès
         Session::addFlash('success', 'Livre ajouté avec succès.');
-
-        // Redirection (PRG)
         header('Location: /account');
-        exit;
-    }
-
-    /**
-     * Met à jour l’image associée à un livre existant.
-     *
-     * Vérifie l’authentification, la propriété du livre,
-     * traite l’upload de l’image et met à jour le chemin en base.
-     *
-     * @param int $id Identifiant du livre
-     *
-     * @throws HttpForbiddenException Si l’utilisateur n’est pas autorisé
-     * @throws HttpNotFoundException  Si le livre n’existe pas
-     */
-    public function updateImage(int $id): void
-    {
-        // Vérifie que l’utilisateur est connecté
-        if (! Session::isLogged()) {
-            throw new HttpForbiddenException('Accès refusé.');
-        }
-
-        // Récupère le livre depuis la base
-        $book = $this->books->findById($id);
-
-        // Livre inexistant → 404
-        if (! $book) {
-            throw new HttpNotFoundException('Livre introuvable.');
-        }
-
-        // Vérifie que l’utilisateur est le propriétaire du livre
-        if ($book->getUserId() !== Session::getUserId()) {
-            throw new HttpForbiddenException('Ce livre ne vous appartient pas.');
-        }
-
-        // Vérifie qu’un fichier image a bien été envoyé
-        if (! isset($_FILES['image'])) {
-            Session::addFlash('error', 'Aucune image envoyée.');
-            header('Location: /book/' . $id . '/edit');
-            exit;
-        }
-
-        try {
-            // Upload de la nouvelle image (et suppression de l’ancienne si nécessaire)
-            $newImage = FileUploader::upload(
-                $_FILES['image'],
-                __DIR__ . '/../../public/uploads/books', // dossier de destination
-                'book_',                                 // préfixe du nom de fichier
-                $book->getImagePath()
-                    ? basename($book->getImagePath())   // ancienne image à supprimer
-                    : null
-            );
-        } catch (\RuntimeException $e) {
-            // Gestion des erreurs d’upload
-            Session::addFlash('error', $e->getMessage());
-            header('Location: /book/' . $id . '/edit');
-            exit;
-        }
-
-        // Mise à jour du chemin de l’image en base de données
-        $this->books->updateImage(
-            $id,
-            'uploads/books/' . $newImage
-        );
-
-        // Message de succès + redirection
-        Session::addFlash('success', 'Photo du livre mise à jour.');
-        header('Location: /book/' . $id . '/edit');
         exit;
     }
 
@@ -320,135 +233,96 @@ class BookController extends Controller
             throw new HttpForbiddenException('Ce livre ne vous appartient pas.');
         }
 
-        $this->setPageTitle('Modifier un livre');
-
-        $this->render('book/edit', [
-            'book' => $book,
-            'allowImageEdit' => true,
-            'showStatus'     => true,
-            'submitLabel'    => 'Enregistrer les modifications',
-            'pageStyles' => ['book-form.css'],        
-            'pageClass' => 'is-light-page',            
-        ]);
+        $this->renderBookForm(
+            'book/edit',
+            'Modifier les informations',
+            [
+                'book'           => $book,
+                'allowImageEdit' => true,
+                'showStatus'     => true,
+                'submitLabel'    => 'Valider',
+            ]
+        );
     }
 
     /**
-     * Traite la soumission du formulaire d’édition d’un livre.
-     * (Accès via la page "Mon compte", lien "Editer" - Maquette p. 19 - 20)
+     * Traite la modification d’un livre existant.
      *
-     * Vérifie l’authentification, la propriété du livre,
-     * valide les données puis met à jour le livre en base.
+     * Vérifie l’authentification et les droits d’accès, valide les données du formulaire,
+     * met à jour l’image et les informations du livre, puis persiste les changements.
      *
-     * @param int $id Identifiant du livre
+     * @param int $id Identifiant du livre à modifier.
      * @return void
-     * @throws HttpForbiddenException Si l’utilisateur n’est pas autorisé
-     * @throws HttpNotFoundException Si le livre n’existe pas
+     *
+     * @throws HttpForbiddenException Si l’utilisateur n’est pas authentifié ou autorisé.
+     * @throws HttpNotFoundException  Si le livre n’existe pas.
      */
     public function edit(int $id): void
     {
-        if (! Session::isLogged()) {
+        // Accès réservé aux utilisateurs connectés
+        if (!Session::isLogged()) {
             throw new HttpForbiddenException('Accès refusé.');
         }
 
+        // Récupération du livre
         $book = $this->books->findById($id);
 
-        if (! $book) {
+        if (!$book) {
             throw new HttpNotFoundException('Livre introuvable.');
         }
 
-        if ($book->getUserId() !== Session::getUserId()) {
-            throw new HttpForbiddenException('Ce livre ne vous appartient pas.');
-        }
+        // Vérification des droits d’accès :
+        // l’utilisateur ne peut modifier que ses propres livres
+        $accessChecker = new BookAccessChecker();
+        $accessChecker->checkOwnership($book);
 
-        // Récupération et nettoyage des données
-        $title       = trim($_POST['title'] ?? '');
-        $author      = trim($_POST['author'] ?? '');
-        $description = trim($_POST['description'] ?? '');
-        $status      = $_POST['status'] ?? Book::STATUS_AVAILABLE;
+        // Données brutes issues du formulaire (nettoyées)
+        $data = [
+            'title'       => trim($_POST['title'] ?? ''),
+            'author'      => trim($_POST['author'] ?? ''),
+            'description' => trim($_POST['description'] ?? ''),
+            'status'      => $_POST['status'] ?? Book::STATUS_AVAILABLE,
+        ];
 
-        $errors = [];
+        // Validation métier des données du formulaire
+        $validator = new BookFormValidator();
+        $errors = $validator->validate($data, true);
 
-        // Validation des champs obligatoires
-        // Validation titre
-        if ($title === '') {
-            $errors['title'] = 'Le titre est obligatoire.';
-        }
-
-        // Validation auteur
-        if ($author === '') {
-            $errors['author'] = 'L’auteur est obligatoire.';
-        }
-
-        // Validation description
-        if ($description === '') {
-            $errors['description'] = 'La description est obligatoire.';
-        }
-
-        if (! in_array($status, [Book::STATUS_AVAILABLE, Book::STATUS_UNAVAILABLE], true)) {
-            $errors['status'] = 'Statut invalide.';
-        }    
-
-        // En cas d’erreurs, stockage en session et réaffichage du formulaire
+        // En cas d’erreurs : messages flash + réaffichage du formulaire
         if (!empty($errors)) {
-
             Session::addFlash(
                 'error',
                 'Données invalides. Veuillez corriger les champs en erreur.'
             );
-
             Session::addFlash('error', $errors);
             Session::addFlash('old', $_POST);
 
-            $this->setPageTitle('Modifier un livre');
-            $this->render('book/edit', [
-                'book' => $book,
-            ]);
-
-            return;
+            $this->renderBookForm(
+                'book/edit',
+                'Modifier les informations',
+                [
+                    'book'           => $book,
+                    'allowImageEdit' => true,
+                    'showStatus'     => true,
+                    'submitLabel'    => 'Valider',
+                ]
+            );
         }
 
-        // Gestion de l’image (optionnelle en édition)
-        if (! empty($_FILES['image']['name'])) {
-            try {
-                $oldImagePath = $book->getImagePath();
+        // Mise à jour de l’image (upload + suppression éventuelle de l’ancienne)
+        $imageService = new BookImageService();
+        $imageService->update($book, $_FILES['image'] ?? []);
 
-                // Upload de la nouvelle image
-                $newImage = FileUploader::upload(
-                    $_FILES['image'],
-                    __DIR__ . '/../../public/' . Book::IMAGE_UPLOAD_DIR,
-                    'book_'
-                );
+        // Mise à jour des propriétés du livre
+        $book->setTitle($data['title']);
+        $book->setAuthor($data['author']);
+        $book->setDescription($data['description']);
+        $book->setStatus($data['status']);
 
-                // Chemin relatif pour la BDD
-                $imagePath =  Book::IMAGE_UPLOAD_DIR . '/' . $newImage;
-
-                // Mise à jour de l'image dans l'objet Book
-                $book->setImagePath($imagePath);        
-
-            } catch (\RuntimeException $e) {
-                Session::addFlash('error', $e->getMessage());
-                Session::addFlash('old', $_POST);
-
-                $this->setPageTitle('Modifier un livre');
-                $this->render('book/edit', [
-                    'book' => $book,
-                ]);
-                return;
-            }
-        }
-
-        $book->setTitle($title);
-        $book->setAuthor($author);
-        $book->setDescription($description);
-        $book->setStatus($status);
-
+        // Persistance en base de données
         $this->books->update($book);
 
-        // Suppression de l'ancienne image
-        if ($oldImagePath !== null) {
-            $this->deleteBookImageIfNeeded($oldImagePath);          
-        }
-
+        // Message de succès + redirection (PRG)
         Session::addFlash('success', 'Livre modifié avec succès.');
         header('Location: /account');
         exit;
@@ -478,13 +352,13 @@ class BookController extends Controller
             throw new HttpNotFoundException('Livre introuvable.');
         }
 
-        if ($book->getUserId() !== Session::getUserId()) {
-            throw new HttpForbiddenException('Ce livre ne vous appartient pas.');
-        }
+        // Vérifie que le livre appartient bien à l'utilisateur       
+        $accessChecker = new BookAccessChecker();
+        $accessChecker->checkOwnership($book);
 
-        // Suppression de l'ancienne image du livre
-        $imagePath = $book->getImagePath();
-        $this->deleteBookImageIfNeeded($imagePath);
+        // Suppression de l’image associée (si nécessaire)
+        $imageService = new BookImageService();
+        $imageService->delete($book);
 
         // Suppression du livre en BDD
         $this->books->delete($id);
@@ -495,27 +369,34 @@ class BookController extends Controller
     }
 
     /**
-     * Supprime le fichier image associé à un livre s’il existe.
+     * Affiche un formulaire de livre avec des paramètres communs.
      *
-     * @param string|null $imagePath Chemin relatif de l'image à supprimer.
+     * Centralise la configuration du formulaire (options, libellés, layout)
+     * afin d’éviter la duplication entre les vues d’ajout et de modification.
+     *
+     * @param string $view      Vue à afficher.
+     * @param string $pageTitle Titre de la page.
+     * @param array  $data      Données spécifiques à fusionner avec les valeurs par défaut.
      * @return void
      */
-    private function deleteBookImageIfNeeded(?string $imagePath): void
-    {
-        if ($imagePath === null || $imagePath === '') {
-            return;
-        }
+    private function renderBookForm(
+        string $view,
+        string $pageTitle,
+        array $data  = []
+    ): void {
+        $this->setPageTitle($pageTitle);
 
-        $publicDir = realpath(__DIR__ . '/../../public');
-        if ($publicDir === false) {
-            return;
-        }
+        $this->render($view, array_merge([
+            // Valeurs par défaut du formulaire
+            'allowImageEdit' => false,
+            'showStatus'     => false,
+            'submitLabel'    => 'Valider',
+            'backUrl'        => '/account',
 
-        $fullPath = $publicDir . DIRECTORY_SEPARATOR . ltrim($imagePath, '/');
-
-        if (is_file($fullPath)) {
-            unlink($fullPath);
-        }
+            // Layout
+            'pageStyles'     => ['book-form.css'],
+            'pageClass'      => 'is-light-page',
+        ], $data));
     }
-
+    
 }

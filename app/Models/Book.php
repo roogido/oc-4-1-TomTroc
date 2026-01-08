@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        12 décembre 2025
- * Maj :         1er janvier 2026
+ * Maj :         3 janvier 2026
  *
  * @category     Models
  * @package      App\Models
@@ -25,10 +25,17 @@ namespace App\Models;
 
 class Book
 {
+    // Statut d'un livre en BDD 
     public const STATUS_AVAILABLE   = 'available';
     public const STATUS_UNAVAILABLE = 'unavailable';
 
-    public const IMAGE_UPLOAD_DIR = 'uploads/books';
+    /**
+     * Dossier d’upload (relatif au dossier /public).
+     * - En BDD : "uploads/books/xxx.webp" (sans slash au début)
+     * - Sur disque : <publicDir> . '/uploads/books'
+     * - En HTML : '/' . self::IMAGE_UPLOAD_DIR . '/xxx.webp'
+     */    
+    public const IMAGE_UPLOAD_DIR = 'uploads/books/';
     public const DEFAULT_IMAGE    = 'uploads/books/book-default.webp';
 
 

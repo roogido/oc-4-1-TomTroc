@@ -33,12 +33,17 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     <?php endif; ?>
 </head>
 <body>
+
     <div class="site-wrapper<?= !empty($pageClass) ? ' ' . htmlspecialchars($pageClass) : '' ?>">
         <header class="site-header desktop-header">
             <nav class="header-container">
 
                 <!-- Bloc gauche : logo + menu -->
                 <div class="header-left">
+
+                    <?php if (($appEnv ?? '') === 'DEV') : ?>
+                        <span class="env-badge" aria-hidden="true">DEV</span>
+                    <?php endif; ?>                  
 
                     <!-- Logo -->
                     <a href="/" class="logo">
