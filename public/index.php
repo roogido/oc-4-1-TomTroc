@@ -34,6 +34,7 @@ Session::start();
 $ENV = Config::get('app.env', 'DEV');
 
 try {
+
     // Instanciation du router
     $router = new Router();
 

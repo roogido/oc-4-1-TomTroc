@@ -12,7 +12,7 @@
  * PHP version 8.2.12
  * 
  * Date :        7 décembre 2025
- * Maj :         7 janvier 2026
+ * Maj :         8 janvier 2026
  * 
  * @category    Configuration
  * @package     App\Config
@@ -36,7 +36,7 @@ return [
         'layout'       => dirname(__DIR__) . '/views/layout.php',
 
         // Routes
-        'routes'       => dirname(__DIR__) . '/Routes/web.php',
+        'routes'       => dirname(__DIR__) . '/app/Routes/web.php',
                 
         // Public
         'public'          => dirname(__DIR__) . '/public',
