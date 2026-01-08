@@ -65,7 +65,7 @@ function formatMessageDate(string $datetime): array
                                                     ? '/uploads/avatars/' . $user['avatar_path']
                                                     : \App\Models\User::DEFAULT_AVATAR
                                             ) ?>"
-                                            alt="Avatar de <?= htmlspecialchars($user->getPseudo()) ?>"
+                                            alt="Avatar de <?= htmlspecialchars($user['pseudo']) ?>"
                                             class="avatar avatar--md avatar--portrait"
                                         >
 
