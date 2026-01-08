@@ -1,0 +1,59 @@
+/* ==================================================
+   ERROR PAGES
+   ================================================== */
+
+.error-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 80px 16px;
+}
+
+.error-box {
+    /* Réutilise la logique des cards existantes */
+    background: #FFFFFF;
+    border-radius: 24px;
+    padding: 40px 32px;
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+
+    box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+}
+
+.error-code {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #9A9A9A;
+    margin-bottom: 24px;
+}
+
+.error-message {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #2C2C2C;
+    margin-bottom: 32px;
+}
+
+.error-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* ==================================================
+   DEV TRACE
+   ================================================== */
+
+.error-page--dev .error-trace {
+    margin-top: 24px;
+    padding: 16px;
+    background: #111;
+    color: #f1f1f1;
+    font-size: 13px;
+    border-radius: 12px;
+    overflow-x: auto;
+    text-align: left;
+}

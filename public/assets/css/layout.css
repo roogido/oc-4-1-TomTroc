@@ -15,24 +15,50 @@ body {
     background-color: #000; /* fond latéral desktop */
 }
 
+/* ===========================
+   WRAPPER GLOBAL
+   =========================== */
 .site-wrapper {
-    min-height: 100vh;
+    min-height: 100vh; /* Pour les vues "normale" sans scrolling */
     max-width: 1440px;
     margin: 0 auto;
-
     display: flex;
     flex-direction: column;
-
     background-color: #F5F3EF; /* fond site */
 }
 
-main {
-    flex: 1 0 auto;
-    max-width: 1440px;
-    margin: 0 auto;
-    width: 100%;    
+.site-wrapper--fixed {
+    /* comportement spécifique messagerie */
+    height: 100vh; 
+    min-height: 0;
 }
 
+/* ===========================
+   MAIN/FOOTER 
+   =========================== */
+main {
+    flex: 1 1 auto;  
+    min-height: 0;   
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* .site-wrapper--fixed > main {
+    display: flex;       
+    flex-direction: column;    
+} */
+
+/* le footer ne doit JAMAIS se compresser */
+.site-wrapper > footer {
+    flex-shrink: 0;
+}
+
+/* ===========================
+   LOGO
+   =========================== */
 .logo img,
 .footer-logo img,
 .footer-logo-mobile img {
@@ -59,6 +85,7 @@ main {
    ========================= */
 
 .site-header {
+    flex-shrink: 0;
     height: 80px;
     background-color: #F5F3EF;
 }

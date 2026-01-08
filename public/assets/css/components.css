@@ -1,12 +1,45 @@
 /* ===============================
    TITRES DE PAGE
 =============================== */
-
+/* h1 */
 .page-title {
     font-family: "Playfair Display", serif;
-    font-size: 40px;
+    font-size: 36px;
     font-weight: 400;
     line-height: 1.2;
+    margin: 0;
+}
+
+/* Titre non visible pour l'accessibilité */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ===============================
+   TITRES – SECTIONS
+=============================== */
+/* h2 */
+.section-title {
+    font-family: "Playfair Display", serif;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.2;
+    margin: 0;
+}
+
+/* h2 - plus petit */
+.section-title--small {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 /* ==================================================
@@ -119,6 +152,12 @@
 /* ==================================================
    COMPONENTS – BOOK CARD
    ================================================== */
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: center;
+    gap: 32px;
+}
 
 /* Carte livre */
 .book-card {
@@ -126,7 +165,6 @@
     border-radius: 12px;
     overflow: hidden;
     text-align: left;
-
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -139,9 +177,9 @@
 /* Image couverture */
 .book-card img {
     width: 100%;
-    height: 220px;
-    object-fit: cover;
+    height: auto;
     display: block;
+    background-color: #f5f5f5;
 }
 
 /* Corps de la carte */
@@ -228,15 +266,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     height: 48px;
     padding: 0 24px; /* largeur flexible par défaut */
-
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 500;
     text-decoration: none;
-
     border-radius: 10px;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -483,15 +518,12 @@
     position: absolute;
     top: 12px;
     right: 12px;
-
     background: none;
     border: none;
     padding: 4px;
-
     font-size: 18px;
     line-height: 1;
     color: currentColor;
-
     cursor: pointer;
     opacity: 0.6;
 }
@@ -551,7 +583,7 @@
 }
 
 /* ==================================================
-   MODAL
+   MODAL CONFIRMATION
    ================================================== */
 
 .modal-overlay {
@@ -595,24 +627,52 @@
     justify-content: center;
 }
 
-.btn {
+#confirm-modal .btn {
     padding: 10px 18px;
     border-radius: 10px;
-    border: none;
     cursor: pointer;
     font-size: 14px;
 }
 
-.btn-secondary {
+#confirm-modal .btn-secondary {
     background: #e6ecef;
+    border: none;
 }
 
-.btn-danger {
+#confirm-modal .btn-danger {
     background: #d64545;
     color: #fff;
+    border: none;
 }
 
+/* ==================================================
+   ENVIRONMENT BADGE (DEV)
+   ================================================== */
 
+.header-left {
+    position: relative; /* ancrage */
+}
+
+.env-badge {
+    position: absolute;
+    left: -50px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    color: rgba(41, 41, 41, 0.35);
+    border: 1px dashed rgba(41, 41, 41, 0.25);
+    border-radius: 6px;
+    padding: 4px 6px;
+
+    user-select: none;
+    pointer-events: none;
+}
 
 /* ==================================================
    RESPONSIVE
@@ -673,36 +733,75 @@
 }
 
 /* ==================================================
-   RESPONSIVE – BOOK CARD
-   (comportement commun HOME / BOOKS)
-   RESPONSIVE ≤ 1023px
+   RESPONSIVE – BOOK CARD (COMMUN HOME / BOOKS)
    ================================================== */
 
 @media (max-width: 1023px) {
-
-    /* Cartes légèrement réduites (~ -10%) */
     .book-card {
-        max-width: 200px;
+        max-width: 180px;
     }
 
-    .book-card img {
-        width: 100%;
-        aspect-ratio: 3 / 4;
-        object-fit: cover;
-        object-position: center;
+    .book-card-body {
+        padding: 14px;
     }
-
-    .book-card a {
-        display: block;
-        overflow: hidden;
-        border-radius: 12px 12px 0 0;
-    }    
 }
 
 @media (max-width: 768px) {
+    /* ===============================
+        TITRES DE PAGE
+        =============================== */
+    /* h1 */    
+    .page-title {
+        font-size: 30px;
+    }
 
-    /* Réduction supplémentaire */
+    /* ===============================
+        TITRES – SECTIONS
+        =============================== */
+    /* h2 */
+    .section-title {
+        font-size: 28px;
+    }
+
+    /* h2 - plus petit */
+    .section-title--small {
+        font-size: 12px;
+    }    
+
+    /* ===============================
+        BOOK
+        =============================== */    
     .book-card {
-        max-width: 170px;
+        max-width: 160px;
+    }
+
+    .book-card-body {
+        padding: 12px;
+    }
+
+    .book-card-body h3 {
+        font-size: 12.5px;
+    }
+
+    .book-author {
+        font-size: 11.5px;
+        margin-bottom: 8px;
+    }
+
+    .book-owner {
+        font-size: 11px;
     }
 }
+
+@media (max-width: 610px) {
+    .book-card {
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 385px) {
+    .book-card {
+        max-width: 220px;
+    }   
+}
+

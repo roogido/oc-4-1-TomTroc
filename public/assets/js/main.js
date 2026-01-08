@@ -2,109 +2,54 @@
  * main.js
  *
  * Script JavaScript global du projet TomTroc.
- * Gère les interactions communes côté front-end (ex. menu mobile).
+ * Gère les interactions communes côté front-end.
  *
  * Auteur : Salem Hadjali
  * Date   : 21 décembre 2025
- * Maj    : 1er janvier 2026
- * 
+ * Maj    : 7 janvier 2026
  */
 
+'use strict';
+
+/* ============================================================
+   UTILITAIRES GLOBAUX
+   ============================================================ */
 
 /**
- * Gère les changements sur les champs input de type file.
- * - Affiche le nom du fichier sélectionné si présent
- * - Déclenche l’upload immédiat de l’avatar sur la page compte
+ * Affiche un message global dans la page compte
+ * @param {'error'|'success'} type
+ * @param {string} message
  */
-document.addEventListener('change', async (e) => {
-    const input = e.target;
+function showAccountMessage(type, message) {
+    const container = document.querySelector('.account-page');
+    if (!container) return;
 
-    if (!input.matches('.form-file-input')) {
-        return;
-    }
+    // Supprime tous les messages existants
+    container.querySelectorAll('.alert').forEach(el => el.remove());
 
-    // --- CAS 1 : affichage du nom de fichier (register, book, etc.)
-    const fileNameContainer = input.closest('.form-group')?.querySelector('.form-file-name');
-    if (fileNameContainer) {
-        const fileName = input.files[0]?.name || 'Aucun fichier sélectionné';
-        fileNameContainer.textContent = fileName;
-    }
+    const div = document.createElement('div');
+    div.className = `alert alert-${type}`;
+    div.setAttribute('role', 'alert');
 
-    // --- CAS 2 : avatar account (upload immédiat)
-    if (input.id === 'avatar' && input.closest('.account-avatar-form')) {
-        await handleAvatarUpload(input);
-    }
-});
+    div.innerHTML = `
+        <button type="button" class="alert-close" aria-label="Fermer le message">
+            &times;
+        </button>
+        <p>${message}</p>
+    `;
 
-/**
- * IIFE - Initialise le menu mobile (burger).
- *
- * - Ouvre / ferme le menu
- * - Met à jour aria-expanded
- * - Ferme le menu au resize desktop, clic sur lien ou touche Escape
- *
- * Fonction auto-exécutée pour éviter la pollution du scope global.
- */
-(function () {
-    'use strict';
+    const title = container.querySelector('h1');
+    title.after(div);
 
-    const MOBILE_BREAKPOINT = 768;
-
-    const burgerButton = document.querySelector('.burger');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    if (!burgerButton || !mobileMenu) {
-        return;
-    }
-
-    function openMenu() {
-        mobileMenu.hidden = false;
-        burgerButton.setAttribute('aria-expanded', 'true');
-    }
-
-    function closeMenu() {
-        mobileMenu.hidden = true;
-        burgerButton.setAttribute('aria-expanded', 'false');
-    }
-
-    function toggleMenu() {
-        const isExpanded = burgerButton.getAttribute('aria-expanded') === 'true';
-        if (isExpanded) {
-            closeMenu();
-            return;
-        }
-        openMenu();
-    }
-
-    function handleResize() {
-        // Si on repasse en desktop, on force la fermeture.
-        if (window.innerWidth > MOBILE_BREAKPOINT) {
-            closeMenu();
-        }
-    }
-
-    burgerButton.addEventListener('click', toggleMenu);
-
-    // Bonus UX : fermer au tap sur un lien
-    mobileMenu.addEventListener('click', (event) => {
-        const link = event.target.closest('a');
-        if (link) {
-            closeMenu();
-        }
+    // Fermeture manuelle
+    div.querySelector('.alert-close').addEventListener('click', () => {
+        div.remove();
     });
+}
 
-    // Bonus accessibilité : fermer avec Escape
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
-            closeMenu();
-        }
-    });
-
-    window.addEventListener('resize', handleResize);
-
-    // Sécurité au chargement (si on arrive direct en desktop)
-    handleResize();
-})();
+/* ============================================================
+   UPLOADS & FICHIERS
+   ============================================================ */
 
 /**
  * IIFE - Upload immédiatement un nouvel avatar utilisateur.
@@ -174,6 +119,108 @@ async function handleAvatarUpload(input) {
 }
 
 /**
+ * Gère les changements sur les champs input de type file (images).
+ * - Affiche le nom du fichier sélectionné si présent
+ * - Déclenche l’upload immédiat de l’avatar sur la page compte
+ */
+document.addEventListener('change', async (e) => {
+    const input = e.target;
+
+    if (!input.matches('.form-file-input')) {
+        return;
+    }
+
+    // --- CAS 1 : affichage du nom de fichier (register, book, etc.)
+    const fileNameContainer = input.closest('.form-group')?.querySelector('.form-file-name');
+    if (fileNameContainer) {
+        const fileName = input.files[0]?.name || 'Aucun fichier sélectionné';
+        fileNameContainer.textContent = fileName;
+    }
+
+    // --- CAS 2 : avatar account (upload immédiat)
+    if (input.id === 'avatar' && input.closest('.account-avatar-form')) {
+        await handleAvatarUpload(input);
+    }
+});
+
+/* ============================================================
+   NAVIGATION / MENU
+   ============================================================ */
+
+/**
+ * IIFE - Initialise le menu mobile (burger).
+ *
+ * - Ouvre / ferme le menu
+ * - Met à jour aria-expanded
+ * - Ferme le menu au resize desktop, clic sur lien ou touche Escape
+ *
+ * Fonction auto-exécutée pour éviter la pollution du scope global.
+ */
+(() => {
+ 
+    const MOBILE_BREAKPOINT = 768;
+
+    const burgerButton = document.querySelector('.burger');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (!burgerButton || !mobileMenu) {
+        return;
+    }
+
+    function openMenu() {
+        mobileMenu.hidden = false;
+        burgerButton.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMenu() {
+        mobileMenu.hidden = true;
+        burgerButton.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleMenu() {
+        const isExpanded = burgerButton.getAttribute('aria-expanded') === 'true';
+        if (isExpanded) {
+            closeMenu();
+            return;
+        }
+        openMenu();
+    }
+
+    function handleResize() {
+        // Si on repasse en desktop, on force la fermeture.
+        if (window.innerWidth > MOBILE_BREAKPOINT) {
+            closeMenu();
+        }
+    }
+
+    burgerButton.addEventListener('click', toggleMenu);
+
+    // UX : fermer au tap sur un lien
+    mobileMenu.addEventListener('click', (event) => {
+        const link = event.target.closest('a');
+        if (link) {
+            closeMenu();
+        }
+    });
+
+    // accessibilité : fermer avec Escape
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeMenu();
+        }
+    });
+
+    window.addEventListener('resize', handleResize);
+
+    // Sécurité au chargement (si on arrive direct en desktop)
+    handleResize();
+})();
+
+/* ============================================================
+   FORMULAIRES & UX
+   ============================================================ */
+
+/**
  * Password visibility toggle.
  *
  * Gère l’affichage / masquage du mot de passe pour les champs `input[type="password"]`
@@ -185,7 +232,6 @@ async function handleAvatarUpload(input) {
  * Utilisé dans les vues : login, register, account.
  */
 (() => {
-    'use strict';
 
     const SELECTOR = '[data-password-toggle]';
 
@@ -248,9 +294,7 @@ async function handleAvatarUpload(input) {
 /**
  * Gère l’aperçu d’une image sélectionnée via un champ fichier.
  */
-
 (() => {
-    'use strict';
 
     const fileInput = document.getElementById('image');
     const previewImg = document.getElementById('book-image-preview');
@@ -280,11 +324,14 @@ async function handleAvatarUpload(input) {
     });
 })();
 
+/* ============================================================
+   MODALES & ALERTES
+   ============================================================ */
+
 /**
  * Gère la confirmation de suppression via une modale avant soumission de formulaire.
  */
 (() => {
-    'use strict';
 
     const modal = document.getElementById('confirm-modal');
     if (!modal) {
@@ -324,35 +371,100 @@ async function handleAvatarUpload(input) {
 })();
 
 /**
- * Affiche un message global dans la page compte
- * @param {'error'|'success'} type
- * @param {string} message
+ * Fermeture des messages d’alerte (success / error)
+ * via le bouton [data-alert-close]
  */
-function showAccountMessage(type, message) {
-    const container = document.querySelector('.account-page');
-    if (!container) return;
+(() => {
 
-    // Supprime tous les messages existants
-    container.querySelectorAll('.alert').forEach(el => el.remove());
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-alert-close]');
+        if (!btn) {
+            return;
+        }
 
-    const div = document.createElement('div');
-    div.className = `alert alert-${type}`;
-    div.setAttribute('role', 'alert');
+        const alert = btn.closest('.alert');
+        if (!alert) {
+            return;
+        }
 
-    div.innerHTML = `
-        <button type="button" class="alert-close" aria-label="Fermer le message">
-            &times;
-        </button>
-        <p>${message}</p>
-    `;
-
-    const title = container.querySelector('h1');
-    title.after(div);
-
-    // Fermeture manuelle
-    div.querySelector('.alert-close').addEventListener('click', () => {
-        div.remove();
+        alert.remove();
     });
+})();
+
+/* ============================================================
+   MESSAGERIE
+   ============================================================ */
+
+/**
+ * Synchronise le badge de messages non lus du header
+ * avec la conversation actuellement ouverte.
+ *
+ * Si une discussion est active, le nombre de messages non lus
+ * est déduit du badge global du header et le badge de la
+ * conversation est supprimé.
+ */
+(() => {
+
+    const headerBadge = document.querySelector('.header-action .badge');
+    if (!headerBadge) return;
+
+    const currentPath = window.location.pathname;
+
+    // Trouver la conversation actuellement ouverte
+    const activeConversationLink = document.querySelector(
+        `.conversation-link[href="${currentPath}"]`
+    );
+
+    if (!activeConversationLink) return;
+
+    const conversationBadge = activeConversationLink.querySelector('.conversation-badge');
+    if (!conversationBadge) return;
+
+    const conversationCount = parseInt(conversationBadge.textContent, 10);
+    if (isNaN(conversationCount) || conversationCount <= 0) return;
+
+    // Décrémenter le badge header
+    const headerCount = parseInt(headerBadge.textContent, 10) || 0;
+    const newHeaderCount = headerCount - conversationCount;
+
+    if (newHeaderCount > 0) {
+        headerBadge.textContent = newHeaderCount;
+    } else {
+        headerBadge.remove();
+    }
+
+    // Supprimer le badge de la conversation ouverte
+    conversationBadge.remove();
+})();
+
+/* ============================================================
+   SCROLL & COMPORTEMENTS FINAUX
+   ============================================================ */
+
+/**
+ * Scroll automatiquement la zone de messages vers le bas
+ */
+function scrollThreadToBottom() {
+    const threadBody = document.querySelector('.thread-body');
+    if (!threadBody) return;
+
+    threadBody.scrollTop = threadBody.scrollHeight;
 }
 
+/**
+ * Scroll automatique à l’ouverture de la conversation
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    scrollThreadToBottom();
+});
 
+/**
+ * Scroll après clic sur "Envoyer"
+ */
+document.addEventListener('submit', (e) => {
+    const form = e.target.closest('.thread-form');
+    if (!form) return;
+
+    // Laisse le POST se faire, mais force le scroll juste avant
+    scrollThreadToBottom();
+});

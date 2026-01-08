@@ -2,22 +2,24 @@
 /**
  * Class MessageController
  *
- * Contrôleur de la page d’accueil.
- *
- * Responsable de l’affichage des contenus publics,
- * notamment la liste des derniers livres disponibles à l’échange.
+ * Contrôleur en charge de la messagerie utilisateur.
+ * Gère l’affichage de la boîte de réception, des fils de discussion
+ * ainsi que l’envoi des messages entre utilisateurs.
  *
  * PHP version 8.2.12
  *
  * Date :      15 décembre 2025
- * Maj  :      16 décembre 2025
+ * Maj  :      6 janvier 2026
  *
- * @category   Controllers
+ * @category   Controller
+ * @package    App\Controllers
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
  * @version    1.0.0
  * @since      1.0.0
- * @see        BookRepository
+ * @see        \App\Repositories\MessageRepository
+ * @see        \App\Repositories\UserRepository
  */
+
 
 namespace App\Controllers;
 
@@ -28,6 +30,7 @@ use App\Core\HttpNotFoundException;
 use App\Repositories\MessageRepository;
 use App\Repositories\UserRepository;
 use App\Models\Message;
+
 
 class MessageController extends Controller
 {
@@ -42,8 +45,14 @@ class MessageController extends Controller
     }
 
     /**
-     * Messagerie (liste des conversations)
-     * Route : GET /messages
+     * Affiche la boîte de réception de l’utilisateur.
+     *
+     * Vérifie l’authentification, récupère les conversations
+     * et rend la vue de messagerie.
+     *
+     * @return void
+     *
+     * @throws HttpForbiddenException Si l’utilisateur n’est pas authentifié.
      */
     public function inbox(): void
     {
@@ -55,17 +64,34 @@ class MessageController extends Controller
 
         $conversations = $this->messages->findConversationsByUser($currentUserId);
 
+        // Utilisateurs disponibles pour discussion libre (sans passer par un livre)
+        $users = [];
+        if (empty($conversations)) {
+            $users = $this->users->findAllExcept($currentUserId);
+        }        
+
         $this->setPageTitle('Messagerie');
         $this->render('messages/index', [
             'conversations' => $conversations,
+            'users'         => $users,   
             'thread'        => null,
             'otherUser'     => null,
+            'pageStyles'    => ['messages.css'],
+            'pageClass'     => 'site-wrapper--fixed messages--list',
         ]);
     }
 
     /**
-     * Fil de discussion avec un utilisateur
-     * Route : GET /messages/{userId}
+     * Affiche le fil de discussion entre l’utilisateur courant et un autre utilisateur.
+     *
+     * Vérifie l’authentification, charge la conversation ciblée,
+     * marque les messages reçus comme lus et rend la vue de messagerie.
+     *
+     * @param int $userId Identifiant de l’autre utilisateur.
+     * @return void
+     *
+     * @throws HttpForbiddenException Si l’utilisateur n’est pas authentifié.
+     * @throws HttpNotFoundException  Si la conversation est invalide ou inexistante.
      */
     public function thread(int $userId): void
     {
@@ -93,14 +119,24 @@ class MessageController extends Controller
         $this->setPageTitle('Messagerie');
         $this->render('messages/index', [
             'conversations' => $conversations,
+            'users'         => [], 
             'thread'        => $thread,
             'otherUser'     => $otherUser,
+            'pageStyles'    => ['messages.css'],
+            'pageClass'     => 'site-wrapper--fixed messages--thread',
         ]);
     }
 
     /**
-     * Envoi d'un message
-     * Route : POST /messages/send
+     * Envoie un message à un autre utilisateur.
+     *
+     * Vérifie l’authentification, valide les données envoyées,
+     * crée le message et redirige vers le fil de discussion.
+     *
+     * @return void
+     *
+     * @throws HttpForbiddenException Si l’utilisateur n’est pas authentifié ou tente une action interdite.
+     * @throws HttpNotFoundException  Si le destinataire n’existe pas.
      */
     public function send(): void
     {
@@ -132,4 +168,5 @@ class MessageController extends Controller
         header('Location: /messages/' . $receiverId);
         exit;
     }
+
 }

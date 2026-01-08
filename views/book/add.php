@@ -1,37 +1,11 @@
 <?php
 /* VUE ADD (BOOK) */
 
-use App\Core\Session;
+use App\View\FlashHelper;
 
-// Récupération des données flash
-$errorsAll = Session::getFlashes('error');
-$success  = Session::getFlashes('success');
-$oldAll   = Session::getFlashes('old');
-
-/*
- * Convention :
- * - $globalError : string|null
- * - $errors      : array par champ
- * - $old         : anciennes valeurs
- */
-$globalError = null;
-$errors = [];
-$old    = $oldAll[0] ?? [];
-
-foreach ($errorsAll as $err) {
-    if (is_array($err)) {
-        $errors = $err;
-    } elseif (is_string($err)) {
-        $globalError = $err;
-    }
-}
-
-// Configuration formulaire ADD
-$allowImageEdit = true;
-$showStatus     = false;
-$submitLabel    = 'Ajouter le livre';
-
-$pageTitle     ??= 'Ajouter un livre';
-$backUrl       ??= '/account';
+// Récupération des messages flash normalisés :
+//  - (erreurs globales, erreurs par champ, anciennes valeurs, succès)
+//  extract() : créer automatiquement les variables utilisables directement dans la vue
+extract(FlashHelper::extract());
 
 require __DIR__ . '/_book-form.php';

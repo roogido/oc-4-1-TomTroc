@@ -1,39 +1,11 @@
 <?php
 /* VUE EDIT (BOOK) */
 
-use App\Core\Session;
+use App\View\FlashHelper;
 
-/** @var \App\Models\Book $book */
-
-// Récupération des données flash
-$errorsAll = Session::getFlashes('error');
-$success  = Session::getFlashes('success');
-$oldAll   = Session::getFlashes('old');
-
-/*
- * Convention :
- * - $globalError : string|null
- * - $errors      : array par champ
- * - $old         : anciennes valeurs
- */
-$globalError = null;
-$errors = [];
-$old    = $oldAll[0] ?? [];
-
-foreach ($errorsAll as $err) {
-    if (is_array($err)) {
-        $errors = $err;
-    } elseif (is_string($err)) {
-        $globalError = $err;
-    }
-}
-
-// Configuration du formulaire (EDIT)
-$allowImageEdit = true;
-$showStatus     = true;
-$submitLabel    = 'Valider';
-
-$pageTitle     ??= 'Modifier les informations';
-$backUrl       ??= '/account';
+// Récupération des messages flash normalisés :
+//  - (erreurs globales, erreurs par champ, anciennes valeurs, succès)
+//  extract() : créer automatiquement les variables utilisables directement dans la vue
+extract(FlashHelper::extract());
 
 require __DIR__ . '/_book-form.php';

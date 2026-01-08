@@ -37,21 +37,8 @@ $old            ??= [];
 
     </header>
 
-    <!-- ===== Global error (fallback) ===== -->
-    <?php if (!empty($globalError)) : ?>
-        <div class="alert alert-error" role="alert">
-            <p><?= htmlspecialchars($globalError) ?></p>
-        </div>
-    <?php endif; ?>
-
-    <!-- ===== Success messages ===== -->
-    <?php if (!empty($success)) : ?>
-        <div class="alert alert-success" role="alert">
-            <?php foreach ($success as $message) : ?>
-                <p><?= htmlspecialchars($message) ?></p>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+    <!-- ===== Alertes : success/errors  ===== -->
+    <?php require __DIR__ . '/../partials/alerts.php'; ?>
    
     <div class="book-form-card">
 

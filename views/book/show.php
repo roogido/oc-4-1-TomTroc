@@ -2,7 +2,10 @@
 
     <!-- Fil d’Ariane (plein largeur, aligné logo) -->
     <div class="book-detail-breadcrumb-wrapper">
-        <nav class="breadcrumb book-detail-breadcrumb">
+        <nav
+            class="breadcrumb book-detail-breadcrumb"
+            aria-label="Fil d’Ariane"
+        >
             <a href="/books">Nos livres</a>
             <span aria-hidden="true">›</span>
             <span><?= htmlspecialchars($book->getTitle()) ?></span>
@@ -32,7 +35,7 @@
             <div class="book-detail-content">
 
                 <header class="book-detail-header">
-                    <h1><?= htmlspecialchars($book->getTitle()) ?></h1>
+                    <h1 class="page-title"><?= htmlspecialchars($book->getTitle()) ?></h1>
 
                     <p class="book-detail-author">
                         par <?= htmlspecialchars($book->getAuthor()) ?>
@@ -42,12 +45,12 @@
                 <hr class="book-detail-separator">
 
                 <section class="book-detail-description">
-                    <h2>DESCRIPTION</h2>
+                    <h2 class="section-title section-title--small">DESCRIPTION</h2>
                     <p><?= nl2br(htmlspecialchars($book->getDescription())) ?></p>
                 </section>
 
                 <section class="book-detail-owner">
-                    <h2>PROPRIÉTAIRE</h2>
+                    <h2 class="section-title section-title--small">PROPRIÉTAIRE</h2>
 
                     <a
                         href="/users/<?= (int) $book->getUserId() ?>"

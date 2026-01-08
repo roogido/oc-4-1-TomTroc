@@ -1,9 +1,10 @@
-<section class="user-public page">
+<div class="user-public page">
+    <h1 class="sr-only">Bibliothèque utilisateur</h1>
 
     <div class="page-inner user-public-inner">
 
         <div class="user-public-layout">
-
+        
             <!-- ================= LEFT : PROFILE CARD ================= -->
             <aside class="profile-card">
 
@@ -56,7 +57,7 @@
             </aside>
 
             <!-- ================= RIGHT : LIBRARY LIST ================= -->
-            <section class="library-card user-library-card">
+            <div class="library-card user-library-card">
 
                 <!-- Header desktop -->
                 <div class="library-head">
@@ -70,7 +71,7 @@
                     <p class="library-empty">Aucun livre.</p>
                 <?php else : ?>
                     <?php foreach ($books as $book) : ?>
-                        <article class="library-row">
+                        <div class="library-row">
 
                             <!-- PHOTO -->
                             <div class="col-photo">
@@ -106,12 +107,12 @@
                                 ) ?>
                             </div>
 
-                        </article>
+                        </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
 
-            </section>
+            </div>
 
         </div>
     </div>
-</section>
+</div>

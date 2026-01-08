@@ -5,7 +5,7 @@
 <!-- ================= HERO ================= -->
 <section class="home-hero">
     <div class="home-hero-left">
-        <h1>
+        <h1 class="page-title">
             Rejoignez nos<br>
             lecteurs passionnés
         </h1>
@@ -34,14 +34,14 @@
 
 <!-- ================= DERNIERS LIVRES ================= -->
 <section class="home-last-books">
-    <h2>Les derniers livres ajoutés</h2>
+    <h2 class="section-title">Les derniers livres ajoutés</h2>
 
     <?php if (empty($books)) : ?>
         <p class="home-last-books-empty">
             Aucun livre disponible pour le moment.
         </p>
     <?php else : ?>
-        <div class="home-last-books-grid">
+        <div class="books-grid home-last-books-grid">
             <?php foreach ($books as $book) : ?>
                 <article class="book-card">
                     <a href="/book/<?= (int) $book->getId() ?>">
@@ -76,7 +76,7 @@
 
 <!-- ================= COMMENT ÇA MARCHE ================= -->
 <section class="home-how-it-works">
-    <h2>Comment ça marche ?</h2>
+    <h2 class="section-title">Comment ça marche ?</h2>
 
     <p class="how-intro">
         Échanger des livres avec TomTroc c’est simple et amusant !
@@ -109,7 +109,7 @@
 </section>
 
 <!-- ================= BANDEAU IMAGE ================= -->
-<section class="home-banner">
+<div class="home-banner">
     <picture>
         <!-- Mobile -->
         <source
@@ -123,7 +123,7 @@
             alt="Lectrice cherchant un livre dans une bibliothèque"
         >
     </picture>
-</section>
+</div>
 
 <!-- ================= NOS VALEURS ================= -->
 <section class="home-values">

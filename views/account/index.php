@@ -1,61 +1,29 @@
 <?php
 /* VUE ACCOUNT (MON COMPTE) */
 
-use App\Core\Session;
+use App\View\FlashHelper;
 
-// Récupération flash
-$errorsAll = Session::getFlashes('error');
-$success   = Session::getFlashes('success');
-$oldAll    = Session::getFlashes('old');
-
-/*
- * Convention :
- * - $globalError : string|null
- * - $errors      : array par champ
- * - $old         : anciennes valeurs
- */
-$globalError = null;
-$errors = [];
-$old    = $oldAll[0] ?? [];
-
-foreach ($errorsAll as $err) {
-    if (is_array($err)) {
-        $errors = $err;
-    } elseif (is_string($err)) {
-        $globalError = $err;
-    }
-}
+// Récupération des messages flash normalisés :
+//  - (erreurs globales, erreurs par champ, anciennes valeurs, succès)
+//  extract() : créer automatiquement les variables utilisables directement dans la vue
+extract(FlashHelper::extract());
 ?>
 
-<section class="account-page">
+<div class="account-page">
 
     <!-- ================= PAGE TITLE ================= -->
     <header class="account-header">
         <h1 class="page-title">Mon compte</h1>
     </header>
 
-    <!-- ===== Global errors (fallback) ===== -->
-    <?php if ($globalError) : ?>
-        <div class="alert alert-error" role="alert">
-            <p><?= htmlspecialchars($globalError) ?></p>
-        </div>
-    <?php endif; ?>
-
-    <!-- ===== Success messages ===== -->
-    <?php if (!empty($success)) : ?>
-        <div class="alert alert-success" role="alert">
-            <?php foreach ($success as $message) : ?>
-                <p><?= htmlspecialchars($message) ?></p>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-
+    <!-- ===== Alertes : success/errors  ===== -->
+    <?php require __DIR__ . '/../partials/alerts.php'; ?>
 
     <!-- ================= PROFILE + SETTINGS ================= -->
     <div class="account-layout">
 
         <!-- ===== PROFILE CARD ===== -->
-        <section class="profile-card account-profile-card">
+        <div class="profile-card account-profile-card">
 
             <!-- ===== AVATAR ===== -->
             <div class="profile-avatar account-avatar">
@@ -124,14 +92,14 @@ foreach ($errorsAll as $err) {
                 </a>
             </div>
 
-        </section>
+        </div>
 
         <!-- ===== SETTINGS CARD ===== -->
-        <section class="account-settings">
+        <div class="account-settings">
 
             <div class="profile-card account-settings-card">
 
-                <h2 class="account-section-title">
+                <h2 id="account-settings-title" class="account-section-title">
                     Vos informations personnelles
                 </h2>
 
@@ -222,12 +190,12 @@ foreach ($errorsAll as $err) {
 
             </div>
 
-        </section>
+        </div>
 
     </div>
 
     <!-- ================= LIBRARY ================= -->
-    <section class="library-card account-library">
+    <div class="library-card account-library">
 
         <header class="account-library-header">
             <a href="/book/add" class="btn btn-primary btn--md">
@@ -254,7 +222,7 @@ foreach ($errorsAll as $err) {
             <?php else : ?>
 
                 <?php foreach ($books as $book) : ?>
-                    <article class="library-row">
+                    <div class="library-row">
 
                         <!-- PHOTO -->
                         <div class="col-photo">
@@ -326,44 +294,13 @@ foreach ($errorsAll as $err) {
                             </form>
                         </div>
 
-                    </article>
+                    </div>
                 <?php endforeach; ?>
 
             <?php endif; ?>
 
         </div>
 
-    </section>
-
-</section>
-
-<div id="confirm-modal" class="modal-overlay" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true">
-        <h2 class="modal-title">Confirmation</h2>
-
-        <p class="modal-text">
-            Es-tu sûr de vouloir supprimer ce livre ?
-            <br>
-            Cette action est définitive.
-        </p>
-
-        <div class="modal-actions">
-            <button
-                type="button"
-                class="btn btn-secondary"
-                data-confirm-cancel
-            >
-                Annuler
-            </button>
-
-            <button
-                type="button"
-                class="btn btn-danger"
-                data-confirm-ok
-            >
-                Supprimer
-            </button>
-        </div>
     </div>
-</div>
 
+</div>

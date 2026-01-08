@@ -1,8 +1,8 @@
-<main class="books page">
+<section class="books page">
     <div class="page-inner">
         <!-- HEADER PAGE -->
         <header class="books-header">
-            <h1>Nos livres à l’échange</h1>
+            <h1 class="page-title">Nos livres à l’échange</h1>
 
             <form method="get" action="/books" class="books-search">
                 <input
@@ -18,9 +18,9 @@
         <?php if (empty($books)) : ?>
             <p class="books-empty">Aucun livre disponible.</p>
         <?php else : ?>
-            <section class="books-grid">
+            <div class="books-grid">
                 <?php foreach ($books as $book) : ?>
-                    <article class="book-card">
+                    <div class="book-card">
 
                         <div class="book-card-image">
                             <?php if ($book->getStatus() === 'unavailable') : ?>
@@ -39,7 +39,7 @@
                         </div>
 
                         <div class="book-card-body">
-                            <h3><?= htmlspecialchars($book->getTitle()) ?></h3>
+                            <p class="book-title"><?= htmlspecialchars($book->getTitle()) ?></p>
 
                             <p class="book-author">
                                 <?= htmlspecialchars($book->getAuthor()) ?>
@@ -53,9 +53,9 @@
                             </p>
                         </div>
 
-                    </article>
+                    </div>
                 <?php endforeach; ?>
-            </section>
+            </div>
         <?php endif; ?>
     </div>
-</main>
+</section>

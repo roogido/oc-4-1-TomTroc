@@ -1,0 +1,68 @@
+--------------------------
+login : <email_address>
+password :  password (pour tous les utilisateurs)
+--------------------------
+
+Pseudo : CamilleClubLit
+login : camille.clublit@tomtroc.test
+password :  password
+
+Pseudo : Alexlecture
+login : alexlecture@tomtroc.test
+password :  password
+
+Pseudo : Lotrfanclub67
+login : lotrfanclub67@tomtroc.test
+password :  password
+
+Pseudo : Alexlecture
+login : alexlecture@tomtroc.test
+password :  password
+
+Pseudo : Hugo1990_12
+login : hugo1990_12@tomtroc.test
+password :  password
+
+Pseudo : Juju1432
+login : juju1432@tomtroc.test
+password :  password
+
+Pseudo : Christiane75014
+login : christiane75014@tomtroc.test
+password :  password
+
+Pseudo : Hamzalecture
+login : hamzalecture@tomtroc.test
+password :  password
+
+Pseudo : Hugo1990_12
+login : hugo1990_12@tomtroc.test
+password :  password
+
+Pseudo : Lou&Ben50
+login : lou.ben50@tomtroc.test
+password :  password
+
+Pseudo : Lolobzh
+login : lolobzh@tomtroc.test
+password :  password
+
+Pseudo : Sas634
+login : sas634@tomtroc.test
+password :  password
+
+Pseudo : ML95
+login : ml95@tomtroc.test
+password :  password
+
+Pseudo : Verogo33
+login : verogo33@tomtroc.test
+password :  password
+
+Pseudo : AnnikaBrahms
+login : annika.brahms@tomtroc.test
+password :  password
+
+Pseudo : Victoirefabr912
+login : victoirefabr912@tomtroc.test
+password :  password

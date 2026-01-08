@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :      8 décembre 2025
- * Maj  :      17 décembre 2025
+ * Maj  :      6 janvier 2026
  *
  * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -51,6 +51,10 @@ abstract class Controller
      */
     protected function setPageTitle(string $title): void
     {
+        if (!str_ends_with($title, 'TomTroc')) {
+            $title .= ' - ' . Config::get('app.title');
+        }
+
         $this->pageTitle = $title;
     }
 
@@ -81,6 +85,9 @@ abstract class Controller
             throw new \RuntimeException("View not found: {$viewFile}");
         }
 
+        // Environnement (DEV/PROD) 
+        $params['appEnv'] = Config::get('app.env');
+
         // Ajout du titre à la liste des paramètres transmis à la vue
         $params['pageTitle'] = $this->pageTitle;        
 
@@ -95,8 +102,8 @@ abstract class Controller
             $params['currentUser'] = null;
         }
 
-        // Transforme un tableau associatif en variables locales EXTR_SKIP évite
-        // que les variables critiques du layout soient écrasées par erreur
+        // Transforme un tableau associatif en variables locales exploitable dans la vue.
+        // EXTR_SKIP évite que les variables critiques du layout soient écrasées par erreur.
         extract($params, EXTR_SKIP);
         require $layoutPath;
     }
@@ -112,26 +119,42 @@ abstract class Controller
      */
     public static function renderError(string $view, array $params = []): void
     {
-        $viewsErrorPath  = Config::get('app.paths.views_error');
-        $layoutErrorPath = Config::get('app.paths.layout_error');
+        // Sécurité : interdiction de la vue dev en PROD
+        if ($view === 'dev' && Config::get('app.env') !== 'DEV') {
+            $view = '500';
+            unset($params['trace']);
+        }
+
+        $viewsErrorPath = Config::get('app.paths.views_error');
+        $layoutPath    = Config::get('app.paths.layout');
 
         $viewFile = $viewsErrorPath . $view . '.php';
 
-        if (! file_exists($layoutErrorPath)) {
+        if (!file_exists($layoutPath) || !file_exists($viewFile)) {
             http_response_code(500);
-            echo "Critical error: error layout missing.";
+            echo 'Critical error.';
             return;
         }
 
-        if (! file_exists($viewFile)) {
-            http_response_code(500);
-            echo "Critical error: error view missing.";
-            return;
-        }
+        // Titre par défaut
+        $params['pageTitle'] = $params['pageTitle']
+            ?? 'Erreur - ' . Config::get('app.title');
 
-        $params['pageTitle'] = $params['pageTitle'] ?? 'Erreur - ' . Config::get('app.title');
-    
+        // Environnement (DEV/PROD) 
+        $params['appEnv'] = Config::get('app.env');
+
+        // CSS spécifique erreur
+        $params['pageStyles'][] = 'error.css';
+
+        // Variables attendue par le layout
+        $params['currentUser'] = Session::isLogged()
+            ? (new \App\Repositories\UserRepository())->findById(Session::getUserId())
+            : null;
+
+        $params['unreadMessagesCount'] = 0;
+
         extract($params, EXTR_SKIP);
-        require $layoutErrorPath;
+        require $layoutPath;
     }
+
 }

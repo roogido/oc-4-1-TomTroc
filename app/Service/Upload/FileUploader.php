@@ -16,7 +16,7 @@
  * PHP version 8.2.12
  *
  * Date :        19 décembre 2025
- * Maj :         20 décembre 2025
+ * Maj :         2 janvier 2026
  *
  * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -27,7 +27,8 @@
  * @todo       
  */
 
-namespace App\Core;
+namespace App\Service\Upload;
+
 
 class FileUploader
 {

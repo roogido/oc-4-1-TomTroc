@@ -13,7 +13,7 @@
  * PHP version 8.2.12
  * 
  * Date :      10 décembre 2025
- * Maj  :
+ * Maj  :       8 janvier 2026
  * 
  * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -32,22 +32,40 @@ class Config
 
 
     /**
-     * Charge tous les fichiers du dossier /config au premier appel.
+     * Charge la configuration en mémoire  (chargement différé).
+     *
+     * Parcourt les fichiers PHP du dossier /config et les stocke dans self::$config.
+     * Gère un override local pour la base de données via database.local.php si présent.
+     *
+     * @return void
      */
     private static function load(): void
     {
+        // Évite de recharger la configuration si elle est déjà en mémoire
         if (!empty(self::$config)) {
-            return; // Déjà chargé
+            return;
         }
 
+        // Répertoire des fichiers de configuration
         $configDir = dirname(__DIR__, 2) . '/config';
 
-        // Lecture de tous les fichier de la directory
+        // Parcourt tous les fichiers *.php du dossier config
         foreach (glob($configDir . '/*.php') as $file) {
+            // Nom de la clé = nom du fichier (sans extension)
             $key = basename($file, '.php');
 
-            // Insère chaque tableau retourné dans le tableau $config ac. 
-            // comme nom de clé, le préfixe du nom de fichier
+            // Cas particulier : surcharge locale de la configuration database
+            if ($key === 'database') {
+                $local = $configDir . '/database.local.php';
+
+                self::$config['database'] = file_exists($local)
+                    ? require $local   // priorité au fichier local (non versionné)
+                    : require $file;   // fallback sur la config par défaut
+
+                continue;
+            }
+
+            // Chargement standard des autres configurations
             self::$config[$key] = require $file;
         }
     }

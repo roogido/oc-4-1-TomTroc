@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         17 décembre 2025
+ * Maj :         6 janvier 2026
  *
  * @category     Repository
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -98,6 +98,27 @@ class UserRepository
         $data = $stmt->fetch();
 
         return $data ? $this->hydrateUser($data) : null;
+    }
+
+    /**
+     * Récupère tous les utilisateurs sauf l’utilisateur spécifié.
+     *
+     * @param int $userId Identifiant de l’utilisateur à exclure.
+     * @return array Liste des utilisateurs (id, pseudo, avatar_path).
+     */
+    public function findAllExcept(int $userId): array
+    {
+        $sql = '
+            SELECT id, pseudo, avatar_path
+            FROM users
+            WHERE id != :id
+            ORDER BY pseudo ASC
+        ';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id' => $userId]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

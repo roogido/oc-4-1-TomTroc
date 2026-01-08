@@ -1,11 +1,11 @@
-<main class="page page-static">
+<div class="page page-static">
     <div class="page-inner">
 
         <header class="page-header">
-            <h1>Politique de confidentialité</h1>
+            <h1 class="page-title">Politique de confidentialité</h1>
         </header>
 
-        <section class="page-content">
+        <div class="page-content">
             <p>
                 Cette page décrit la politique de confidentialité du site Tom Troc.
             </p>
@@ -18,8 +18,8 @@
             <p>
                 Aucune donnée n’est transmise à des tiers.
             </p>
-        </section>
+        </div>
 
     </div>
-</main>
+</div>
 
