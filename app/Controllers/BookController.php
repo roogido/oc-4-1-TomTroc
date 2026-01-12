@@ -10,7 +10,7 @@
  * PHP version 8.2.12
  *
  * Date :        13 décembre 2025
- * Maj :         3 janvier 2026
+ * Maj :         10 janvier 2026
  *
  * @category     Controllers
  * @package      App\Controllers
@@ -24,6 +24,7 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\Exception\CsrfException;
 use App\Core\Session;
 use App\Repositories\BookRepository;
 use App\Models\Book;
@@ -66,8 +67,7 @@ class BookController extends Controller
             $search = null;
         }
 
-        // $books = $this->books->findAllAvailable($search);
-        $books = $this->books->findAll($search);
+        $books = $this->books->findAllVisible($search);
 
         $this->setPageTitle('Nos livres à l’échange');
 
@@ -75,6 +75,8 @@ class BookController extends Controller
             'books'  => $books,
             'search' => $search,
             'pageStyles' => ['books.css'],
+            'pageClass' => 'has-soft-background',
+            'pageNoticesClass' => 'has-soft-background',
         ]);
     }
 
@@ -88,7 +90,7 @@ class BookController extends Controller
      */
     public function show(int $id): void
     {
-        $book = $this->books->findById($id);
+        $book = $this->books->findVisibleById($id);
 
         if (! $book) {
             throw new HttpNotFoundException('Livre introuvable.');
@@ -99,6 +101,7 @@ class BookController extends Controller
             'book' => $book,
             'pageStyles' => ['book-detail.css'],
             'pageClass' => 'is-light-page',
+            'pageNoticesClass' => 'is-light-page',
         ]);
     }
 
@@ -121,7 +124,8 @@ class BookController extends Controller
             'showStatus'     => false,
             'submitLabel'    => 'Ajouter le livre',
             'pageStyles' => ['book-form.css'],        
-            'pageClass' => 'is-light-page',            
+            'pageClass' => 'is-light-page', 
+            'pageNoticesClass' => 'is-light-page',           
         ]);
     }
 
@@ -140,6 +144,14 @@ class BookController extends Controller
         if (!Session::isLogged()) {
             throw new HttpForbiddenException('Accès refusé.');
         }
+
+		// Contrôle la validité du token CSRF et type de requête POST
+		try {
+			$this->requireValidPost();
+		} catch (CsrfException $e) {
+			Session::addFlash('error', 'Action non autorisée.');
+			$this->redirect('/account');
+		}        
 
         // Données brutes issues du formulaire (nettoyées)
         $data = [
@@ -201,8 +213,7 @@ class BookController extends Controller
         $this->books->create($book);
 
         Session::addFlash('success', 'Livre ajouté avec succès.');
-        header('Location: /account');
-        exit;
+        $this->redirect('/account');
     }
 
     /**
@@ -223,7 +234,7 @@ class BookController extends Controller
             throw new HttpForbiddenException('Accès refusé.');
         }
 
-        $book = $this->books->findById($id);
+        $book = $this->books->findVisibleById($id);
 
         if (! $book) {
             throw new HttpNotFoundException('Livre introuvable.');
@@ -264,8 +275,16 @@ class BookController extends Controller
             throw new HttpForbiddenException('Accès refusé.');
         }
 
+		// Contrôle la validité du token CSRF et type de requête POST
+		try {
+			$this->requireValidPost();
+		} catch (CsrfException $e) {
+			Session::addFlash('error', 'Action non autorisée.');
+			$this->redirect('/account');
+		}
+                
         // Récupération du livre
-        $book = $this->books->findById($id);
+        $book = $this->books->findVisibleById($id);
 
         if (!$book) {
             throw new HttpNotFoundException('Livre introuvable.');
@@ -319,13 +338,12 @@ class BookController extends Controller
         $book->setDescription($data['description']);
         $book->setStatus($data['status']);
 
-        // Persistance en base de données
+        // Persistance en BDD
         $this->books->update($book);
 
         // Message de succès + redirection (PRG)
         Session::addFlash('success', 'Livre modifié avec succès.');
-        header('Location: /account');
-        exit;
+        $this->redirect('/account');
     }
 
     /**
@@ -339,6 +357,7 @@ class BookController extends Controller
      * @return void
      * @throws HttpForbiddenException Si l’utilisateur n’est pas autorisé
      * @throws HttpNotFoundException Si le livre n’existe pas
+     * @throws CsrfException  Si token CSRF inexistant ou invalide.
      */
     public function delete(int $id): void
     {
@@ -346,7 +365,15 @@ class BookController extends Controller
             throw new HttpForbiddenException('Accès refusé.');
         }
 
-        $book = $this->books->findById($id);
+		// Contrôle la validité du token CSRF et type de requête POST
+        try {
+            $this->requireValidPost();
+        } catch (CsrfException $e) {
+            Session::addFlash('error', 'Action non autorisée.');
+            $this->redirect('/account');
+        }        
+
+        $book = $this->books->findVisibleById($id);
 
         if (! $book) {
             throw new HttpNotFoundException('Livre introuvable.');
@@ -364,8 +391,7 @@ class BookController extends Controller
         $this->books->delete($id);
 
         Session::addFlash('success', 'Livre supprimé.');
-        header('Location: /account');
-        exit;
+        $this->redirect('/account');
     }
 
     /**
@@ -396,7 +422,8 @@ class BookController extends Controller
             // Layout
             'pageStyles'     => ['book-form.css'],
             'pageClass'      => 'is-light-page',
+            'pageNoticesClass' => 'has-light-page',
         ], $data));
     }
-    
+  
 }

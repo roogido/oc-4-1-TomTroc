@@ -6,7 +6,7 @@
  *
  * Auteur : Salem Hadjali
  * Date   : 21 décembre 2025
- * Maj    : 7 janvier 2026
+ * Maj    : 10 janvier 2026
  */
 
 'use strict';
@@ -21,29 +21,41 @@
  * @param {string} message
  */
 function showAccountMessage(type, message) {
-    const container = document.querySelector('.account-page');
-    if (!container) return;
+    const noticesContainer = document.querySelector('.page-notices');
+    if (!noticesContainer) return;
 
-    // Supprime tous les messages existants
-    container.querySelectorAll('.alert').forEach(el => el.remove());
+    // Forcer le mode "page claire"
+    noticesContainer.classList.add('has-light-page');
 
-    const div = document.createElement('div');
-    div.className = `alert alert-${type}`;
-    div.setAttribute('role', 'alert');
+    // Supprimer les alertes existantes
+    noticesContainer.querySelectorAll('.alert').forEach(el => el.remove());
 
-    div.innerHTML = `
-        <button type="button" class="alert-close" aria-label="Fermer le message">
-            &times;
+    // Créer l’alerte conforme au HTML serveur
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type}`;
+    alert.setAttribute('role', type === 'success' ? 'status' : 'alert');
+
+    alert.innerHTML = `
+        <div class="alert-content">
+            <p>${message}</p>
+        </div>
+
+        <button
+            type="button"
+            class="alert-close"
+            aria-label="Fermer le message"
+            data-alert-close
+        >
+            ×
         </button>
-        <p>${message}</p>
     `;
 
-    const title = container.querySelector('h1');
-    title.after(div);
+    // Injection dans .page-notices
+    noticesContainer.appendChild(alert);
 
-    // Fermeture manuelle
-    div.querySelector('.alert-close').addEventListener('click', () => {
-        div.remove();
+    // Fermeture manuelle (si pas déjà gérée globalement)
+    alert.querySelector('[data-alert-close]').addEventListener('click', () => {
+        alert.remove();
     });
 }
 
@@ -71,6 +83,14 @@ async function handleAvatarUpload(input) {
 
     const formData = new FormData();
     formData.append('avatar', file);
+    
+    // Token CRSF
+    const form = input.closest('form');
+    const csrfToken = form?.dataset.csrfToken;
+    
+    if (csrfToken) {
+        formData.append('csrf_token', csrfToken);
+    }
 
     try {
         const response = await fetch('/account/avatar', {

@@ -22,6 +22,7 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\Exception\CsrfException;
 use App\Core\Session;
 use App\Core\HttpForbiddenException;
 use App\Models\User;
@@ -72,8 +73,7 @@ class AccountController extends Controller
 
         if (! $user) {
             Session::destroy();
-            header('Location: /login');
-            exit;
+            $this->redirect('/login');
         }
 
         $this->renderAccountPage($user);
@@ -94,20 +94,29 @@ class AccountController extends Controller
      * @return void
      *
      * @throws HttpForbiddenException Si l’utilisateur n’est pas connecté
+     * @throws CsrfException  Si token CSRF inexistant ou invalide.
      */
     public function update(): void
     {
         if (!Session::isLogged()) {
             throw new HttpForbiddenException('Vous devez être connecté.');
         }
+       
+		// Contrôle la validité du token CSRF et type de requête POST
+        try {
+            $this->requireValidPost();
+        } catch (CsrfException $e) {
+            Session::addFlash('error', 'Action non autorisée.');
+            $this->redirect('/account');
+        }
 
+        // Logique métier
         $userId = Session::getUserId();
         $user   = $this->users->findById($userId);
 
         if (! $user) {
             Session::destroy();
-            header('Location: /login');
-            exit;
+            $this->redirect('/login');
         }
 
         // Données brutes
@@ -145,8 +154,7 @@ class AccountController extends Controller
         );
 
         Session::addFlash('success', 'Vos informations ont été mises à jour.');
-        header('Location: /account');
-        exit;
+        $this->redirect('/account');
     }
 
     /**
@@ -170,7 +178,8 @@ class AccountController extends Controller
      * @return void
      *
      * @throws HttpForbiddenException Si l’utilisateur n’est pas authentifié
-     *         dans un contexte non-AJAX.
+     *                                 ans un contexte non-AJAX.
+     * @throws CsrfException  Si token CSRF inexistant ou invalide.
      */
     public function updateAvatar(): void
     {
@@ -196,18 +205,28 @@ class AccountController extends Controller
                 $this->jsonError('Session invalide.', 401);
             }
 
-            header('Location: /login');
-            exit;
+            $this->redirect('/login');
         }
 
+        try {
+            $this->requireValidPost();
+        } catch (CsrfException $e) {
+            if ($isAjax) {
+                $this->jsonError('Action non autorisée (CSRF).', 403);
+            }
+
+            Session::addFlash('error', 'Action non autorisée.');
+            $this->redirect('/account');
+        }        
+
+        // Gestion du fichier transmis (Métier)
         if (empty($_FILES['avatar']) || $_FILES['avatar']['error'] !== UPLOAD_ERR_OK) {
             if ($isAjax) {
                 $this->jsonError('Aucun fichier valide envoyé.', 400);
             }
 
             Session::addFlash('error', 'Aucun fichier sélectionné.');
-            header('Location: /account');
-            exit;
+            $this->redirect('/account');
         }
 
         try {
@@ -228,8 +247,7 @@ class AccountController extends Controller
             }
 
             Session::addFlash('error', $e->getMessage());
-            header('Location: /account');
-            exit;
+            $this->redirect('/account');
         }
 
         if ($isAjax) {
@@ -242,8 +260,7 @@ class AccountController extends Controller
         }
 
         Session::addFlash('success', 'Avatar mis à jour avec succès.');
-        header('Location: /account');
-        exit;
+        $this->redirect('/account');
     }
 
     /**
@@ -261,7 +278,7 @@ class AccountController extends Controller
 
         // Données nécessaires au rendu
         // récupération des livres du user
-        $userBooks   = $this->books->findByUser($userId);
+        $userBooks   = $this->books->findVisibleByUser($userId);
 
         // Ancienneté de l'utilisateur
         $memberSince = $this->users->getMemberSince($userId);
@@ -278,9 +295,18 @@ class AccountController extends Controller
             'booksCount'  => $booksCount,
             'pageStyles'  => ['account.css'],
             'pageClass'   => 'is-light-page',
+            'pageNoticesClass' => 'has-light-page',
         ]);
     }
 
+    /**
+     * Envoie une réponse JSON d’erreur et interrompt l’exécution du script.
+     *
+     * @param string $message Message d’erreur à retourner.
+     * @param int    $status  Code HTTP à renvoyer.
+     *
+     * @return void
+     */
     private function jsonError(string $message, int $status): void
     {
         http_response_code($status);
@@ -290,6 +316,7 @@ class AccountController extends Controller
             'message' => $message
         ]);
         exit;
-    }    
+    }   
+
 }
 

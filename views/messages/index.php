@@ -39,6 +39,10 @@ function formatMessageDate(string $datetime): array
 }
 ?>
 
+<div class="page-alerts">
+    <?php require __DIR__ . '/../partials/alerts.php'; ?>
+</div>
+
 <div class="messages-page">
     <div class="messages-inner">
         <div class="messages-layout">
@@ -46,14 +50,14 @@ function formatMessageDate(string $datetime): array
             <!-- ======================
                 COLONNE CONVERSATIONS
                 ====================== -->
-            <aside class="messages-list">
+            <aside class="messages-list has-soft-background">
                 <h1 class="page-title">Messagerie</h1>
 
                 <?php if (empty($conversations)) : ?>
                     <ul class="conversations conversations--users">
 
                         <?php foreach ($users as $user) : ?>
-                            <li class="conversation">
+                            <li class="conversation has-soft-background">
                                 <a
                                     href="/messages/<?= (int) $user['id'] ?>"
                                     class="conversation-link"
@@ -253,6 +257,7 @@ function formatMessageDate(string $datetime): array
                         action="/messages/send"
                         class="thread-form"
                     >
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($this->generateCsrfToken()) ?>">
                         <input
                             type="hidden"
                             name="receiver_id"

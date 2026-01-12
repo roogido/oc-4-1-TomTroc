@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         6 janvier 2026
+ * Maj :         11 janvier 2026
  *
  * @category     Repository
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -25,7 +25,7 @@ namespace App\Repositories;
 use App\Core\Database;
 use App\Models\User;
 use PDO;
-
+use RuntimeException;
 
 class UserRepository
 {
@@ -121,6 +121,36 @@ class UserRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Récupère une liste paginée d’utilisateurs.
+     * 
+     * Méthode réservée aux administrateurs.     
+     *
+     * @param int $limit  Nombre maximum d’utilisateurs à retourner.
+     * @param int $offset Position de départ pour la pagination.
+     *
+     * @return User[] Liste des utilisateurs.
+     */
+    public function findPaginated(int $limit, int $offset): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT * FROM users ORDER BY email ASC, created_at DESC LIMIT :limit OFFSET :offset'
+        );
+
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $users = [];
+        foreach ($rows as $row) {
+            $users[] = $this->hydrateUser($row);
+        }
+
+        return $users;
+    }
+  
     /**
      * Retourne une durée lisible indiquant depuis combien de temps
      * un utilisateur est inscrit sur la plateforme.
@@ -279,11 +309,72 @@ class UserRepository
             return null;
         }
 
+        // Modération :  utilisateur désactivé
+        if (! $user->isActive()) {
+            throw new RuntimeException('Votre compte a été désactivé.');
+        }
+
         if (! password_verify($password, $user->getPasswordHash())) {
             return null;
         }
 
         return $user;
+    }
+
+    /**
+     * Récupère la liste complète des utilisateurs.
+     *
+     * Méthode réservée aux administrateurs.
+     *
+     * @return User[] Liste des utilisateurs ordonnée par date de création décroissante.
+     */
+    public function findAll(): array
+    {
+        $stmt = $this->pdo->query(
+            'SELECT * FROM users ORDER BY created_at DESC'
+        );
+
+        $users = [];
+
+        while ($row = $stmt->fetch()) {
+            $users[] = $this->hydrateUser($row);
+        }
+
+        return $users;
+    }
+
+    /**
+     * Bascule l’état actif d’un utilisateur.
+     *
+     * Méthode réservée aux administrateurs.
+     *
+     * @param int $id Identifiant de l’utilisateur.
+     *
+     * @return void
+     */    
+    public function toggleActive(int $id): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE users
+            SET is_active = NOT is_active
+            WHERE id = :id'
+        );
+
+        $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Compte le nombre total d’utilisateurs.
+     *
+     * Méthode réservée aux administrateurs.
+     *
+     * @return int Nombre total d’utilisateurs.
+     */
+    public function countAll(): int
+    {
+        return (int) $this->pdo
+            ->query('SELECT COUNT(*) FROM users')
+            ->fetchColumn();
     }
 
     /**
@@ -303,6 +394,15 @@ class UserRepository
         );
 
         $user->setId((int) $data['id']);
+
+
+        if (array_key_exists('is_admin', $data)) {
+            $user->setIsAdmin($data['is_admin']);
+        }
+
+        if (array_key_exists('is_active', $data)) {
+            $user->setIsActive($data['is_active']);
+        }        
 
         return $user;
     }

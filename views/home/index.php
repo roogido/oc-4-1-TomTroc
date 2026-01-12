@@ -1,14 +1,8 @@
-<?php
-// VUE HOME / PAGE D'ACCUEIL
-?>
-
 <!-- ================= HERO ================= -->
-<section class="home-hero">
+<section class="home-hero has-neutral-background">
+
     <div class="home-hero-left">
-        <h1 class="page-title">
-            Rejoignez nos<br>
-            lecteurs passionnés
-        </h1>
+        <h1 class="page-title"><?= $heroTitle ?></h1>
 
         <p>
             Donnez une nouvelle vie à vos livres en les échangeant
@@ -33,7 +27,7 @@
 </section>
 
 <!-- ================= DERNIERS LIVRES ================= -->
-<section class="home-last-books">
+<section class="home-last-books has-soft-background">
     <h2 class="section-title">Les derniers livres ajoutés</h2>
 
     <?php if (empty($books)) : ?>
@@ -109,7 +103,7 @@
 </section>
 
 <!-- ================= BANDEAU IMAGE ================= -->
-<div class="home-banner">
+<div class="home-banner has-neutral-background">
     <picture>
         <!-- Mobile -->
         <source
@@ -126,7 +120,7 @@
 </div>
 
 <!-- ================= NOS VALEURS ================= -->
-<section class="home-values">
+<section class="home-values has-soft-background">
     <h2>Nos valeurs</h2>
 
     <div class="home-values-content">

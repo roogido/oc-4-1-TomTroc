@@ -1,4 +1,5 @@
 <div class="page page-static">
+
     <div class="page-inner">
 
         <header class="page-header">

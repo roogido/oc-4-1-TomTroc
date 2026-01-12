@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        12 décembre 2025
- * Maj :         3 janvier 2026
+ * Maj :         12 janvier 2026
  *
  * @category     Models
  * @package      App\Models
@@ -37,7 +37,7 @@ class Book
      */    
     public const IMAGE_UPLOAD_DIR = 'uploads/books/';
     public const DEFAULT_IMAGE    = 'uploads/books/book-default.webp';
-
+  
 
     private ?int $id = null;
     private int $userId;
@@ -48,6 +48,7 @@ class Book
     private string $description;
     private ?string $imagePath;
     private string $status;
+    protected bool $isVisible = true;
 
 
     /**
@@ -62,6 +63,7 @@ class Book
      * @param string      $description Description du livre (texte long).
      * @param string      $status      Statut de disponibilité ('available' ou 'unavailable').
      * @param string|null $imagePath   Chemin de l'image (optionnel).
+     * @param bool        $isVisible   Masqué ou non un livre (admin).
      */
     public function __construct(
         int $userId,
@@ -69,7 +71,8 @@ class Book
         string $author,
         string $description,
         string $status = self::STATUS_AVAILABLE,
-        ?string $imagePath = null
+        ?string $imagePath = null,
+        bool $isVisible = true
     ) {
         $this->userId      = $userId;
         $this->title       = trim($title);
@@ -77,6 +80,7 @@ class Book
         $this->description = trim($description);
         $this->status      = $status;
         $this->imagePath   = $imagePath;
+        $this->isVisible   = $isVisible;
     }
 
     // ---------
@@ -144,6 +148,11 @@ class Book
         return $this->imagePath ?: self::DEFAULT_IMAGE;
     }
 
+    public function isVisible(): bool
+    {
+        return (bool) $this->isVisible;
+    }    
+
     // ---------
     // Setters
     // ---------
@@ -187,4 +196,9 @@ class Book
     {
         $this->imagePath = $imagePath;
     }
+
+    public function setIsVisible(bool $isVisible): void
+    {
+        $this->isVisible = $isVisible;
+    }       
 }

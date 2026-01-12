@@ -54,11 +54,13 @@ class HomeController extends Controller
         // Récupère les 4 derniers livres disponibles
         $lastBooks = $this->books->findLast(4);
 
-        $this->setPageTitle('Accueil - TomTroc');
+         $this->setPageTitle('Accueil');;
 
         $this->render('home/index', [
             'books' => $lastBooks,
             'pageStyles' => ['home.css'],
+            'pageNoticesClass' => 'has-neutral-background',
+            'heroTitle' => "Rejoignez nos<br> lecteurs passionnés",
         ]);
     }
 }

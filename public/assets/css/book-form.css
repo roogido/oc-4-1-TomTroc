@@ -16,24 +16,6 @@
     margin-bottom: 40px;
 }
 
-.book-form-back {
-    display: inline-block;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #6b6b6b;
-    text-decoration: underline;
-}
-
-.book-form-back:hover {
-    text-decoration: underline;
-}
-
-.book-form-back:hover {
-    color: #006D41;
-}
-
-/* page-title vient de components.css */
-
 /* ===============================
    CARD
 =============================== */
@@ -47,12 +29,6 @@
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
 }
 
-/* .book-form-layout {
-    display: grid;
-    grid-template-columns: 480px minmax(0, 440px);
-    gap: 110px;
-    align-items: flex-start;
-} */
 .book-form-layout {
     display: grid;
     grid-template-columns: 488px 1fr;

@@ -8,7 +8,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         30 décembre 2025
+ * Maj :         12 janvier 2026
  *
  * @category     Models
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -25,6 +25,9 @@ class User
 {
     public const AVATAR_UPLOAD_DIR = '/uploads/avatars/';
     public const DEFAULT_AVATAR = '/uploads/avatars/avatar-default.webp';
+    
+    protected ?int $is_admin = null;
+    protected ?int $is_active = null;
 
     private ?int $id = null;
     private string $pseudo;
@@ -123,10 +126,31 @@ class User
 
         return self::DEFAULT_AVATAR;
     }
-
+   
     // Retourne le mot de passe déjà hashé (jamais le mot de passe en clair)
     public function getPasswordHash(): string
     {
         return $this->passwordHash;
     }
+
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
+    }
+
+    public function setIsAdmin(?int $isAdmin): void
+    {
+        $this->is_admin = $isAdmin;
+    }
+ 
+    public function setIsActive(?int $isActive): void
+    {
+        $this->is_active = $isActive;
+    }
+
+    public function isActive(): bool
+    {
+        return (bool) $this->is_active;
+    }    
+    
 }

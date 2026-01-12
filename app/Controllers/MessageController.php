@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :      15 décembre 2025
- * Maj  :      6 janvier 2026
+ * Maj  :      10 janvier 2026
  *
  * @category   Controller
  * @package    App\Controllers
@@ -24,6 +24,7 @@
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\Exception\CsrfException;
 use App\Core\Session;
 use App\Core\HttpForbiddenException;
 use App\Core\HttpNotFoundException;
@@ -71,6 +72,7 @@ class MessageController extends Controller
         }        
 
         $this->setPageTitle('Messagerie');
+
         $this->render('messages/index', [
             'conversations' => $conversations,
             'users'         => $users,   
@@ -78,6 +80,7 @@ class MessageController extends Controller
             'otherUser'     => null,
             'pageStyles'    => ['messages.css'],
             'pageClass'     => 'site-wrapper--fixed messages--list',
+            'pageNoticesClass' => 'has-soft-background',
         ]);
     }
 
@@ -117,6 +120,7 @@ class MessageController extends Controller
         $this->messages->markAsRead($userId, $currentUserId);
 
         $this->setPageTitle('Messagerie');
+
         $this->render('messages/index', [
             'conversations' => $conversations,
             'users'         => [], 
@@ -124,6 +128,7 @@ class MessageController extends Controller
             'otherUser'     => $otherUser,
             'pageStyles'    => ['messages.css'],
             'pageClass'     => 'site-wrapper--fixed messages--thread',
+            'pageNoticesClass' => 'has-soft-background',
         ]);
     }
 
@@ -137,6 +142,7 @@ class MessageController extends Controller
      *
      * @throws HttpForbiddenException Si l’utilisateur n’est pas authentifié ou tente une action interdite.
      * @throws HttpNotFoundException  Si le destinataire n’existe pas.
+     * @throws CsrfException  Si token CSRF inexistant ou invalide.
      */
     public function send(): void
     {
@@ -144,14 +150,21 @@ class MessageController extends Controller
             throw new HttpForbiddenException('Accès interdit.');
         }
 
+		// Contrôle la validité du token CSRF et type de requête POST
+		try {
+			$this->requireValidPost();
+		} catch (CsrfException $e) {
+			Session::addFlash('error', 'Action non autorisée.');
+			$this->redirect('/account');
+		}
+
         $senderId   = Session::getUserId();
         $receiverId = (int) ($_POST['receiver_id'] ?? 0);
         $content    = trim($_POST['content'] ?? '');
 
         if ($receiverId <= 0 || $content === '') {
             Session::addFlash('error', 'Message invalide.');
-            header('Location: /messages');
-            exit;
+            $this->redirect('/messages');
         }
 
         if ($receiverId === $senderId) {
@@ -165,8 +178,7 @@ class MessageController extends Controller
         $message = new Message($senderId, $receiverId, $content);
         $this->messages->create($message);
 
-        header('Location: /messages/' . $receiverId);
-        exit;
+        $this->redirect('/messages/' . $receiverId);
     }
 
 }

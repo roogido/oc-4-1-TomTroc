@@ -2,10 +2,6 @@
    USER PUBLIC – LAYOUT (FIGMA)
    ================================================== */
 
-.user-public {
-    background-color: #FDFCF9;
-}
-
 .user-public-inner {
     max-width: none;
     margin: 0;
@@ -28,22 +24,6 @@
     grid-template-columns: 360px 1fr;
     gap: 48px;
     align-items: start;
-}
-
-/* ==================================================
-   USER PROFILE – MESSAGE BUTTON
-   ================================================== */
-
-/* Idle state */
-.user-profile-card .btn-outline.user-message-btn {
-    background-color: #F5F3EF;
-}
-
-/* Hover & focus : same as global btn-outline */
-.user-profile-card .btn-outline.user-message-btn:hover,
-.user-profile-card .btn-outline.user-message-btn:focus-visible {
-    background-color: #006D41;
-    color: #ffffff;
 }
 
 /* ==================================================

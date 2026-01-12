@@ -26,7 +26,6 @@ main {
     grid-template-columns: 1fr 1fr;
     align-items: center;
     gap: 80px;
-    background-color: #F5F3EF;
 }
 
 /* -------- LEFT -------- */
@@ -79,7 +78,6 @@ main {
    ================================================== */
 
 .home-last-books {
-    background-color: #FAF9F7;
     padding: 80px 0;
     text-align: center;
 }
@@ -181,7 +179,6 @@ main {
 
 .home-banner {
     width: 100%;
-    background-color: #F5F3EF;
 }
 
 .home-banner picture {
@@ -200,7 +197,6 @@ main {
    ================================================== */
 
 .home-values {
-    background-color: #FAF9F7;
     max-width: 1440px;
     margin: 0 auto;
     padding: 98px 150px 190px;
@@ -293,7 +289,6 @@ main {
         display: flex;
         flex-direction: column;
         padding: 0;
-        background-color: #F5F3EF;
     }
 
     .home-hero-right { order: 1; width: 100%; } 
@@ -356,7 +351,6 @@ main {
         width: 100%;
         margin: 0;
         padding: 0;
-        background-color: #F5F3EF;
     }
 
     .home-banner picture {
@@ -416,7 +410,6 @@ main {
         width: 100%;
         margin: 0;
         padding: 0;
-        background-color: #F5F3EF;
     }
 
     .home-hero-right img,
