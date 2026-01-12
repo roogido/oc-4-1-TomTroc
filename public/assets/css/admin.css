@@ -1,0 +1,310 @@
+/* ==================================================
+   ADMIN 
+   ================================================== */
+
+.admin-page {
+    padding-top: 48px;   
+    padding-bottom: 48px;
+}
+
+.admin-title {
+    margin-bottom: 48px;
+}
+
+.admin-header {
+    display: flex;
+    flex-direction: column;  
+    align-items: flex-start; 
+    gap: 8px;                
+    margin-bottom: 30px;
+}
+
+.users.admin-page .library-head,
+.users.admin-page .library-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 180px 180px !important;
+    grid-template-areas: none !important;
+}
+
+.books.admin-page .library-head,
+.books.admin-page .library-row {
+    display: grid;
+    grid-template-columns: 3fr 1fr 120px 120px 190px;
+    grid-template-areas: none;
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+}
+
+.admin-stat-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+}
+
+.admin-stat-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6B6B6B;
+    margin-bottom: 8px;
+}
+
+.admin-stat-value {
+    font-family: "Playfair Display", serif;
+    font-size: 36px;
+    font-weight: 400;
+}
+
+/* ==================================================
+   ADMIN – DASHBOARD PANEL
+   ================================================== */
+
+.dashboard .admin-stat-action {
+    margin-top: 20px;
+}
+.admin-panel {
+    max-width: 720px;
+    margin: 0 auto; /* centrage horizontal */
+}
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* ligne */
+    gap: 32px;
+}
+
+/* ==================================================
+   ADMIN – BADGES
+   ================================================== */
+
+.admin-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.admin-badge--active {
+    background: #E6F4EC;
+    color: #2E7D32;
+}
+
+.admin-badge--inactive {
+    background: #FFF2F2;
+    color: #D64545;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* ==================================================
+   ADMIN – PAGINATION
+   ================================================== */
+
+.admin-pagination {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.admin-pagination-list {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.admin-pagination-link {
+    min-width: 40px;
+    height: 40px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    text-decoration: none;
+
+    color: #292929;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 10px;
+
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-pagination-link:hover {
+    background-color: #F5F3EF;
+}
+
+.admin-pagination-link.is-active {
+    background-color: #00AC66;
+    border-color: #00AC66;
+    color: #FFFFFF;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+/* ==================================================
+   ADMIN – AJUSTEMENT DES MARGES (DESKTOP LARGE)
+   ================================================== */
+
+/* Réduction progressive des marges UNIQUEMENT */
+@media (max-width: 1400px) {
+    .admin-page .page-inner {
+        max-width: none;
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .admin-page .page-inner {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+/* ==================================================
+   ADMIN – MODE LISTE (TABLETTE / MOBILE)
+   ================================================== */
+
+@media (max-width: 900px) {
+    .users.admin-page .library-row,
+    .books.admin-page .library-row {
+        grid-template-columns: 1fr !important;
+    }
+
+    .users.admin-page .library-head,
+    .books.admin-page .library-head {
+        display: none !important;
+    }    
+
+    /* Titre centré */
+    .admin-header {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .admin-header .page-title {
+        text-align: center;
+    }
+
+    /* Masque TOUJOURS l’en-tête tableau */
+    .admin-page .library-head {
+        display: none;
+    }
+
+    /* Chaque ligne devient une carte verticale */
+    .admin-page .library-row {
+        display: grid;
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+        padding: 16px;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+    }
+
+    /* Cellules = label + valeur */
+    .admin-page .library-row > div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    /* Labels visibles (et UNIQUES) */
+    .admin-page .library-row > div::before {
+        content: attr(data-label) " :";
+        font-weight: 600;
+        color: #6B6B6B;
+        text-align: left;
+        flex-shrink: 0;
+    }
+
+    .users.admin-page .library-row > div::before {
+        width: 70px;          /* largeur commune des libellés (users) */
+    }
+
+    .books.admin-page .library-row > div::before {
+        width: 120px;          
+    }
+
+    /* La cellule Actions ne doit pas suivre le pattern label/valeur */
+    .admin-page .library-row > .col-actions {
+        justify-content: center;
+        margin-top: 16px;        
+    }
+
+    /* Masque le pseudo-label sur Actions (sinon il pousse à droite) */
+    .admin-page .library-row > .col-actions::before {
+        content: none;
+        display: none;
+    }
+
+    /* Centre le groupe de boutons */
+    .admin-page .library-row > .col-actions .admin-actions {
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+    }
+
+}
+
+@media (max-width: 500px) {
+
+    main {
+        padding: 0 5px;
+    }
+
+    /* Suppression totale des marges latérales */
+    .admin-page .page-inner {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* Carte admin compacte */
+    .admin-page .library-card {
+        padding: 3px;
+        border-radius: 0; /* optionnel mais recommandé à ce niveau */
+    }
+
+    /* Lignes cartes légèrement compactées */
+    .admin-page .library-row {
+        padding: 8px;
+    }
+
+    /* ==================================================
+       ADMIN – DASHBOARD : empilement des boites stats
+       ================================================== */
+
+    .dashboard .admin-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        margin: 0 32px
+    }
+
+    .dashboard .admin-stat-card {
+        text-align: center;
+    }
+
+    .dashboard .admin-stat-card .btn {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+}

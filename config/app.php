@@ -12,7 +12,7 @@
  * PHP version 8.2.12
  * 
  * Date :        7 décembre 2025
- * Maj :         8 janvier 2026
+ * Maj :         12 janvier 2026
  * 
  * @category    Configuration
  * @package     App\Config
@@ -34,7 +34,7 @@ return [
         'views'        => dirname(__DIR__) . '/views/',
         'views_error'  => dirname(__DIR__) . '/views/error/',
         'layout'       => dirname(__DIR__) . '/views/layout.php',
-
+        
         // Routes
         'routes'       => dirname(__DIR__) . '/app/Routes/web.php',
                 
@@ -44,5 +44,13 @@ return [
         'book_uploads'    => dirname(__DIR__) . '/public/uploads/books',
         'avatar_uploads'  => dirname(__DIR__) . '/public/uploads/avatars',        
     ],
+
+    // ADMIN
+    'admin' => [
+        'pagination' => [
+            'users_limit' => 6,
+            'books_limit' => 5,
+        ],
+    ],       
 
 ];

@@ -28,6 +28,7 @@
 use App\Controllers\HomeController;
 use App\Controllers\AuthController;
 use App\Controllers\AccountController;
+use App\Controllers\AdminController;
 use App\Controllers\BookController;
 use App\Controllers\MessageController;
 use App\Controllers\PageController;
@@ -106,3 +107,15 @@ $router->get('/messages/{userId}', [MessageController::class, 'thread']);
 // ==================================================
 $router->get('/privacy', [PageController::class, 'privacy']);
 $router->get('/legal', [PageController::class, 'legal']);
+
+
+// ==================================================
+// Administration
+// ==================================================
+$router->get('/admin', [AdminController::class, 'dashboard']);
+$router->get('/admin/users', [AdminController::class, 'users']);
+$router->post('/admin/users/toggle', [AdminController::class, 'toggleUser']);
+
+$router->get('/admin/books', [AdminController::class, 'books']);
+$router->post('/admin/books/toggle', [AdminController::class, 'toggleBook']);
+$router->post('/admin/books/status', [AdminController::class, 'changeBookStatus']);

@@ -8,7 +8,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         -
+ * Maj :         9 janvier 2026
  *
  * @category     Core
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -147,6 +147,26 @@ class Session
 
         unset($_SESSION[$key]);
     }
+
+    /**
+     * Déconnecte l'utilisateur actuellement authentifié.
+     *
+     * Supprime uniquement les informations d'identification de l'utilisateur
+     * (ex: user_id) sans détruire la session PHP complète.
+     * 
+     * Cette méthode permet de :
+     * - conserver les messages flash
+     * - préserver le contexte de session (CSRF, préférences, etc.)
+     * - forcer l'utilisateur à redevenir un visiteur non authentifié
+     *
+     * À utiliser notamment lors de la désactivation d'un compte utilisateur.
+     *
+     * @return void
+     */    
+    public static function logout(): void
+    {
+        unset($_SESSION['user_id']);
+    }    
 
     /**
      * Detruit completement la session et cookie de session (nav).

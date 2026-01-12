@@ -2,10 +2,6 @@
    AUTH LAYOUT (REGISTER / LOGIN)
    ================================================== */
 
-.auth-page {
-    background-color: #FDFCF9;
-}
-
 .auth-layout {
     display: grid;
     grid-template-columns: 1fr 1fr;

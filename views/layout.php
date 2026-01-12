@@ -1,9 +1,15 @@
 <?php
-use App\Core\Session;
+use App\Core\Config;
+use App\View\FlashHelper;
 
 /** @var string $pageTitle */
 /** @var string $viewFile */
 /** @var \App\Models\User|null $currentUser */
+
+// Récupération des messages flash normalisés :
+//  - (erreurs globales, erreurs par champ, anciennes valeurs, succès)
+//  extract() : créer automatiquement les variables utilisables directement dans la vue
+extract(FlashHelper::extract());
 
 $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 ?>
@@ -11,7 +17,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title><?= htmlspecialchars($pageTitle ?? 'Tom Troc') ?></title>
+    <title><?= htmlspecialchars($htmlTitle ?? Config::get('app.title')) ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Google Fonts : Inter + Playfair Display -->
@@ -103,6 +109,8 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                                 <?php endif; ?>
                             </a>
                         </li>
+
+                        <?php require __DIR__ . '/partials/header.php'; ?>  
 
                         <li>
                             <a
@@ -212,6 +220,8 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                         </a>
                     </li>
 
+                    <?php require __DIR__ . '/partials/header.php'; ?>                
+
                     <li>
                         <a
                             href="/account"
@@ -244,6 +254,11 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                 <?php endif; ?>
             </ul>
         </nav>
+
+        <!-- Zone de notification -->
+        <div class="page-notices<?= !empty($pageNoticesClass) ? ' ' . htmlspecialchars($pageNoticesClass) : '' ?>">
+            <?php require __DIR__ . '/partials/alerts.php'; ?>
+        </div>        
 
         <!-- Contenu principal de la page -->
         <main>

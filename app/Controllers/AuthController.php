@@ -11,7 +11,7 @@
  * PHP version 8.2.12
  *
  * Date :        11 décembre 2025
- * Maj :         3 janvier 2026
+ * Maj :         10 janvier 2026
  *
  * @category     Controllers
  * @author       Salem Hadjali <salem.hadjali@gmail.com>
@@ -26,6 +26,7 @@ namespace App\Controllers;
 
 use App\Core\AvatarUploader;
 use App\Core\Controller;
+use App\Core\Exception\CsrfException;
 use App\Core\Session;
 use App\Core\HttpForbiddenException;
 use App\Repositories\UserRepository;
@@ -50,7 +51,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        parent::__construct(); // initialise le titre de page
+        parent::__construct(); 
         $this->users = new UserRepository();
     }
 
@@ -73,6 +74,7 @@ class AuthController extends Controller
         $this->render('auth/register', [
             'pageStyles' => ['auth.css'],
             'pageClass' => 'is-light-page',
+            'pageNoticesClass' => 'has-light-page',
         ]);
     }
 
@@ -86,6 +88,7 @@ class AuthController extends Controller
      * @return void
      *
      * @throws HttpForbiddenException Si l'utilisateur est déjà connecté.
+     * @throws CsrfException  Si token CSRF inexistant ou invalide.
      */
     public function register(): void
     {
@@ -93,19 +96,31 @@ class AuthController extends Controller
             throw new HttpForbiddenException("Vous êtes déjà connecté.");
         }
 
+		// Contrôle la validité du token CSRF et type de requête POST
+		try {
+			$this->requireValidPost();
+		} catch (CsrfException $e) {
+			Session::addFlash('error', 'Action non autorisée.');
+			$this->redirect('/account');
+		}            
+
         // Validation
         $validator = new AuthRegisterValidator($this->users);
         $result    = $validator->validate($_POST);
 
         if (!empty($result['errors'])) {
+            Session::addFlash(
+                'error',
+                'Veuillez corriger les erreurs indiquées ci-dessous.'
+            );   
+
             Session::addFlash('error', $result['errors']);
             Session::addFlash('old', [
                 'pseudo' => $result['data']['pseudo'],
                 'email'  => $result['data']['email'],
             ]);
 
-            header('Location: /register');
-            exit;
+            $this->redirect('/register');
         }
 
         // Upload avatar (optionnel, non bloquant)
@@ -132,8 +147,7 @@ class AuthController extends Controller
             "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter."
         );
 
-        header('Location: /login');
-        exit;
+        $this->redirect('/login');
     }
 
     /**
@@ -145,7 +159,6 @@ class AuthController extends Controller
      *
      * @throws HttpForbiddenException Si l'utilisateur est déjà connecté.
      */
-
     public function loginForm(): void
     {
         if (Session::isLogged()) {
@@ -156,6 +169,7 @@ class AuthController extends Controller
         $this->render('auth/login', [
             'pageStyles' => ['auth.css'],
             'pageClass' => 'is-light-page',
+            'pageNoticesClass' => 'has-light-page',
         ]);    
     }
 
@@ -169,6 +183,7 @@ class AuthController extends Controller
      * @return void
      *
      * @throws HttpForbiddenException Si l'utilisateur est déjà connecté.
+     * @throws CsrfException  Si token CSRF inexistant ou invalide.
      */
     public function login(): void
     {
@@ -177,16 +192,28 @@ class AuthController extends Controller
             throw new HttpForbiddenException("Vous êtes déjà connecté.");
         }
 
+		// Contrôle la validité du token CSRF et type de requête POST
+		try {
+			$this->requireValidPost();
+		} catch (CsrfException $e) {
+			Session::addFlash('error', 'Action non autorisée.');
+			$this->redirect('/account');
+		}    
+
         // Validation des données
         $validator = new AuthLoginValidator();
         $result    = $validator->validate($_POST);
 
-        if (!empty($result['errors'])) {
+        if (!empty($result['errors'])) {        
+            Session::addFlash(
+                'error',
+                'Identifiants incorrects'
+            );      
+
             Session::addFlash('error', $result['errors']);
             Session::addFlash('old', ['email' => $result['email']]);
-
-            header('Location: /login');
-            exit;
+        
+            $this->redirect('/login');
         }
 
         // Authentification
@@ -200,16 +227,14 @@ class AuthController extends Controller
             Session::addFlash('error', $e->getMessage());
             Session::addFlash('old', ['email' => $result['email']]);
 
-            header('Location: /login');
-            exit;
+            $this->redirect('/login');
         }
 
         // Connexion réussie
         Session::set('user_id', $user->getId());
 
         Session::addFlash('success', 'Connexion réussie !');
-        header('Location: /account');
-        exit;
+        $this->redirect('/account');
     }
 
     /**
@@ -229,7 +254,6 @@ class AuthController extends Controller
 
         Session::destroy();
 
-        header('Location: /');
-        exit;
+        $this->redirect('/');
     }
 }

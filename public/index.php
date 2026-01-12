@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date  :     7 décembre 2025
- * Maj   :     8 janvier 2026
+ * Maj   :     9 janvier 2026
  *
  * @category   Core
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -24,6 +24,7 @@ use App\Core\Router;
 use App\Core\Controller;
 use App\Core\HttpForbiddenException;
 use App\Core\HttpNotFoundException;
+use App\Core\Exception\CsrfException;
 use App\Core\Session;
 
 // Autoloader 
@@ -74,6 +75,11 @@ try {
     Controller::renderError('404', [
         'message' => $e->getMessage()
     ]);
+
+} catch (CsrfException $e) {
+
+    http_response_code(403);
+    require Config::get('app.paths.views_error') . '/403.php';
 
 } catch (Throwable $e) { 
 

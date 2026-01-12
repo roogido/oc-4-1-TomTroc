@@ -1,5 +1,5 @@
-<!-- ===== Global errors (fallback) ===== -->
 <?php if (!empty($globalError)) : ?>
+    <!-- ===== Global errors (fallback) ===== -->
     <div class="alert alert-error" role="alert">
         <div class="alert-content">
             <p><?= htmlspecialchars($globalError) ?></p>
@@ -16,8 +16,8 @@
     </div>
 <?php endif; ?>
 
-<!-- ===== Success messages ===== -->
 <?php if (!empty($success)) : ?>
+    <!-- ===== Success messages ===== -->
     <div class="alert alert-success" role="status">
         <div class="alert-content">
             <?php foreach ($success as $message) : ?>

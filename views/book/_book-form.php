@@ -24,7 +24,7 @@ $old            ??= [];
 
         <?php if (!empty($pageTitle)) : ?>
             <header class="book-form-header">
-                <a href="<?= htmlspecialchars($backUrl ?? '/account') ?>" class="book-form-back">
+                <a href="<?= htmlspecialchars($backUrl ?? '/account') ?>" class="link-back">
                     ← retour
                 </a>
 
@@ -37,12 +37,10 @@ $old            ??= [];
 
     </header>
 
-    <!-- ===== Alertes : success/errors  ===== -->
-    <?php require __DIR__ . '/../partials/alerts.php'; ?>
-   
     <div class="book-form-card">
 
         <form method="post" enctype="multipart/form-data" novalidate>
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($this->generateCsrfToken()) ?>">
 
             <div class="book-form-layout">
 

@@ -1,27 +1,14 @@
-<?php
-/* VUE LOGIN (CONNEXION) */
-
-use App\View\FlashHelper;
-
-// Récupération des messages flash normalisés :
-//  - (erreurs globales, erreurs par champ, anciennes valeurs, succès)
-//  extract() : créer automatiquement les variables utilisables directement dans la vue
-extract(FlashHelper::extract());
-?>
-
 <section class="auth-page auth-login">
     <div class="auth-layout">
 
         <!-- ================= LEFT : FORM ================= -->
         <div class="auth-form">
 
-            <h1 class="page-title">Connexion</h1>
-
-            <!-- ===== Alertes : success/errors  ===== -->
-            <?php require __DIR__ . '/../partials/alerts.php'; ?>
+            <h1 class="page-title"><?= htmlspecialchars($pageTitle) ?></h1>
 
             <form method="post" action="/login" novalidate>
-
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($this->generateCsrfToken()) ?>">
+                
                 <div class="auth-form-fields">
 
                     <!-- ===== EMAIL ===== -->
@@ -57,13 +44,13 @@ extract(FlashHelper::extract());
                                 required
                             >
                             <button
-                            type="button"
-                            class="password-toggle"
-                            data-password-toggle
-                            aria-label="Afficher le mot de passe"
-                            aria-pressed="false"
-                            >
-                            <span class="eye" aria-hidden="true">👁</span>
+                                type="button"
+                                class="password-toggle"
+                                data-password-toggle
+                                aria-label="Afficher le mot de passe"
+                                aria-pressed="false"
+                                >
+                                <span class="eye" aria-hidden="true">👁</span>
                             </button>
                         </div>   
 

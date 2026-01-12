@@ -1,8 +1,8 @@
-<section class="books page">
+<section class="books page has-soft-background">
     <div class="page-inner">
         <!-- HEADER PAGE -->
         <header class="books-header">
-            <h1 class="page-title">Nos livres à l’échange</h1>
+            <h1 class="page-title"><?= htmlspecialchars($pageTitle) ?></h1>
 
             <form method="get" action="/books" class="books-search">
                 <input

@@ -45,6 +45,46 @@ class BookRepository
      * @param int $id Identifiant du livre
      * @return Book|null Instance de Book ou null si introuvable
      */
+    public function findVisibleById(int $id): ?Book
+    {
+        $sql = "
+            SELECT
+                b.*,
+                u.pseudo       AS owner_pseudo,
+                u.avatar_path  AS owner_avatar_path
+            FROM books b
+            JOIN users u ON u.id = b.user_id
+            WHERE b.id = :id
+            AND is_visible = 1
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id' => $id]);
+
+        $data = $stmt->fetch();
+
+        if (! $data) {
+            return null;
+        }
+
+        $book = $this->hydrateBook($data);
+
+        // Hydratation du pseudo propriétaire & avatar
+        $book->setOwnerPseudo($data['owner_pseudo']);
+        $book->setOwnerAvatarPath($data['owner_avatar_path']);
+
+        return $book;
+    }
+
+    /**
+     * Récupère un livre à partir de son identifiant.
+     * 
+     * Méthode réservée aux administrateurs.
+     *      
+     * @param int $id Identifiant du livre
+     * @return Book|null Instance de Book ou null si introuvable
+     */
     public function findById(int $id): ?Book
     {
         $sql = "
@@ -78,7 +118,8 @@ class BookRepository
 
     /**
      * Récupère tous les livres appartenant à un utilisateur.
-     * Utilisation : privé (pour Mon compte)
+     *
+     * Méthode réservée aux administrateurs.
      * 
      * @param int $userId Identifiant de l'utilisateur
      * @return Book[] Liste des livres de l'utilisateur
@@ -89,6 +130,36 @@ class BookRepository
             SELECT *
             FROM books
             WHERE user_id = :user_id
+            ORDER BY created_at DESC
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+
+        // Contiendra un tableau d'objets de type Book.
+        $books = [];
+
+        while ($row = $stmt->fetch()) {
+            $books[] = $this->hydrateBook($row);
+        }
+
+        return $books;
+    }
+
+    /**
+     * Récupère tous les livres appartenant à un utilisateur.
+     * Utilisation : privé (pour Mon compte)
+     * 
+     * @param int $userId Identifiant de l'utilisateur
+     * @return Book[] Liste des livres de l'utilisateur
+     */
+    public function findVisibleByUser(int $userId): array
+    {
+        $sql = "
+            SELECT *
+            FROM books
+            WHERE user_id = :user_id
+            AND is_visible = 1
             ORDER BY created_at DESC
         ";
 
@@ -119,6 +190,7 @@ class BookRepository
             FROM books
             WHERE user_id = :user_id
             AND status = :status
+            AND is_visible = 1
             ORDER BY created_at DESC
         ";
 
@@ -154,6 +226,7 @@ class BookRepository
             FROM books b
             JOIN users u ON u.id = b.user_id
             WHERE b.status = :status
+            AND b.is_visible = 1            
         ";
 
         $params = [
@@ -175,7 +248,7 @@ class BookRepository
 
         while ($row = $stmt->fetch()) {
             $book = $this->hydrateBook($row);
-            $book->setOwnerPseudo($row['owner_pseudo']); // voir point 2
+            $book->setOwnerPseudo($row['owner_pseudo']); 
             $books[] = $book;
         }
 
@@ -189,20 +262,20 @@ class BookRepository
      * @param string|null $search
      * @return Book[]
      */
-    public function findAll(?string $search = null): array
+    public function findAllVisible(?string $search = null): array
     {
         $sql = "
             SELECT b.*, u.pseudo AS owner_pseudo
             FROM books b
             JOIN users u ON u.id = b.user_id
-            WHERE 1 = 1
+            WHERE b.is_visible = 1
         ";
 
         $params = [];
 
         if ($search !== null && $search !== '') {
             $sql .= " AND b.title LIKE :search";
-            $params['search'] = '%' . $search . '%';
+            $params['search'] = '%' . $search . '%'; // Paramètre de recherche
         }
 
         $sql .= " ORDER BY b.created_at DESC";
@@ -238,6 +311,7 @@ class BookRepository
             FROM books b
             JOIN users u ON u.id = b.user_id
             WHERE b.status = :status
+            AND b.is_visible = 1
             ORDER BY b.created_at DESC
             LIMIT :limit
         ";
@@ -259,6 +333,45 @@ class BookRepository
     }
 
     /**
+     * (Admin)
+     * Récupère une liste paginée de livres avec le pseudo de leur propriétaire.
+     * 
+     * Méthode réservée aux administrateurs.
+     *
+     * @param int $limit  Nombre maximum de livres à retourner.
+     * @param int $offset Position de départ pour la pagination.
+     *
+     * @return Book[] Liste des livres ordonnés par date de création décroissante.
+     */
+    public function findPaginated(int $limit, int $offset): array
+    {
+        $sql = '
+            SELECT 
+                b.*, 
+                u.pseudo AS owner_pseudo
+            FROM books b
+            JOIN users u ON u.id = b.user_id
+            ORDER BY b.created_at DESC
+            LIMIT :limit OFFSET :offset
+        ';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $books = [];
+
+        while ($row = $stmt->fetch()) {
+            $book = $this->hydrateBook($row);
+            $book->setOwnerPseudo($row['owner_pseudo']);
+            $books[] = $book;
+        }
+       
+        return $books;
+    }
+
+    /**
      * Insère un nouveau livre en base de données.
      *
      * @param Book $book (obj) Livre à persister
@@ -267,8 +380,8 @@ class BookRepository
     public function create(Book $book): bool
     {
         $sql = "
-            INSERT INTO books (user_id, title, author, description, image_path, status)
-            VALUES (:user_id, :title, :author, :description, :image_path, :status)
+            INSERT INTO books (user_id, title, author, description, image_path, status, is_visible)
+            VALUES (:user_id, :title, :author, :description, :image_path, :status, :is_visible)
         ";
 
         $stmt = $this->pdo->prepare($sql);
@@ -280,6 +393,7 @@ class BookRepository
             'description' => $book->getDescription(),
             'image_path'  => $book->getImagePath(),
             'status'      => $book->getStatus(),
+            'is_visible'  => $book->isVisible() ? 1 : 0,
         ]);
     }
 
@@ -352,6 +466,64 @@ class BookRepository
 
         return $stmt->execute(['id' => $id]);
     }
+ 
+    /**
+     * Bascule la visibilité d’un livre.
+     *
+     * Méthode réservée aux administrateurs.
+     *
+     * @param int $id Identifiant du livre.
+     *
+     * @return void
+     */    
+    public function toggleVisibility(int $id): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE books
+            SET is_visible = NOT is_visible
+            WHERE id = :id'
+        );
+
+        $stmt->execute(['id' => $id]);
+    }
+
+    /**
+     * Met à jour le statut d’un livre.
+     *
+     * Méthode réservée aux administrateurs.
+     *
+     * @param int    $id     Identifiant du livre.
+     * @param string $status Nouveau statut à appliquer.
+     *
+     * @return void
+     */
+    public function updateStatus(int $id, string $status): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE books
+            SET status = :status
+            WHERE id = :id'
+        );
+
+        $stmt->execute([
+            'id' => $id,
+            'status' => $status,
+        ]);
+    }
+
+    /**
+     * Compte le nombre total de livres.
+     * 
+     * Méthode réservée aux administrateurs.
+     * 
+     * @return int Nombre total de livres.
+     */
+    public function countAll(): int
+    {
+        return (int) $this->pdo
+            ->query('SELECT COUNT(*) FROM books')
+            ->fetchColumn();
+    }
 
     /**
      * Crée et hydrate une instance de Book à partir des données de la base.
@@ -371,6 +543,7 @@ class BookRepository
         );
 
         $book->setId((int) $data['id']);
+        $book->setIsVisible((bool) $data['is_visible']);
 
         return $book;
     }

@@ -1,26 +1,13 @@
-<?php
-/* VUE REGISTER (INSCRIPTION) */
-
-use App\View\FlashHelper;
-
-// Récupération des messages flash normalisés :
-//  - (erreurs globales, erreurs par champ, anciennes valeurs, succès)
-//  extract() : créer automatiquement les variables utilisables directement dans la vue
-extract(FlashHelper::extract());
-?>
-
 <section class="auth-page auth-register">
     <div class="auth-layout">
 
         <!-- ================= LEFT : FORM ================= -->
         <div class="auth-form">
 
-            <h1 class="page-title">Inscription</h1>
-
-            <!-- ===== Alertes : success/errors  ===== -->
-            <?php require __DIR__ . '/../partials/alerts.php'; ?>
+            <h1 class="page-title"><?= htmlspecialchars($pageTitle) ?></h1>
 
             <form method="post" action="/register" enctype="multipart/form-data" novalidate>
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($this->generateCsrfToken()) ?>">
 
                 <div class="auth-form-fields">
 

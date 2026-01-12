@@ -9,7 +9,7 @@
  * PHP version 8.2.12
  *
  * Date :        3 janvier 2026
- * Maj :         
+ * Maj :         10 janvier 2026
  *
  * @category     Service
  * @package      App\Service\Auth
@@ -53,6 +53,8 @@ final class AuthLoginValidator
         // Validation mot de passe
         if ($password === '') {
             $errors['password'] = 'Le mot de passe est requis.';
+        } elseif (strlen($password) < 6) {
+            $errors['password'] = 'Minimum 6 caractères requis.';
         }
 
         return [

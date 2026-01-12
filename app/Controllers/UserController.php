@@ -14,7 +14,7 @@
  * PHP version 8.2.12
  *
  * Date :      15 décembre 2025
- * Maj  :      19 décembre 2025
+ * Maj  :      10 janvier 2026
  *
  * @category   Controllers
  * @author     Salem Hadjali <salem.hadjali@gmail.com>
@@ -85,6 +85,7 @@ class UserController extends Controller
             'memberSince' => $memberSince,
             'pageStyles' => ['user-public.css'],
             'pageClass' => 'is-light-page',
+            'pageNoticesClass' => 'is-light-page',
         ]);
     }
 }

@@ -1,23 +1,9 @@
-<?php
-/* VUE ACCOUNT (MON COMPTE) */
-
-use App\View\FlashHelper;
-
-// Récupération des messages flash normalisés :
-//  - (erreurs globales, erreurs par champ, anciennes valeurs, succès)
-//  extract() : créer automatiquement les variables utilisables directement dans la vue
-extract(FlashHelper::extract());
-?>
-
 <div class="account-page">
 
     <!-- ================= PAGE TITLE ================= -->
     <header class="account-header">
-        <h1 class="page-title">Mon compte</h1>
+        <h1 class="page-title"><?= htmlspecialchars($pageTitle) ?></h1>
     </header>
-
-    <!-- ===== Alertes : success/errors  ===== -->
-    <?php require __DIR__ . '/../partials/alerts.php'; ?>
 
     <!-- ================= PROFILE + SETTINGS ================= -->
     <div class="account-layout">
@@ -41,6 +27,7 @@ extract(FlashHelper::extract());
                     action="/account/avatar"
                     enctype="multipart/form-data"
                     class="account-avatar-form"
+                    data-csrf-token="<?= htmlspecialchars($this->generateCsrfToken()) ?>"
                 >
                     <input
                         type="file"
@@ -108,6 +95,8 @@ extract(FlashHelper::extract());
                     class="account-form"
                     novalidate
                     aria-labelledby="account-settings-title">
+
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($this->generateCsrfToken()) ?>">
 
                     <!-- EMAIL -->
                     <div class="form-group<?= isset($errors['email']) ? ' form-group--error' : '' ?>">
@@ -285,6 +274,8 @@ extract(FlashHelper::extract());
                                 action="/book/<?= (int) $book->getId() ?>/delete"
                                 class="js-confirm-delete"
                             >
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($this->generateCsrfToken()) ?>">
+
                                 <button
                                     type="submit"
                                     class="library-action delete"
