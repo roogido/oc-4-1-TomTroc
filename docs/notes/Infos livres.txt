@@ -1,3 +1,15 @@
+Administrateur :
+**************
+    Pseudo : admin
+    login : admin@tomtroc.test
+    password : admin1
+	
+Nouveau compte (test) :
+--------------
+    Pseudo : roogido
+    login : salem@tomtroc.test
+    password : password
+	
 --------------------------
 login : <email_address>
 password :  password (pour tous les utilisateurs)

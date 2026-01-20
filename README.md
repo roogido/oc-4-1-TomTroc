@@ -213,7 +213,7 @@ Ces comptes permettent de tester :
 ## Remarques
 
 Le projet respecte strictement le périmètre fonctionnel défini dans les spécifications.
-Les fonctionnalités optionnelles (ex. : partie administration avancée, Recherche avancée, champs prénom/nom)
+Les fonctionnalités optionnelles (ex. : recherche avancée, champs prénom/nom)
 n’ont volontairement pas été implémentées afin de rester cohérent avec le MVP attendu.
 
 ## Auteur
